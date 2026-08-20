@@ -1,0 +1,30 @@
+name: release
+
+# Skeleton for automated publishing. Real publishing requires a Marketplace
+# publisher token and GitHub release permissions that are provided externally.
+# This workflow currently runs a dry-run build only.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run compile
+      - run: npm test
+      - run: npm run build
+
+  # Reserved: package + publish steps will be added once publisher token and
+  # release permissions are provided externally. No secrets are stored here.

@@ -1,0 +1,2772 @@
+[
+  {
+    "name": "archive",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-box-close-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-box-collection",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-box-collection-large",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-box-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-box-open-collection",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-shopping",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-shopping-saled",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-style1",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "archive-style3",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-bold-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-bold-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-bold-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-bold-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-bottom-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-bottom-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-bottom-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-bottom-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-collapse-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-collapse-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-collapse-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-collapse-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-top-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-top-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-chevron-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-collapse-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-collapse-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-collapse-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-collapse-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-decrease",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-bottom-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-bottom-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-collapse-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-collapse-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-collapse-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-collapse-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-top-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-top-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-double-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-drop-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-drop-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-drop-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-drop-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-escalate",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-move",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-play-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-play-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-play-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-play-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-top-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-top-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-bottom-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-bottom-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-left-bottom",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-left-top",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-right-bottom",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-right-top",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-up-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-turn-up-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-u-down-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-u-left-top",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-u-right-top",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-u-up-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "arrow-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "art-color",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-castle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-account",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-alert",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-analytics",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-automation",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-close",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-location",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-love",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-search",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-style2-city",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-home-style2-farm",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-office",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-office-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-office-location",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-office-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-office-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "building-shop",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-bar",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-bell-curve",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-bell-curve-cumulative",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-bubble",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-donut",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-histogram",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-poll",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-ppf",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-scatter-plot",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-scatter-plot-hexbin",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-timeline",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-chart-waterfall",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-high",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "dashboard-low",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-clock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-clock2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-style1",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-style3",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "date-calendar-style4",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-battery-charging",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-battery-charging-quick",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-battery-full",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-battery-low",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-battery-middle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-camera",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-camera-gopro",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-camera-movie",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-charging",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-charging-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-charging-high",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-charging-middle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-charging-quick",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-computer",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-computer-cd",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-game-controller",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-headphones",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-keyboard",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-laptop",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-microphone",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-monitor",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-monitor-account",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-monitor-dashboard",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-monitor-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-monitor-edit",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-monitor-multiple",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-mouse",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-mouse-bluetooth",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-mouse-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-mouse-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-mouse-vertical",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-mouse-wireless",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-pad",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-phone",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-phone-calculator",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-phone-elderly",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-phone-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-printer",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-smartwatch",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-tv",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-watch",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "device-webcam",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "download-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "download-cloud",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "download-tray",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-angry",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-close",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-confused",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-cute",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-happy",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-helpless",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-joy",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-lecherous",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-love",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-question",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-sleep",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-surprise",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-unhappy",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-wink",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-xd",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-robot-xx",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-thumb-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-thumb-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "emoji-thumb-up-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-code",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-collection",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-css",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-csv",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-excel",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-gif",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-html",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-image",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-jpg",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-js",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-json",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-movie",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-music",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-pdf",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-png",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-ppt",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-search",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-svg",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-system",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-txt",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-unable",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-webp",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "file-word",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-close",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-disable",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-info",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-key",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-like",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-lock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-lock-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-read",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-search",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-unlock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "folder-write",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-apple",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-banana",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-cake",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-chips",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-cupcake",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-fork-knife",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-grape",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-hamburger",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-ice-cream",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-ice-pop",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-pear",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-pineapple",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-pizza",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-watermelon",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "food-wine",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-face-mask",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-heart",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-medical-bag",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-pill",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-stethoscope",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-thermometer",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-water",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-water-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "health-water-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "image",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "image-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "image-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "image-panoramic",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "image-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "image-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-arrow-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-arrow-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-disk",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-tray",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-tray-arrow-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-tray-arrow-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "inbox-tray-file",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-bluetooth",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-capacitor",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-conduit",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-cpu",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-alert",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-error",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-speed1",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-speed2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-speed3",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-speed4",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-fan-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-gpu",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-harddisk",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-internet",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-memory",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-access-point",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-console",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-disable",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-folder",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-help",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-ip",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-monitor",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-normal",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-pinter",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-port",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-router",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-network-router-wireless",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-resistance",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-resistance-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-rom",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-save",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-ssd",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-ssd-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-volume-large",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-volume-low",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-volume-middle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-volume-small",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "it-wifi",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "life-love",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-android",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-apple",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-aws",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-blender",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-digital-ocean",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-docker",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-dropbox",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-ethereum",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-facebook",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-finder",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-instagram",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-kubernetes",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-linkedin",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-linux",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-microsoft-azure",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-microsoft-windows",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-patreon",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-qq",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-react",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-redhat",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-ubuntu",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-vimeo",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-vuejs",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-wechat",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-x",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "logo-youtube",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-compass",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-compass-north",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-marker",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-marker-radius",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-style3",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-target",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-target-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-tree",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "map-tree-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "media-music",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "media-music-half",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "media-music-note",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "media-music-note-sixteenth",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "media-pause",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "media-play-pause",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-email",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-email-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-email-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-email-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-email-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-email-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-phone",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-phone-incoming",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-phone-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-phone-outgoing",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "message-phone-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-bankcard",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-card",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-card-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-card-location",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-card-settings",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash-clock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash-dollar",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash-one",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash-one-hundred",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash-sync",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-cash-ten",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "pay-wallet",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-clock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-lock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-open-mark",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-open-page",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-book-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-chemistry",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-doctor",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-flask",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-graph",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-root",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "science-test-tube",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-eye",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-eye-closed",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-key",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-key-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-lock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-lock-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-lock-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-lock-style2-open",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-shield",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-shield-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-shield-check-small",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-shield-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "secure-shield-small",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-alert",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-badge",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-clock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-lock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-question",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-search",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "social-message-talk",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-stroke",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-stroke-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-stroke-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-check-stroke-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-stroke",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-stroke-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-stroke-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-close-stroke-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-stroke",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-stroke-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-stroke-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-minus-stroke-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-box-stroke",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-circle-stroke",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-stroke",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "symbol-plus-stroke-min",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-av-timer",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock-alarm",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock-nine",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock-seven",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock-six",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock-ten",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-clock-three",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-lock",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-pause",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-play",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-refresh",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-sand",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-sand-complete",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-sand-running",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-star",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "time-timer-stop",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-bag-suitcase",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-close",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-earth-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-language",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "traveling-umbrella",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-align-center",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-align-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-align-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-copy",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-delete",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-edit",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-filter",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-help",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-info",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-info-slab",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-menu",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-menu-badge",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-more",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-other",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-power",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-search",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-setting",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-setting-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-setting-cog-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-setting-cog-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-setting-cog-style3",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-setting-style2",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-tune",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-tune-vertical",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-wrench",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-wrench-cog",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "ui-writer",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "upload-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "upload-cloud",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "upload-tray",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-box",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-cancel",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-check",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-circle",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-down",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-group",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-left",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-multiple",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-multiple-minus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-multiple-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-multiple-switch",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-plus",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-read",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-remove",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-right",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-search",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-setting",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-account-up",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "user-recognition",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-cloud",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-lightning",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-moon",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-rain",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-rain-pouring",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-sun",
+    "styleGroup": "outline",
+    "tier": "free"
+  },
+  {
+    "name": "weather-thermometer",
+    "styleGroup": "outline",
+    "tier": "free"
+  }
+]

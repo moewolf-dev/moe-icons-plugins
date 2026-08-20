@@ -1,0 +1,156 @@
+{
+  "name": "moe-icons-plugins",
+  "displayName": "Moe Icons",
+  "description": "Code completion and semantic highlighting for the Moe Icons library (React & Vue).",
+  "version": "0.0.1",
+  "publisher": "moewolf-dev",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moewolf-dev/moe-icons-plugins"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "icons",
+    "svg",
+    "react",
+    "vue",
+    "moeicons",
+    "completion",
+    "highlighting"
+  ],
+  "activationEvents": [
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact",
+    "onLanguage:vue",
+    "onCommand:moeicons.listStyleLibraries",
+    "onCommand:moeicons.showVersionMap"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "moeicons.listStyleLibraries",
+        "title": "Moe Icons: List Style Libraries",
+        "category": "Moe Icons"
+      },
+      {
+        "command": "moeicons.showVersionMap",
+        "title": "Moe Icons: Show Plugin/Library Version Map",
+        "category": "Moe Icons"
+      }
+    ],
+    "configuration": {
+      "title": "Moe Icons",
+      "properties": {
+        "moeicons.highlightColorMode": {
+          "type": "string",
+          "enum": [
+            "light",
+            "dark"
+          ],
+          "default": "light",
+          "markdownDescription": "Color palette used for icon name highlighting.",
+          "enumDescriptions": [
+            "Light color palette",
+            "Dark color palette"
+          ]
+        },
+        "moeicons.styleGroup": {
+          "type": "string",
+          "default": "outline",
+          "markdownDescription": "Style library used for completion and highlighting. Use `all` to include every style group."
+        },
+        "moeicons.libraryVersion": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Icon library version to match. Leave empty to use the latest bundled version. See the version map for available mappings."
+        },
+        "moeicons.websiteUrl": {
+          "type": "string",
+          "default": "https://moeicons.com",
+          "markdownDescription": "Official Moe Icons website."
+        },
+        "moeicons.repositoryUrl": {
+          "type": "string",
+          "default": "https://github.com/moewolf-dev/moe-icons",
+          "markdownDescription": "Public Moe Icons repository."
+        },
+        "moeicons.pluginRepositoryUrl": {
+          "type": "string",
+          "default": "https://github.com/moewolf-dev/moe-icons-plugins",
+          "markdownDescription": "Repository of this plugin."
+        },
+        "moeicons.documentationUrl": {
+          "type": "string",
+          "default": "https://github.com/moewolf-dev/moe-icons#readme",
+          "markdownDescription": "Moe Icons usage documentation."
+        }
+      }
+    },
+    "semanticTokenTypes": [
+      {
+        "id": "moeicons.icon",
+        "superType": "type",
+        "description": "Moe Icons icon component name"
+      },
+      {
+        "id": "moeicons.keyword",
+        "superType": "keyword",
+        "description": "Moe Icons keyword/prefix identifier"
+      }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "light",
+        "description": "Icon name highlighted with the light palette"
+      },
+      {
+        "id": "dark",
+        "description": "Icon name highlighted with the dark palette"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "*",
+        "scopes": {
+          "moeicons.icon": [
+            "entity.name.type.class"
+          ],
+          "moeicons.icon.light": [
+            "entity.name.type.class"
+          ],
+          "moeicons.icon.dark": [
+            "support.type"
+          ],
+          "moeicons.keyword": [
+            "keyword.control"
+          ]
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./ --noEmit",
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.75.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.21.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0"
+  }
+}
