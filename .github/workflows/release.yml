@@ -82,7 +82,8 @@ jobs:
           npx --no-install vsce package --out "candidate/$name"
           # API failure stops the job; only an absent release permits a new artifact.
           gh api repos/moewolf-dev/moe-icons-plugins/releases --paginate --jq '.[].tag_name' > candidate/release-tags.txt
-          if rg --fixed-strings --line-regexp "$RELEASE_TAG" candidate/release-tags.txt; then
+          release_exists=$(node -e 'console.log(require("node:fs").readFileSync(process.argv[1], "utf8").split(/\r?\n/).includes(process.env.RELEASE_TAG))' candidate/release-tags.txt)
+          if [ "$release_exists" = true ]; then
             gh release download "$RELEASE_TAG" --repo moewolf-dev/moe-icons-plugins --pattern "$name" --pattern vsix.sha256 --dir release-artifact
             (cd release-artifact && sha256sum --check vsix.sha256)
             export VSIX_NAME="$name"
@@ -132,7 +133,8 @@ jobs:
         run: |
           printf '%s  release-artifact/%s\n' "$VSIX_SHA256" "$VSIX_NAME" | sha256sum --check
           gh api repos/moewolf-dev/moe-icons-plugins/releases --paginate --jq '.[].tag_name' > release-tags.txt
-          if rg --fixed-strings --line-regexp "$RELEASE_TAG" release-tags.txt; then
+          release_exists=$(node -e 'console.log(require("node:fs").readFileSync(process.argv[1], "utf8").split(/\r?\n/).includes(process.env.RELEASE_TAG))' release-tags.txt)
+          if [ "$release_exists" = true ]; then
             echo 'Existing release and reviewed assets retained.'
           else
             gh release create "$RELEASE_TAG" "release-artifact/$VSIX_NAME" release-artifact/vsix.sha256 --repo moewolf-dev/moe-icons-plugins --verify-tag --title "Moe Icons VS Code $RELEASE_TAG" --generate-notes
