@@ -76,3 +76,21 @@ the current incomplete iteration as a completed four-target feature release.
 Official references:
 - https://github.com/microsoft/vscode-vsce#trusted-publishing (OIDC and Node 22+)
 - https://code.visualstudio.com/api/working-with-extensions/publishing-extension (publisher and VSIX upload)
+
+## 0.0.1 publication recovery
+
+The v0.0.1 source tag remains at `a045811dc22e7fbeffc75266b5cc92c0f19193b1`.
+GitHub CI and the package job passed in run `37302966027`; publishing initially
+failed because npm vsce 4.0.0 omitted the Marketplace API version. The upstream
+implementation now uses `7.2-preview.1` and `FederatedToken` authentication.
+`scripts/fix-vsce-oidc.cjs` applies only those upstream changes to the known
+4.0.0 implementation and rejects unexpected source/version combinations.
+It runs only before publication and does not change the VSIX.
+
+To retry this specific artifact, dispatch `release.yml` on `main` with
+`publish=true` and `retry_reviewed_0_0_1=true`. The recovery job downloads the
+original run's artifact and checks its fixed SHA-256
+`f47cdde2576d4dd36acc26e3c25b1614d71c21790b1e8085c81c44b1c3cc7f86`.
+It uses the same `release.yml` trusted-policy identity. This job is limited to
+0.0.1 and the artifact's retention period; future releases use the ordinary
+tag path. No successful Marketplace publication has yet been confirmed.
