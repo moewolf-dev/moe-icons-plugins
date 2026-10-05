@@ -85,8 +85,17 @@ verification status separately. Updates follow each user's VS Code settings.
   read passed, publisher access rejected with `The requested operation is not
   allowed`. The returned Marketplace identity ID is
   `e7044b7b-85cc-670b-9a9c-52d885338a1c`; add it to `moewolf` as Contributor.
-  Publisher authorization and automatic publication remain unverified until
-  a subsequent successful run.
+  The publisher owner subsequently added this identity as Contributor.
+- Entra release run `37317535464` succeeded: tests/package verification, existing
+  GitHub Release asset reuse, Entra login and publisher access all passed;
+  Marketplace accepted `moewolf.moe-icons-plugins` 0.0.2. The artifact retains
+  SHA-256 `12e7c1df54a2a13bd15c935fffa8e5840cc6f29949969e5ce4ec2f390666dc31`.
+  Public-page verification/CDN propagation can lag successful upload; confirm
+  the visible version independently before announcing public availability.
+- Workflow actionlint validation passed. A package-only recovery run
+  `37317418380` confirmed the existing 0.0.2 VSIX matches every file's content
+  in a fresh tagged build. The future tag-to-main dispatch is implemented;
+  this recovery exercised the main dispatch directly without creating a new tag.
 
 ## Local state recovery
 
