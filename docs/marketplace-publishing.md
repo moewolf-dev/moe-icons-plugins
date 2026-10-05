@@ -93,4 +93,12 @@ original run's artifact and checks its fixed SHA-256
 `f47cdde2576d4dd36acc26e3c25b1614d71c21790b1e8085c81c44b1c3cc7f86`.
 It uses the same `release.yml` trusted-policy identity. This job is limited to
 0.0.1 and the artifact's retention period; future releases use the ordinary
-tag path. No successful Marketplace publication has yet been confirmed.
+tag path. The recovery run `37303689100` passed digest verification and applied the fix,
+but the Marketplace service returned HTTP 400: `Trusted Publishing is not supported.`
+This response does not establish whether a policy is missing: the current
+service/publisher path does not accept this publishing mode. Do not assume OIDC
+is available solely because vsce exposes the flag. No successful Marketplace
+publication has been confirmed. For this release, upload the reviewed VSIX
+through the publisher management UI. Configure OIDC only if Marketplace offers
+and accepts it; otherwise a separately authorized supported authentication
+method is required for future automation.
