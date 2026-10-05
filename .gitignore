@@ -9,3 +9,5 @@ out/
 
 release-artifact/
 packaging/*.vsix.sha256
+
+candidate/

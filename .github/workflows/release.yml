@@ -1,35 +1,47 @@
 name: release
 
 on:
-  workflow_call:
-    inputs:
-      publish:
-        description: Publish the reviewed VSIX using Marketplace OIDC trusted publishing.
-        required: false
-        type: boolean
-        default: false
-  workflow_dispatch:
-    inputs:
-      publish:
-        description: Publish from a matching vX.Y.Z tag after packaging. Requires a Marketplace trusted publishing policy.
-        required: false
-        type: boolean
-        default: false
-      retry_reviewed_0_0_1:
-        description: Retry the original reviewed 0.0.1 VSIX without moving its tag.
-        required: false
-        type: boolean
-        default: false
   push:
     tags:
-      - "v*"
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing stable vX.Y.Z tag on main to package or publish.
+        required: true
+        type: string
+      publish:
+        description: Publish the reviewed artifact to GitHub Release and Marketplace via Entra ID.
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
+concurrency:
+  group: extension-release-${{ inputs.release_tag || github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
+  dispatch:
+    if: github.event_name == 'push' && github.repository == 'moewolf-dev/moe-icons-plugins'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch publication on the federated main branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node -e 'if (!/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(process.env.RELEASE_TAG || "")) process.exit(1)'
+          gh workflow run release.yml --repo moewolf-dev/moe-icons-plugins --ref main -f "release_tag=$RELEASE_TAG" -f publish=true
+
   package:
-    if: inputs.retry_reviewed_0_0_1 != true
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.repository == 'moewolf-dev/moe-icons-plugins'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -37,40 +49,59 @@ jobs:
     outputs:
       vsix-name: ${{ steps.package.outputs.name }}
       vsix-sha256: ${{ steps.package.outputs.sha256 }}
+    env:
+      RELEASE_TAG: ${{ inputs.release_tag }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Validate immutable tag and its ancestry on main
+        run: |
+          node -e 'if (!/^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(process.env.RELEASE_TAG || "")) { console.error("A stable vX.Y.Z tag is required"); process.exit(1); }'
+          git rev-parse --verify "refs/tags/$RELEASE_TAG^{commit}"
+          git merge-base --is-ancestor "refs/tags/$RELEASE_TAG^{commit}" origin/main
+          git checkout --detach "refs/tags/$RELEASE_TAG"
+          node -e 'if (process.env.RELEASE_TAG !== `v${require("./package.json").version}`) process.exit(1)'
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
-      - name: Require a tag for manual publishing
-        if: inputs.publish == true
-        env:
-          RELEASE_REF: ${{ github.ref }}
-        run: |
-          node -e 'if (!/^refs\/tags\/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(process.env.RELEASE_REF || "")) { console.error("Publishing requires a stable vX.Y.Z tag."); process.exit(1); }'
       - run: npm ci
       - run: npm run compile
       - run: npm test
       - run: npm run build
       - run: npm run release:validate
-      - name: Validate tag and version map
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          RELEASE_TAG: ${{ github.ref_name }}
-        run: |
-          node -e 'const p=require("./package.json"); if(process.env.RELEASE_TAG !== `v${p.version}`) process.exit(1);'
-      - name: Package reviewed extension
+      - name: Package and preserve an existing reviewed release
         id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           version=$(node -p 'require("./package.json").version')
           name="moe-icons-plugins-${version}.vsix"
-          mkdir -p release-artifact
-          npx --no-install vsce package --out "release-artifact/$name"
+          mkdir -p release-artifact candidate
+          npx --no-install vsce package --out "candidate/$name"
+          # API failure stops the job; only an absent release permits a new artifact.
+          gh api repos/moewolf-dev/moe-icons-plugins/releases --paginate --jq '.[].tag_name' > candidate/release-tags.txt
+          if rg --fixed-strings --line-regexp "$RELEASE_TAG" candidate/release-tags.txt; then
+            gh release download "$RELEASE_TAG" --repo moewolf-dev/moe-icons-plugins --pattern "$name" --pattern vsix.sha256 --dir release-artifact
+            (cd release-artifact && sha256sum --check vsix.sha256)
+            export VSIX_NAME="$name"
+            python3 - <<'PY'
+          import os, zipfile
+          name = os.environ['VSIX_NAME']
+          with zipfile.ZipFile('candidate/' + name) as fresh, zipfile.ZipFile('release-artifact/' + name) as prior:
+              assert sorted(fresh.namelist()) == sorted(prior.namelist()), 'Published artifact file list differs from the tagged build'
+              for path in fresh.namelist():
+                  assert fresh.read(path) == prior.read(path), 'Published artifact differs from the tagged build: ' + path
+          print('Existing release matches the tagged build; retaining its exact VSIX bytes.')
+          PY
+          else
+            cp "candidate/$name" "release-artifact/$name"
+          fi
           digest=$(sha256sum "release-artifact/$name" | cut -d ' ' -f 1)
+          echo "$digest  $name" > release-artifact/vsix.sha256
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "sha256=$digest" >> "$GITHUB_OUTPUT"
-          echo "$digest  $name" > release-artifact/vsix.sha256
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: reviewed-vsix
@@ -80,14 +111,44 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-  publish:
+  github-release:
     needs: package
-    if: startsWith(github.ref, 'refs/tags/v') && (github.event_name == 'push' || inputs.publish == true) && github.repository == 'moewolf-dev/moe-icons-plugins' && github.event_name != 'pull_request'
+    if: inputs.publish == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: reviewed-vsix
+          path: release-artifact
+      - name: Publish the same artifact to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          VSIX_NAME: ${{ needs.package.outputs.vsix-name }}
+          VSIX_SHA256: ${{ needs.package.outputs.vsix-sha256 }}
+        run: |
+          printf '%s  release-artifact/%s\n' "$VSIX_SHA256" "$VSIX_NAME" | sha256sum --check
+          gh api repos/moewolf-dev/moe-icons-plugins/releases --paginate --jq '.[].tag_name' > release-tags.txt
+          if rg --fixed-strings --line-regexp "$RELEASE_TAG" release-tags.txt; then
+            echo 'Existing release and reviewed assets retained.'
+          else
+            gh release create "$RELEASE_TAG" "release-artifact/$VSIX_NAME" release-artifact/vsix.sha256 --repo moewolf-dev/moe-icons-plugins --verify-tag --title "Moe Icons VS Code $RELEASE_TAG" --generate-notes
+          fi
+
+  publish:
+    needs: [package, github-release]
+    if: inputs.publish == true
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: read
       id-token: write
+    env:
+      AZURE_CORE_OUTPUT: none
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -99,38 +160,16 @@ jobs:
         with:
           name: reviewed-vsix
           path: release-artifact
-      - name: Verify and publish the exact VSIX with OIDC
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - name: Verify and publish the exact VSIX using Entra ID
         env:
           VSIX_NAME: ${{ needs.package.outputs.vsix-name }}
           VSIX_SHA256: ${{ needs.package.outputs.vsix-sha256 }}
         run: |
           printf '%s  release-artifact/%s\n' "$VSIX_SHA256" "$VSIX_NAME" | sha256sum --check
-          node scripts/fix-vsce-oidc.cjs
-          npx --no-install vsce publish --oidc --packagePath "release-artifact/$VSIX_NAME"
-
-  retry-reviewed:
-    if: github.event_name == 'workflow_dispatch' && inputs.publish == true && inputs.retry_reviewed_0_0_1 == true && github.repository == 'moewolf-dev/moe-icons-plugins' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      actions: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: reviewed-vsix
-          path: release-artifact
-          run-id: 37302966027
-          github-token: ${{ github.token }}
-      - name: Verify and publish the original reviewed VSIX
-        run: |
-          echo 'f47cdde2576d4dd36acc26e3c25b1614d71c21790b1e8085c81c44b1c3cc7f86  release-artifact/moe-icons-plugins-0.0.1.vsix' | sha256sum --check
-          node scripts/fix-vsce-oidc.cjs
-          npx --no-install vsce publish --oidc --packagePath release-artifact/moe-icons-plugins-0.0.1.vsix
+          npx --no-install vsce verify-pat moewolf --azure-credential
+          npx --no-install vsce publish --azure-credential --skip-duplicate --packagePath "release-artifact/$VSIX_NAME"

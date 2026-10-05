@@ -1,127 +1,108 @@
-# Visual Studio Marketplace publishing runbook
+# Visual Studio Marketplace publishing
 
-## Extension identity
+## Identity and current version
 
-The publisher is `moewolf`, created by the maintainer. The package name remains
-`moe-icons-plugins`, so the extension ID is **`moewolf.moe-icons-plugins`**.
-The GitHub repository is `moewolf-dev/moe-icons-plugins`; the organization name
-is independent of the Marketplace publisher ID. The current plugin version is
-`0.0.2`; it is independent of the resourceVersion `0.0.18`.
+- Extension: `moewolf.moe-icons-plugins`
+- GitHub: `moewolf-dev/moe-icons-plugins`
+- Current plugin version: 0.0.2
+- Accepted CLI baseline: 0.0.3; bundled legacy resource baseline: 0.0.17
 
+The plugin version and resource version are independent. This is an early release
+and does not claim completion of the four-target iteration.
 
-## Local package review
+## Authentication: GitHub → Entra ID → Marketplace
 
-1. Use a clean, reviewed commit and a stable SemVer version in `package.json` and `package-lock.json`.
-2. Run compile, tests, build, and `vsce package` in the plugin repository.
-3. Inspect `vsce ls` and the VSIX archive. Confirm that it contains only runtime code, the metadata-only catalog, docs, and declared assets; it must contain no credential files, tests, private resource artifacts, SVG source, or bitmap bytes.
-4. Install that VSIX into a clean VS Code profile and verify activation and the declared commands/views before publication.
-5. Publish the same reviewed version with `vsce publish` only after the publisher identity and authentication path are ready. Retain the VSIX SHA-256 and Marketplace readback as release evidence.
+The workflow uses `azure/login` with GitHub workload identity federation, then
+`vsce publish --azure-credential`. It does not use Marketplace direct trusted
+publishing (`--oidc`), PATs, client secrets or certificates.
 
-## Automation and authentication
+Repository variables:
 
-The release workflow now packages the VSIX in a credential-free job, then publishes that exact digest with `npx @vscode/vsce publish --oidc` in a separate job that alone receives `id-token: write`. Configure a Visual Studio Marketplace trusted-publishing policy for this repository and workflow before enabling a release. `vsce` requests a GitHub Actions OIDC token with the Marketplace audience and exchanges it for a short-lived credential; it does not fall back to a PAT if trusted publishing fails. The workflow never reads or stores a Marketplace secret. A dispatch credential for reading upstream repositories is a separate identity and must never be reused as Marketplace authentication.
+- `AZURE_CLIENT_ID`: the Application (client) ID
+- `AZURE_TENANT_ID`: the Directory (tenant) ID
 
-## Updates and recovery
+Configure the app's federated credential:
 
-VS Code applies Marketplace updates according to the user's automatic-update settings, extension compatibility (`engines.vscode`), and any version-channel policy. A successful publish does not force every installed client to upgrade immediately. To recover a defective release, publish a corrected higher patch version; do not attempt to roll clients back by publishing a lower version. Keep the original VSIX, digest, source commit, package version, and Marketplace readback together.
+- Issuer: `https://token.actions.githubusercontent.com`
+- Audience: `api://AzureADTokenExchange`
+- Subject: `repo:moewolf-dev/moe-icons-plugins:ref:refs/heads/main`
 
-## External prerequisites
+The Marketplace publisher must separately authorize the Azure identity. Run
+`verify-entra.yml` on `main`: it logs in without subscriptions, calls
+`vsce verify-pat moewolf --azure-credential` without publishing, and retrieves
+the identity ID from the Azure DevOps profiles API. Add that profile ID (not the
+client ID or the Entra object ID) to the `moewolf` publisher as **Contributor**.
+The legacy command name `verify-pat` also supports Entra; it does not create a
+PAT. Its access check alone does not prove write rights: actual publication
+requires Contributor or Owner access. No access token is printed in these steps.
 
-- Verified publisher ownership and extension ID.
-- A Marketplace trusted-publishing policy bound to this repository/workflow, plus publisher ownership and permission.
-- Repository permissions to read the required upstream release artifacts and dispatch events.
-- A maintainer to perform first publish and confirm Marketplace readback.
+## One tag, two release destinations
 
-## Local release state recovery
+1. Review changes and synchronize package.json, package-lock.json, the version
+   map and release baseline. Run compile, tests, build and release validation.
+2. Commit and push the version commit to `main`.
+3. Create and push its matching stable `vX.Y.Z` tag.
+4. The tag coordinator dispatches `release.yml` on `main`, preserving the
+   existing branch-based federation subject. A tag itself cannot log in using
+   a credential bound only to `main`.
+5. The dispatched workflow validates the tag format, version and ancestry on
+   `main`, checks out the tagged code, tests, validates and packages it without
+   Azure credentials.
+6. It publishes the reviewed VSIX and SHA-256 to GitHub Release. If a release
+   already exists, its assets must exist, pass SHA-256 and match every file's
+   content in a fresh build of the tag. Its original bytes are retained.
+7. A separate job receives `id-token: write`, logs into Entra, checks publisher
+   access, verifies the VSIX digest and publishes that exact artifact.
 
-`release-state.mjs` serializes state changes with `.release-state-lock` and writes a
-`.release-state-transaction.json` journal before updating the package, lockfile,
-version map and event ledger. The next operation finishes an interrupted
-transaction only when every file still matches its recorded before/after state.
-A live lock owner rejects competing operations; retry the same event later.
-A lock from a stopped process requires inspecting the owner PID and removing the
-lock directory only after confirming no release operation is running. Retain the
-transaction journal, then retry the event to recover. External file changes cause
-recovery to stop for manual review. These protections do not replace the durable
-cross-repository event queue required by the receiver workflow.
+Branch pushes and PRs run CI without publication. Runs are serialized per tag.
+The GitHub Release and Marketplace jobs have separate permissions; only the
+Marketplace job can obtain an Azure identity. There is no PAT fallback.
 
-## First publication and trusted policy
+## Recovery without a new version
 
-1. Run the `release` workflow manually with `publish=false` on a reviewed commit.
-   Download its `reviewed-vsix` artifact; it contains the VSIX and SHA-256 file.
-2. In https://marketplace.visualstudio.com/manage/publishers/ select **moewolf**
-   and use **New extension → Visual Studio Code** to upload the reviewed VSIX.
-   Uploading a VSIX is the documented first-publication path and creates the
-   extension; no long-lived Marketplace PAT is needed for this path.
-3. Once the extension's management UI offers trusted publishing, configure the
-   GitHub policy for owner **moewolf-dev**, repository **moe-icons-plugins**,
-   workflow **release.yml**. This workflow filename is the one implemented here;
-   do not configure `publish.yml` unless the file and policy are both changed.
-   Marketplace UI availability and the policy's effective permissions must be
-   confirmed externally. The official vsce guide does not establish that a
-   first-upload bootstrap is universally required before OIDC can be configured.
-4. For subsequent releases, use a reviewed version commit whose package, lock,
-   version map and release state agree. Push its exact `vX.Y.Z` tag. The release
-   workflow checks the tag against `package.json`, packages once, verifies the
-   digest and publishes that VSIX with OIDC. Ordinary branch pushes and PRs run
-   `ci.yml` without publishing. Manual `publish=true` also requires selecting the
-   matching tag; a branch cannot be published through this workflow.
+Dispatch `release.yml` on `main` with `release_tag=v0.0.2` and `publish=true`
+to publish the existing reviewed 0.0.2 package. `publish=false` validates and
+packages without creating a GitHub Release or obtaining an Azure credential.
+Do not move existing tags or allocate a new version just to test authentication.
+`--skip-duplicate` permits recovery when the Marketplace version already exists;
+it does not replace that version. A new change needs a higher patch version.
 
-Do not use `npm version patch` alone in this repository: it does not update the
-version map or durable release ledger. Allocate upstream versions through the
-existing release-state tool, review all related data changes, commit them, then
-create/push the matching tag. This documentation does not authorize publishing
-the current incomplete iteration as a completed four-target feature release.
+Authentication failure leaves the GitHub Release and reviewed VSIX available.
+After fixing membership or federation, rerun the same dispatch. GitHub Release
+is not evidence of Marketplace publication; check the Marketplace version and
+verification status separately. Updates follow each user's VS Code settings.
+
+## Evidence and migration history
+
+- Manual first publication of 0.0.1 was confirmed on 2026-10-05.
+- 0.0.2 source tag: `62df19d6ebe0c69546457e8704041df04160cfdb`.
+- Reviewed 0.0.2 VSIX SHA-256:
+  `12e7c1df54a2a13bd15c935fffa8e5840cc6f29949969e5ce4ec2f390666dc31`.
+- Direct Marketplace OIDC publication failed with
+  `Trusted Publishing is not supported` in run `37306940878`. The temporary
+  vsce OIDC compatibility patch and old 0.0.1 retry job have been retired.
+- Entra preflight run `37316511052`: federation login passed, identity profile
+  read passed, publisher access rejected with `The requested operation is not
+  allowed`. The returned Marketplace identity ID is
+  `e7044b7b-85cc-670b-9a9c-52d885338a1c`; add it to `moewolf` as Contributor.
+  Publisher authorization and automatic publication remain unverified until
+  a subsequent successful run.
+
+## Local state recovery
+
+`release-state.mjs` serializes upstream-event allocation with `.release-state-lock`
+and a `.release-state-transaction.json` journal. Interrupted transactions recover
+only when files match their recorded before/after content. A live lock rejects
+competing operations. Inspect the owner PID before removing a stale lock, retain
+the journal, then retry. External changes stop recovery for manual review.
+
+Do not use `npm version patch` alone: it leaves the version map and baseline
+unsynchronized. Maintainer-initiated patches must synchronize the four metadata
+files without inventing upstream events. These local protections do not replace
+the planned cross-repository durable event receiver.
 
 Official references:
-- https://github.com/microsoft/vscode-vsce#trusted-publishing (OIDC and Node 22+)
-- https://code.visualstudio.com/api/working-with-extensions/publishing-extension (publisher and VSIX upload)
 
-## 0.0.1 publication recovery
-
-The v0.0.1 source tag remains at `a045811dc22e7fbeffc75266b5cc92c0f19193b1`.
-GitHub CI and the package job passed in run `37302966027`; publishing initially
-failed because npm vsce 4.0.0 omitted the Marketplace API version. The upstream
-implementation now uses `7.2-preview.1` and `FederatedToken` authentication.
-`scripts/fix-vsce-oidc.cjs` applies only those upstream changes to the known
-4.0.0 implementation and rejects unexpected source/version combinations.
-It runs only before publication and does not change the VSIX.
-
-To retry this specific artifact, dispatch `release.yml` on `main` with
-`publish=true` and `retry_reviewed_0_0_1=true`. The recovery job downloads the
-original run's artifact and checks its fixed SHA-256
-`f47cdde2576d4dd36acc26e3c25b1614d71c21790b1e8085c81c44b1c3cc7f86`.
-It uses the same `release.yml` trusted-policy identity. This job is limited to
-0.0.1 and the artifact's retention period; future releases use the ordinary
-tag path. The recovery run `37303689100` passed digest verification and applied the fix,
-but the Marketplace service returned HTTP 400: `Trusted Publishing is not supported.`
-This response does not establish whether a policy is missing: the current
-service/publisher path does not accept this publishing mode. Do not assume OIDC
-is available solely because vsce exposes the flag. No successful Marketplace
-publication has been confirmed. For this release, upload the reviewed VSIX
-through the publisher management UI. Configure OIDC only if Marketplace offers
-and accepts it; otherwise a separately authorized supported authentication
-method is required for future automation.
-
-## First publication confirmed
-
-On 2026-10-05 the maintainer completed the manual VSIX upload. Public
-Marketplace readback confirms `moewolf.moe-icons-plugins` version `0.0.1` at
-https://marketplace.visualstudio.com/items?itemName=moewolf.moe-icons-plugins .
-The earlier OIDC rejection remains unresolved; a successful manual upload
-does not establish trusted-publishing support.
-
-The repository now declares `moeicons-logo-192x192.png` as its extension icon.
-The provided PNG is actually 128×128 pixels despite its filename. The already
-published 0.0.1 package predates this change; its Marketplace icon changes only
-after uploading a new, higher-version VSIX. Do not replace the v0.0.1 source tag
-or republish a modified package under the same version.
-
-## 0.0.2 documentation and icon release
-
-This maintainer-initiated patch adds the extension icon, official website and
-documentation links, required CLI setup instructions and support email. Its
-package/lock versions, release baseline and version map are synchronized at
-0.0.2. CLI 0.0.3 and the bundled resource baseline 0.0.17 remain unchanged; this
-patch does not manufacture an upstream release event or claim resource 0.0.18
-integration. Package and publish the new version, preserving the 0.0.1 tag.
+- https://github.com/Azure/login (OIDC login and no-subscription support)
+- https://code.visualstudio.com/api/working-with-extensions/publishing-extension
+- https://github.com/microsoft/vscode-vsce (Entra publishing implementation)

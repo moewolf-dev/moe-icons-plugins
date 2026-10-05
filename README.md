@@ -101,10 +101,11 @@ Press `F5` in VS Code to launch an Extension Development Host.
 
 Publisher: `moewolf`; extension ID: `moewolf.moe-icons-plugins`.
 Development and packaging require Node.js 22 or newer.
-PRs and branch pushes run CI. A matching `vX.Y.Z` tag triggers the Marketplace
-release workflow. Marketplace OIDC currently returns `Trusted Publishing is not
-supported`; use the reviewed VSIX for manual Marketplace upload until a supported
-automation identity is configured.
+PRs and branch pushes run CI. A matching `vX.Y.Z` tag dispatches the release
+workflow on `main`, which checks out the tagged code, tests and packages it,
+publishes the same VSIX to GitHub Release and Marketplace, and authenticates using
+Microsoft Entra ID federation. The Entra application must have Contributor
+permission on the `moewolf` Marketplace publisher. No long-lived secret is used.
 See [the publishing runbook](docs/marketplace-publishing.md) for first VSIX upload,
 version synchronization, and policy setup.
 
