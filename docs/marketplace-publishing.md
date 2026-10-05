@@ -102,3 +102,17 @@ publication has been confirmed. For this release, upload the reviewed VSIX
 through the publisher management UI. Configure OIDC only if Marketplace offers
 and accepts it; otherwise a separately authorized supported authentication
 method is required for future automation.
+
+## First publication confirmed
+
+On 2026-10-05 the maintainer completed the manual VSIX upload. Public
+Marketplace readback confirms `moewolf.moe-icons-plugins` version `0.0.1` at
+https://marketplace.visualstudio.com/items?itemName=moewolf.moe-icons-plugins .
+The earlier OIDC rejection remains unresolved; a successful manual upload
+does not establish trusted-publishing support.
+
+The repository now declares `moeicons-logo-192x192.png` as its extension icon.
+The provided PNG is actually 128×128 pixels despite its filename. The already
+published 0.0.1 package predates this change; its Marketplace icon changes only
+after uploading a new, higher-version VSIX. Do not replace the v0.0.1 source tag
+or republish a modified package under the same version.

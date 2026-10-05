@@ -1,6 +1,7 @@
 {
   "name": "moe-icons-plugins",
   "displayName": "Moe Icons",
+  "icon": "moeicons-logo-192x192.png",
   "description": "Code completion and semantic highlighting for the Moe Icons library (React & Vue).",
   "version": "0.0.1",
   "publisher": "moewolf",
