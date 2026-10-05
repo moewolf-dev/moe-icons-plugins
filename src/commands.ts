@@ -61,9 +61,7 @@ export function registerShowVersionMapCommand(): vscode.Disposable {
       void vscode.window.showInformationMessage("Moe Icons: version map is empty.");
       return;
     }
-    const lines = map.map(
-      (entry) => `plugin ${entry.pluginVersion}  ->  library ${entry.libraryVersion}`,
-    );
+    const lines = map.map(entry => `plugin ${entry.pluginVersion}  ->  CLI ${entry.cliVersion ?? "unknown"}  /  resource ${entry.resourceVersion ?? entry.libraryVersion ?? "unknown"}`);
     void vscode.window.showInformationMessage(
       `Moe Icons version map:\n${lines.join("\n")}`,
       { modal: false },

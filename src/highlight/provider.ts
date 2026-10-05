@@ -1,69 +1,31 @@
 import * as vscode from "vscode";
-import { HIGHLIGHT_LANGUAGE_IDS, IDENTIFIER_PATTERN, KEYWORD_IDENTIFIERS } from "../constants";
-import { loadIcons, toComponentName } from "../data";
+import { HIGHLIGHT_LANGUAGE_IDS } from "../constants";
 import { getSettings } from "../settings";
+import type { LanguageService } from "../language/service";
 
-const TOKEN_TYPES = ["moeicons.icon", "moeicons.keyword"];
-const TOKEN_MODIFIERS = ["light", "dark"];
-
-const legend = new vscode.SemanticTokensLegend(TOKEN_TYPES, TOKEN_MODIFIERS);
-
-interface MatchedToken {
-  start: number;
-  length: number;
-  typeIndex: number;
-  modifierMask: number;
-}
-
-function collectTokens(line: string, knownIcons: ReadonlySet<string>, modeIndex: number): MatchedToken[] {
-  const tokens: MatchedToken[] = [];
-  IDENTIFIER_PATTERN.lastIndex = 0;
-
-  let match: RegExpExecArray | null;
-  while ((match = IDENTIFIER_PATTERN.exec(line)) !== null) {
-    const identifier = match[0];
-    const start = match.index;
-    const length = identifier.length;
-    if (knownIcons.has(identifier)) {
-      tokens.push({ start, length, typeIndex: 0, modifierMask: 1 << modeIndex });
-    } else if (KEYWORD_IDENTIFIERS.includes(identifier as (typeof KEYWORD_IDENTIFIERS)[number])) {
-      tokens.push({ start, length, typeIndex: 1, modifierMask: 0 });
-    }
-  }
-  return tokens;
-}
-
-function buildIconSet(): ReadonlySet<string> {
-  const set = new Set<string>();
-  for (const entry of loadIcons()) {
-    set.add(toComponentName(entry.name));
-  }
-  return set;
-}
-
-export function registerHighlightProvider(): vscode.Disposable {
-  const knownIcons = buildIconSet();
-
+const legend = new vscode.SemanticTokensLegend(["moeiconsIcon", "moeiconsKeyword"], ["light", "dark"]);
+export function registerHighlightProvider(service: LanguageService): vscode.Disposable {
+  const changed = new vscode.EventEmitter<void>();
+  const projectChanged = service.onDidChange(() => changed.fire());
+  const themeChanged = vscode.window.onDidChangeActiveColorTheme(() => changed.fire());
   const provider: vscode.DocumentSemanticTokensProvider = {
-    provideDocumentSemanticTokens(document) {
-      const modeIndex = getSettings().highlightColorMode === "dark" ? 1 : 0;
+    onDidChangeSemanticTokens: changed.event,
+    async provideDocumentSemanticTokens(document, cancellation) {
+      const analysis = await service.analyze(document);
+      if (!analysis || cancellation.isCancellationRequested) return undefined;
       const builder = new vscode.SemanticTokensBuilder(legend);
-
-      for (let lineIndex = 0; lineIndex < document.lineCount; lineIndex++) {
-        const line = document.lineAt(lineIndex).text;
-        const tokens = collectTokens(line, knownIcons, modeIndex);
-        for (const token of tokens) {
-          builder.push(lineIndex, token.start, token.length, token.typeIndex, token.modifierMask);
-        }
+      const mode = getSettings().highlightColorMode;
+      const dark = mode === "dark" || (mode === "auto" && (vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark || vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrast));
+      const modifier = dark ? 2 : 1;
+      for (const occurrence of analysis.occurrences) {
+        const start = document.positionAt(occurrence.start), end = document.positionAt(occurrence.end);
+        if (start.line !== end.line) continue;
+        const type = occurrence.symbol.kind === "keyword" ? 1 : 0;
+        builder.push(start.line, start.character, end.character - start.character, type, type === 0 ? modifier : 0);
       }
-
       return builder.build();
     },
   };
-
-  const selector: vscode.DocumentSelector = HIGHLIGHT_LANGUAGE_IDS.map((language) => ({
-    language,
-  }));
-
-  return vscode.languages.registerDocumentSemanticTokensProvider(selector, provider, legend);
+  const registration = vscode.languages.registerDocumentSemanticTokensProvider(HIGHLIGHT_LANGUAGE_IDS.map(language => ({ language })), provider, legend);
+  return { dispose() { registration.dispose(); projectChanged.dispose(); themeChanged.dispose(); changed.dispose(); } };
 }

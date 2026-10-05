@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "current": {
+    "pluginVersion": "0.0.1",
+    "cliVersion": "0.0.3",
+    "resourceVersion": "0.0.17"
+  },
+  "events": []
+}

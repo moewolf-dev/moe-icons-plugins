@@ -1,5 +1,7 @@
 import rawIcons from "../../data/icons.json";
-import { COMPONENT_SUFFIX } from "../constants";
+import { proxyName } from "../language/naming";
+import { parseIconManifest, type IconManifest } from "./manifest";
+export { parseIconManifest } from "./manifest";
 
 export type Tier = "free" | "pro";
 
@@ -9,24 +11,27 @@ export interface IconEntry {
   tier: Tier;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export function loadIconManifest(value: unknown = rawIcons): IconManifest | undefined {
+  if (!isRecord(value) || value.schemaVersion !== 1 || !Array.isArray(value.entries)) return undefined;
+  return parseIconManifest(value);
+}
+
 function isTier(value: unknown): value is Tier {
   return value === "free" || value === "pro";
 }
 
-function toPascalCase(name: string): string {
-  return name
-    .split("-")
-    .filter((segment) => segment.length > 0)
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join("");
-}
-
 export function toComponentName(iconName: string): string {
-  return toPascalCase(iconName) + COMPONENT_SUFFIX;
+  return proxyName(iconName);
 }
 
 export function loadIcons(): IconEntry[] {
   const raw = rawIcons as unknown;
+  const manifest = loadIconManifest(raw);
+  if (manifest) return manifest.entries.map(entry => ({ name: entry.id, styleGroup: entry.styleGroup, tier: entry.minimumTier }));
   if (!Array.isArray(raw)) {
     return [];
   }

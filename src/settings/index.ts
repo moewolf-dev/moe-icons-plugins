@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-export type HighlightColorMode = "light" | "dark";
+export type HighlightColorMode = "light" | "dark" | "auto";
 
 export interface MoeiconsSettings {
   highlightColorMode: HighlightColorMode;
@@ -20,8 +20,8 @@ function readString(section: vscode.WorkspaceConfiguration, key: string, fallbac
 export function getSettings(): MoeiconsSettings {
   const section = vscode.workspace.getConfiguration("moeicons");
 
-  const highlightColorMode =
-    section.get<string>("highlightColorMode") === "dark" ? "dark" : "light";
+  const configured = section.get<string>("highlightColorMode");
+  const highlightColorMode: HighlightColorMode = configured === "dark" || configured === "light" ? configured : "auto";
 
   return {
     highlightColorMode,

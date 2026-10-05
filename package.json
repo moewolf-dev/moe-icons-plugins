@@ -3,7 +3,7 @@
   "displayName": "Moe Icons",
   "description": "Code completion and semantic highlighting for the Moe Icons library (React & Vue).",
   "version": "0.0.1",
-  "publisher": "moewolf-dev",
+  "publisher": "moewolf",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -31,7 +31,12 @@
     "onLanguage:javascriptreact",
     "onLanguage:vue",
     "onCommand:moeicons.listStyleLibraries",
-    "onCommand:moeicons.showVersionMap"
+    "onCommand:moeicons.showVersionMap",
+    "onCommand:moeicons.refreshAccount",
+    "onCommand:moeicons.showAccount",
+    "onView:moeicons.account",
+    "onLanguage:typescript",
+    "onLanguage:javascript"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -45,8 +50,28 @@
         "command": "moeicons.showVersionMap",
         "title": "Moe Icons: Show Plugin/Library Version Map",
         "category": "Moe Icons"
+      },
+      {
+        "command": "moeicons.refreshAccount",
+        "title": "Moe Icons: Refresh Account",
+        "category": "Moe Icons"
+      },
+      {
+        "command": "moeicons.showAccount",
+        "title": "Moe Icons: Show Account",
+        "category": "Moe Icons"
       }
     ],
+    "views": {
+      "explorer": [
+        { "id": "moeicons.account", "name": "Moe Icons Account" }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        { "command": "moeicons.refreshAccount", "when": "view == moeicons.account", "group": "navigation" }
+      ]
+    },
     "configuration": {
       "title": "Moe Icons",
       "properties": {
@@ -54,13 +79,15 @@
           "type": "string",
           "enum": [
             "light",
-            "dark"
+            "dark",
+            "auto"
           ],
-          "default": "light",
+          "default": "auto",
           "markdownDescription": "Color palette used for icon name highlighting.",
           "enumDescriptions": [
             "Light color palette",
-            "Dark color palette"
+            "Dark color palette",
+            "Follow the active editor theme"
           ]
         },
         "moeicons.styleGroup": {
@@ -97,12 +124,12 @@
     },
     "semanticTokenTypes": [
       {
-        "id": "moeicons.icon",
+        "id": "moeiconsIcon",
         "superType": "type",
         "description": "Moe Icons icon component name"
       },
       {
-        "id": "moeicons.keyword",
+        "id": "moeiconsKeyword",
         "superType": "keyword",
         "description": "Moe Icons keyword/prefix identifier"
       }
@@ -117,20 +144,29 @@
         "description": "Icon name highlighted with the dark palette"
       }
     ],
+    "configurationDefaults": {
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "moeiconsIcon.light": "#7c3aed",
+          "moeiconsIcon.dark": "#c4b5fd",
+          "moeiconsKeyword": "#0891b2"
+        }
+      }
+    },
     "semanticTokenScopes": [
       {
         "language": "*",
         "scopes": {
-          "moeicons.icon": [
+          "moeiconsIcon": [
             "entity.name.type.class"
           ],
-          "moeicons.icon.light": [
+          "moeiconsIcon.light": [
             "entity.name.type.class"
           ],
-          "moeicons.icon.dark": [
+          "moeiconsIcon.dark": [
             "support.type"
           ],
-          "moeicons.keyword": [
+          "moeiconsKeyword": [
             "keyword.control"
           ]
         }
@@ -143,12 +179,17 @@
     "watch": "node scripts/build.mjs --watch",
     "test": "node --import tsx --test tests/*.test.ts",
     "vscode:prepublish": "npm run build",
-    "package": "vsce package"
+    "package": "vsce package",
+    "test:core-host": "npm run build && node scripts/test-core-host.mjs",
+    "release:state": "node scripts/release-state.mjs",
+    "release:validate": "node scripts/validate-release-state.mjs",
+    "data:generate": "node scripts/generate-icons-data.mjs"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.75.0",
-    "@vscode/vsce": "^3.0.0",
+    "@vscode/vsce": "^4.0.0",
+    "@vue/compiler-dom": "3.5.41",
     "esbuild": "^0.21.0",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0"

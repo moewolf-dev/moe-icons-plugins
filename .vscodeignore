@@ -9,3 +9,8 @@ tsconfig.json
 .gitignore
 **/*.map
 **/*.ts
+
+.release-state-*
+.release-state-lock/**
+
+release-artifact/**

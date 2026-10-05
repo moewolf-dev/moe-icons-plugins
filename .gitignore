@@ -4,3 +4,8 @@ out/
 *.vsix
 .DS_Store
 *.log
+
+.release-state-*
+
+release-artifact/
+packaging/*.vsix.sha256

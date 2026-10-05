@@ -38,8 +38,8 @@ test("searchIcons matches by component-name prefix", () => {
   }
 });
 
-test("toComponentName converts kebab-case to PascalCase plus Icon suffix", () => {
-  assert.equal(toComponentName("arrow-chevron-right"), "ArrowChevronRightIcon");
-  assert.equal(toComponentName("archive"), "ArchiveIcon");
-  assert.equal(toComponentName("user-account"), "UserAccountIcon");
+test("toComponentName converts kebab-case to the canonical PascalCase export without an invented suffix", () => {
+  assert.equal(toComponentName("arrow-chevron-right"), "ArrowChevronRight");
+  assert.equal(toComponentName("archive"), "Archive");
+  assert.equal(toComponentName("user-account"), "UserAccount");
 });

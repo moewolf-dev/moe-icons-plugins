@@ -1,0 +1,58 @@
+[
+  {
+    "key": "UNKNOWN_ICON",
+    "code": "MOE-ICON-0001",
+    "severity": "warning",
+    "message": "Moe Icons export '{name}' is not available in this installed module.",
+    "hint": "Check the generated exports and run moeicons generate after changing the selected icons.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  },
+  {
+    "key": "MALFORMED_USAGE",
+    "code": "MOE-ICON-0002",
+    "severity": "info",
+    "message": "Moe Icons usage is incomplete.",
+    "hint": "Finish the component or factory expression before checking it.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  },
+  {
+    "key": "INVALID_SYMBOL_NAME",
+    "code": "MOE-ICON-0003",
+    "severity": "warning",
+    "message": "Moe Icons symbol '{name}' does not match an export in this installed module.",
+    "hint": "Use a symbol exported by the installed generated module.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  },
+  {
+    "key": "ACCOUNT_TIER_MISMATCH",
+    "code": "MOE-ICON-0004",
+    "severity": "warning",
+    "message": "This icon requires an active Pro entitlement.",
+    "hint": "Check the account panel or installed resource version.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  },
+  {
+    "key": "RESOURCE_VERSION_MISMATCH",
+    "code": "MOE-ICON-0005",
+    "severity": "info",
+    "message": "The installed Moe Icons resource version differs from this plugin's bundled metadata.",
+    "hint": "Update the plugin or install a matching Moe Icons resource release.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  },
+  {
+    "key": "ACCOUNT_SESSION_EXPIRED",
+    "code": "MOE-ICON-0006",
+    "severity": "info",
+    "message": "The CLI account session has expired.",
+    "hint": "Sign in again with the moeicons CLI.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  },
+  {
+    "key": "ACCOUNT_UNAVAILABLE",
+    "code": "MOE-ICON-0007",
+    "severity": "info",
+    "message": "The Moe Icons account status is temporarily unavailable.",
+    "hint": "Retry when the network or account service is available.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+  }
+]
