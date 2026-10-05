@@ -3,7 +3,7 @@
   "displayName": "Moe Icons",
   "icon": "moeicons-logo-192x192.png",
   "description": "Code completion and semantic highlighting for the Moe Icons library (React & Vue).",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "moewolf",
   "license": "Apache-2.0",
   "repository": {
@@ -65,12 +65,19 @@
     ],
     "views": {
       "explorer": [
-        { "id": "moeicons.account", "name": "Moe Icons Account" }
+        {
+          "id": "moeicons.account",
+          "name": "Moe Icons Account"
+        }
       ]
     },
     "menus": {
       "view/title": [
-        { "command": "moeicons.refreshAccount", "when": "view == moeicons.account", "group": "navigation" }
+        {
+          "command": "moeicons.refreshAccount",
+          "when": "view == moeicons.account",
+          "group": "navigation"
+        }
       ]
     },
     "configuration": {
@@ -118,7 +125,7 @@
         },
         "moeicons.documentationUrl": {
           "type": "string",
-          "default": "https://github.com/moewolf-dev/moe-icons#readme",
+          "default": "https://moeicons.com/docs/",
           "markdownDescription": "Moe Icons usage documentation."
         }
       }
@@ -194,5 +201,10 @@
     "esbuild": "^0.21.0",
     "tsx": "^4.0.0",
     "typescript": "^5.4.0"
+  },
+  "homepage": "https://moeicons.com/",
+  "bugs": {
+    "url": "https://github.com/moewolf-dev/moe-icons-plugins/issues",
+    "email": "info@moeicons.com"
   }
 }

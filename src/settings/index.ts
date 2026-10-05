@@ -41,7 +41,7 @@ export function getSettings(): MoeiconsSettings {
     documentationUrl: readString(
       section,
       "documentationUrl",
-      "https://github.com/moewolf-dev/moe-icons#readme",
+      "https://moeicons.com/docs/",
     ),
   };
 }

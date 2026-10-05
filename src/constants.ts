@@ -32,5 +32,5 @@ export const LINKS = {
   website: "https://moeicons.com",
   repository: "https://github.com/moewolf-dev/moe-icons",
   pluginRepository: "https://github.com/moewolf-dev/moe-icons-plugins",
-  documentation: "https://github.com/moewolf-dev/moe-icons#readme",
+  documentation: "https://moeicons.com/docs/",
 } as const;

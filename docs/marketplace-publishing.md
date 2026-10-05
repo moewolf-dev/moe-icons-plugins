@@ -6,7 +6,7 @@ The publisher is `moewolf`, created by the maintainer. The package name remains
 `moe-icons-plugins`, so the extension ID is **`moewolf.moe-icons-plugins`**.
 The GitHub repository is `moewolf-dev/moe-icons-plugins`; the organization name
 is independent of the Marketplace publisher ID. The current plugin version is
-`0.0.1`; it is independent of the resourceVersion `0.0.18`.
+`0.0.2`; it is independent of the resourceVersion `0.0.18`.
 
 
 ## Local package review
@@ -116,3 +116,12 @@ The provided PNG is actually 128×128 pixels despite its filename. The already
 published 0.0.1 package predates this change; its Marketplace icon changes only
 after uploading a new, higher-version VSIX. Do not replace the v0.0.1 source tag
 or republish a modified package under the same version.
+
+## 0.0.2 documentation and icon release
+
+This maintainer-initiated patch adds the extension icon, official website and
+documentation links, required CLI setup instructions and support email. Its
+package/lock versions, release baseline and version map are synchronized at
+0.0.2. CLI 0.0.3 and the bundled resource baseline 0.0.17 remain unchanged; this
+patch does not manufacture an upstream release event or claim resource 0.0.18
+integration. Package and publish the new version, preserving the 0.0.1 tag.

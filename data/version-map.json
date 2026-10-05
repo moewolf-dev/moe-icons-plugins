@@ -2,5 +2,10 @@
   {
     "pluginVersion": "0.0.1",
     "libraryVersion": "0.0.17"
+  },
+  {
+    "pluginVersion": "0.0.2",
+    "libraryVersion": "0.0.17",
+    "cliVersion": "0.0.3"
   }
 ]
