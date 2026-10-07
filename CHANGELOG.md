@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.7
+
+- Read full-package installation metadata up to 8 MB while retaining the existing per-module and total analysis budgets.
+- Cover metadata with 17000 unrelated artifacts, matching the size of full Pro Vanilla installations.
+
 ## 0.0.6
 
 - Refresh already open files when a nested CLI project is installed.

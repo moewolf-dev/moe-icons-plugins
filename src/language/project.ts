@@ -32,12 +32,12 @@ export { findManagedProjectRoot } from "./project-root";
 export async function readProjectSnapshot(workspaceRoot: string): Promise<ProjectSnapshot> {
   try {
     const root = await realpath(workspaceRoot);
-    async function readWithin(path: string): Promise<string> {
+    async function readWithin(path: string, maxBytes = 2_000_000): Promise<string> {
       const file = await realpath(path);
-      if (!inside(root, file) || (await stat(file)).size > 2_000_000) throw new Error("Untrusted project input");
+      if (!inside(root, file) || (await stat(file)).size > maxBytes) throw new Error("Untrusted project input");
       return readFile(file, "utf8");
     }
-    const metadata: unknown = JSON.parse(await readWithin(resolve(root, ".moeicons/install-metadata.json")));
+    const metadata: unknown = JSON.parse(await readWithin(resolve(root, ".moeicons/install-metadata.json"), 8_000_000));
     if (!record(metadata) || metadata.schemaVersion !== 1 || !target(metadata.target) || typeof metadata.artifactVersion !== "string" || !record(metadata.managedFiles)) return missing();
     const outputDir = metadata.generatedOutputDir;
     if (typeof outputDir !== "string" || !safePath(outputDir)) return missing();

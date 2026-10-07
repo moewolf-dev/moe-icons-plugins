@@ -108,3 +108,19 @@ test("nearest CLI-managed subproject and bounded aliases identify actual install
     assert.equal(snapshot.watches(join(root, "src/custom-icons/icons/UiSearch.tsx")), true);
   } finally { await rm(root, { recursive: true, force: true }); }
 });
+
+
+test("large full-package metadata does not force scanning unrelated artifacts", async () => {
+  const { root, metadata } = await project("vanilla");
+  try {
+    for (let i = 0; i < 17000; i++) metadata.managedFiles[`.moeicons/artifact/vanilla/moe-outline/UnusedLongIcon${i}.js`] = hash("unused");
+    const text=JSON.stringify(metadata,null,2);
+    assert.ok(Buffer.byteLength(text)>2_000_000);
+    await writeFile(join(root,".moeicons/install-metadata.json"),text);
+    const snapshot=await readProjectSnapshot(root);
+    const module=snapshot.resolver(join(root,"src/App.ts"))("./custom-icons");
+    assert.ok(module?.complete);
+    assert.ok(module?.exports.has("MoeOutline"));
+    assert.ok(snapshot.modules.size<10);
+  } finally { await rm(root,{recursive:true,force:true}); }
+});
