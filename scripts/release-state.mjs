@@ -40,7 +40,7 @@ async function atomicWrite(path, content) {
 
 function validateEvent(event) {
   assert(record(event) && event.schemaVersion === 1, "unsupported event schema");
-  const allowed = ["schemaVersion", "eventId", "sourceRepository", "sourceVersion", "sourceCommit", "cliVersion", "resourceVersion", "resourceDigest", "descriptorSha256"];
+  const allowed = ["schemaVersion", "eventId", "sourceRepository", "sourceVersion", "sourceCommit", "cliVersion", "resourceVersion", "resourceDigest", "descriptorSha256", "verifiedDelivery"];
   assert(Object.keys(event).every(key => allowed.includes(key)), "event contains unsupported data");
   assert(typeof event.eventId === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/.test(event.eventId), "invalid eventId");
   assert(repos.has(event.sourceRepository), "untrusted source repository");
@@ -48,6 +48,7 @@ function validateEvent(event) {
   assert(sha(event.resourceDigest), "invalid resourceDigest");
   assert(typeof event.descriptorSha256 === "string" && sha(event.descriptorSha256), "invalid descriptorSha256");
   semver(event.sourceVersion); semver(event.cliVersion); semver(event.resourceVersion);
+  if (event.verifiedDelivery !== undefined) assert(event.verifiedDelivery === true && event.sourceRepository.endsWith('moe-icons-code-library'), 'joint delivery requires verified resource input');
   if (event.sourceRepository.endsWith("moe-icons-code-library")) assert(event.sourceVersion === event.resourceVersion, "resource event version mismatch");
   else assert(event.sourceVersion === event.cliVersion, "CLI event version mismatch");
 }
@@ -72,7 +73,10 @@ async function saveRelease(event) {
   }
   const current = state.current;
   assert(pkg.version === current.pluginVersion, "package version does not match durable release state");
-  if (event.sourceRepository.endsWith("moe-icons-code-library")) {
+  if (event.verifiedDelivery === true) {
+    assert(compare(event.cliVersion, current.cliVersion) >= 0, 'joint delivery CLI cannot move backwards');
+    assert(compare(event.resourceVersion, current.resourceVersion) > 0, 'resource version is old or already accepted');
+  } else if (event.sourceRepository.endsWith("moe-icons-code-library")) {
     assert(event.cliVersion === current.cliVersion, "resource event does not reference the accepted CLI baseline");
     assert(compare(event.resourceVersion, current.resourceVersion) > 0, "resource version is old or already accepted");
   } else {

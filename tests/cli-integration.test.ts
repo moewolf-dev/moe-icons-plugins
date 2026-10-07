@@ -13,22 +13,24 @@ const cliRoot = process.env.MOEICONS_CLI_REPO || resolve('../moe-icons-cli');
 const available = fs.existsSync(join(cliRoot, 'src/core/generate.ts'));
 if (process.env.MOEICONS_CLI_REPO && !available) throw new Error('Required CLI checkout is missing');
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
-for (const [target, bitmap, compiledFactory] of [['react', true, false], ['vue', true, false], ['react', false, false], ['vue', false, false], ['vanilla', false, false], ['vanilla', false, true]] as const) {
-  test(`real CLI ${target} ${bitmap ? "bitmap" : "SVG"} ${compiledFactory ? "compiled factory" : "source"} generation is understood by the plugin in a nested project`, { skip: !available }, async () => {
+const cases: Array<readonly [target: 'react'|'vue'|'vanilla', bitmap: boolean, compiledFactory: boolean, bitmapGroup?: string, imageSize?: number, bitmapFormat?: 'png'|'webp']> = [['react', true, false], ['vue', true, false], ['react', false, false], ['vue', false, false], ['vanilla', false, false], ['vanilla', false, true]];
+for (const target of ['react','vue'] as const) for (const size of [128,256,512]) for (const format of ['png','webp'] as const) cases.push([target,true,false,'moe-3d-plastic-green',size,format]);
+for (const [target, bitmap, compiledFactory, bitmapGroup = 'moe-3d-metal', imageSize = 256, bitmapFormat = 'webp'] of cases) {
+  test(`real CLI ${target} ${bitmap ? `${bitmapGroup}/${imageSize}/${bitmapFormat}` : "SVG"} ${compiledFactory ? "compiled factory" : "source"} generation is understood by the plugin in a nested project`, { skip: !available }, async () => {
     const root = await mkdtemp(join(tmpdir(), 'moe-cli-plugin-'));
     try {
       const project = join(root, 'apps/site');
       await mkdir(join(project, '.moeicons'), { recursive: true });
       await writeFile(join(project, 'package.json'), '{"name":"fixture","version":"1.0.0"}');
-      const group = !bitmap ? 'moe-outline' : 'moe-3d-metal';
+      const group = !bitmap ? 'moe-outline' : bitmapGroup;
       const catalog = JSON.stringify({ schemaVersion: 1, catalogVersion: '1.0.0', sourceVersion: '1.0.0', sourceCommit: 'a'.repeat(40), generatorCommit: 'b'.repeat(40), styleGroups: [
-        !bitmap ? { id: group, type: 'outline', tiers: ['free','pro'], formats: ['svg'], imageSizes: [] } : { id: group, type: 'bitmap', tiers: ['pro'], formats: ['webp'], imageSizes: [256], variants: ['moe-3d-metal-256-webp'] },
+        !bitmap ? { id: group, type: 'outline', tiers: ['free','pro'], formats: ['svg'], imageSizes: [] } : { id: group, type: 'bitmap', tiers: ['pro'], formats: [bitmapFormat], imageSizes: [imageSize], variants: [`${group}-${imageSize}-${bitmapFormat}`] },
       ], icons: [{ id: 'archive-box', prefix: 'ar', label: 'Archive box', aliases: [], availableIn: [group] }] });
       await writeFile(join(project, '.moeicons/catalog.json'), catalog);
       await writeFile(join(project, '.moeicons/install-metadata.json'), JSON.stringify({ schemaVersion: 1, artifactVersion: '1.0.0', tier: 'pro', target, descriptorSha256: 'c'.repeat(64), artifactSha256: 'd'.repeat(64), catalogSha256: sha(catalog), installedAt: '2026-10-07T00:00:00Z', managedFiles: { '.moeicons/catalog.json': sha(catalog) } }));
-      await writeFile(join(project, 'moeicons.config.json'), JSON.stringify({ schemaVersion: 2, tier: 'pro', target, outputDir: 'src/moeicons', defaultTheme: 'metal', themes: { metal: !bitmap ? { styleGroup: group, format: 'svg' } : { styleGroup: group, format: 'webp', imageSize: 256 } }, icons: ['archive-box'] }));
+      await writeFile(join(project, 'moeicons.config.json'), JSON.stringify({ schemaVersion: 2, tier: 'pro', target, outputDir: 'src/moeicons', defaultTheme: 'metal', themes: { metal: !bitmap ? { styleGroup: group, format: 'svg' } : { styleGroup: group, format: bitmapFormat, imageSize } }, icons: ['archive-box'] }));
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0L24 24"/></svg>';
-      const archive = !bitmap ? { 'assets/moe-outline/archive-box.svg': Buffer.from(svg), 'assets/manifest.json': Buffer.from(JSON.stringify({schemaVersion:1,assets:[{path:'moe-outline/archive-box.svg',size:Buffer.byteLength(svg),sha256:sha(svg)}]})) } : { 'assets/moe-3d-metal-256-webp/archive-box.webp': new Uint8Array([82,73,70,70,1]) };
+      const archive = !bitmap ? { 'assets/moe-outline/archive-box.svg': Buffer.from(svg), 'assets/manifest.json': Buffer.from(JSON.stringify({schemaVersion:1,assets:[{path:'moe-outline/archive-box.svg',size:Buffer.byteLength(svg),sha256:sha(svg)}]})) } : { [`assets/${group}-${imageSize}-${bitmapFormat}/archive-box.${bitmapFormat}`]: new Uint8Array([82,73,70,70,1]) };
       if (compiledFactory) {
         const factory = 'function n() { return document.createElementNS("http://www.w3.org/2000/svg", "svg"); } export { n as createArchiveBox, n as default };';
         const artifactPath = '.moeicons/artifact/vanilla/moe-outline/ArchiveBox.js';

@@ -1,4 +1,5 @@
 name: release
+run-name: Plugin publication ${{ inputs.release_tag || github.ref_name }}
 
 on:
   push:
@@ -73,7 +74,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: moewolf-dev/moe-icons-cli
-          ref: 5638faba36bf0287b96d32ec936d91af4ea221a4
+          ref: 7934c8ad569c7598a0fa61032ff9719d7e9af32f
           path: .tmp/cli-integration
           persist-credentials: false
       - name: Prepare real CLI integration checks

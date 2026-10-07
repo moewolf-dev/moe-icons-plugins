@@ -90,9 +90,75 @@ test("release allocation is idempotent and interrupted writes recover before the
     assert.equal(JSON.parse((await run(process.execPath, args)).stdout).duplicate, true);
     for (const file of files) assert.equal(await readFile(file.path, "utf8"), file.content);
     await assert.rejects(readFile(join(root, ".release-state-transaction.json")), /ENOENT/);
+    const delivery = { ...event, eventId: 'delivery:0.0.19:0.0.4', sourceVersion: '0.0.19', resourceVersion: '0.0.19', cliVersion: '0.0.4', verifiedDelivery: true };
+    await writeFile(eventFile, JSON.stringify(delivery));
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).pluginVersion, '0.0.3');
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).duplicate, true);
+    await writeFile(eventFile, JSON.stringify({ ...delivery, cliVersion: '0.0.5' }));
+    await assert.rejects(run(process.execPath, args), /different payload/);
+    await writeFile(eventFile, JSON.stringify({ ...delivery, eventId: 'delivery:backwards', sourceVersion: '0.0.20', resourceVersion: '0.0.20', cliVersion: '0.0.3' }));
+    await assert.rejects(run(process.execPath, args), /cannot move backwards/);
+    await writeFile(eventFile, JSON.stringify(delivery));
     await mkdir(join(root, ".release-state-lock"));
     await writeFile(join(root, ".release-state-lock/owner.json"), JSON.stringify({ pid: process.pid }));
     await assert.rejects(run(process.execPath, args), /another release operation is running/);
-    assert.equal(await readFile(files[0].path, "utf8"), files[0].content);
+    assert.equal(JSON.parse(await readFile(files[0].path, "utf8")).version, '0.0.3');
   } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test('plugin artifact extraction retains metadata only and rejects altered archives and links', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'moe-plugin-artifact-'));
+  try {
+    const fixture = `
+import io,json,tarfile,zipfile,hashlib,sys
+from pathlib import Path
+root=Path(sys.argv[1]); refs={}
+for tier in ('free','pro'):
+ data=io.BytesIO()
+ with tarfile.open(fileobj=data,mode='w:gz') as tar:
+  for name,payload in [('catalog.json',b'{}'),('assets/manifest.json',b'{}'),('react/moe-outline/index.d.ts',b'export {}'),('assets/image.png',b'x'*3000000)]:
+   entry=tarfile.TarInfo(name);entry.size=len(payload);tar.addfile(entry,io.BytesIO(payload))
+  if sys.argv[2]=='link':
+   entry=tarfile.TarInfo('assets/link');entry.type=tarfile.SYMTYPE;entry.linkname='/etc/passwd';tar.addfile(entry)
+ payload=data.getvalue(); name=f'moe-icons-{tier}-0.0.19.tgz'
+ (root/name).write_bytes(payload);refs[tier]={'filename':name,'size':len(payload),'sha256':hashlib.sha256(payload).hexdigest()}
+descriptor=json.dumps(dict(fullVersion='0.0.19',sourceCommit='a'*40,generatorCommit='b'*40,**refs)).encode()
+with zipfile.ZipFile(root/'artifact.zip','w') as archive:
+ archive.writestr('release-descriptor.json',descriptor)
+ for ref in refs.values():
+  payload=(root/ref['filename']).read_bytes()
+  archive.writestr(ref['filename'],payload if sys.argv[2]!='corrupt' else payload+b'changed')
+print(hashlib.sha256(descriptor).hexdigest())
+`;
+    const check = async (mode: string) => {
+      const generated = await run('python3', ['-c', fixture, root, mode]);
+      const out = join(root, `out-${mode}`); await mkdir(out);
+      return run('python3', ['scripts/extract-resource-input.py', join(root, 'artifact.zip'), out], { env: { ...process.env, RESOURCE_VERSION: '0.0.19', SOURCE_COMMIT: 'a'.repeat(40), GENERATOR_COMMIT: 'b'.repeat(40), DESCRIPTOR_SHA256: generated.stdout.trim() } });
+    };
+    await check('valid');
+    assert.equal(await readFile(join(root,'out-valid/pro/react/moe-outline/index.d.ts'),'utf8'),'export {}');
+    await assert.rejects(readFile(join(root,'out-valid/pro/assets/image.png')),/ENOENT/);
+    await assert.rejects(check('corrupt'),/size mismatch|SHA mismatch/);
+    await assert.rejects(check('link'),/non-regular tar entry/);
+  } finally { await rm(root,{recursive:true,force:true}); }
+});
+
+test('plugin version/tag is reused on retry and changed same-version metadata is refused', async () => {
+  const root=await mkdtemp(join(tmpdir(),'moe-plugin-commit-'));
+  try {
+    await mkdir(join(root,'scripts'));await mkdir(join(root,'data'));
+    await copyFile('scripts/commit-resource-update.mjs',join(root,'scripts/commit-resource-update.mjs'));
+    const event={eventId:'delivery:0.0.19:cli:0.0.5',descriptorSha256:'a'.repeat(64),cliVersion:'0.0.5'};
+    const record={eventId:event.eventId,event,pluginVersion:'0.0.8',phase:'versionAllocated'};
+    for(const [name,value] of Object.entries({'data/release-state.json':{current:{pluginVersion:'0.0.8'},events:[record]},'data/icons.json':{entries:[]},'data/version-map.json':[],'package.json':{version:'0.0.8'},'package-lock.json':{version:'0.0.8'}}))await writeFile(join(root,name),JSON.stringify(value));
+    await writeFile(join(root,'event.json'),JSON.stringify(event));
+    const git=(...args:string[])=>run('git',args,{cwd:root});
+    await git('init','-b','main');await git('config','user.name','audit');await git('config','user.email','audit@example.test');
+    await git('add','.');await git('commit','-m','allocated');await git('init','--bare',join(root,'remote.git'));await git('remote','add','origin',join(root,'remote.git'));
+    const execute=()=>run(process.execPath,['scripts/commit-resource-update.mjs','event.json'],{cwd:root,env:{...process.env,GITHUB_OUTPUT:join(root,'outputs')}});
+    await execute();const tag=(await git('rev-parse','v0.0.8^{commit}')).stdout;
+    await execute();assert.equal((await git('rev-parse','v0.0.8^{commit}')).stdout,tag);
+    await writeFile(join(root,'data/icons.json'),JSON.stringify({entries:['changed']}));
+    await assert.rejects(execute(),/same-version replacement/);
+  } finally {await rm(root,{recursive:true,force:true});}
 });
