@@ -3,7 +3,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { createHash } from 'node:crypto';
-import { Transform } from 'node:stream';
+import { Writable } from 'node:stream';
 const repo = 'moewolf-dev/moe-icons-plugins';
 const tag = process.env.RELEASE_TAG;
 if (!/^v\d+\.\d+\.\d+$/.test(tag || '')) throw new Error('invalid release tag');
@@ -43,7 +43,7 @@ for (let attempt = 0; attempt < 20; attempt++) {
     let bytes = 0; const hash = createHash('sha256');
     const complete = new Promise((accept,reject) => { child.once('error',reject); child.once('exit', code => code === 0 ? accept() : reject(new Error('Marketplace package unavailable'))); });
     child.stderr.resume();
-    try { await Promise.all([complete, pipeline(child.stdout, new Transform({ transform(chunk, _, callback) {
+    try { await Promise.all([complete, pipeline(child.stdout, new Writable({ write(chunk, _, callback) {
       bytes += chunk.length; if (bytes > 64 * 1024 * 1024) return callback(new Error('VSIX exceeds budget')); hash.update(chunk); callback();
     } }))]); actual = hash.digest('hex'); } finally { child.kill(); }
     if (actual !== match[1]) throw new Error('Marketplace bytes differ from reviewed VSIX');

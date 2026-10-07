@@ -162,3 +162,25 @@ test('plugin version/tag is reused on retry and changed same-version metadata is
     await assert.rejects(execute(),/same-version replacement/);
   } finally {await rm(root,{recursive:true,force:true});}
 });
+
+test('publication waits for exact tag workflow and streams the final Marketplace digest', async () => {
+  const root=await mkdtemp(join(tmpdir(),'moe-plugin-publication-'));
+  try {
+    await mkdir(join(root,'scripts'));await mkdir(join(root,'bin'));
+    await copyFile('scripts/publish-resource-update.mjs',join(root,'scripts/publish-resource-update.mjs'));
+    await writeFile(join(root,'package.json'),JSON.stringify({name:'moe-icons-plugins',publisher:'moewolf',version:'0.0.8'}));
+    const payload='bounded reviewed VSIX fixture'.repeat(100000),digest=hash(payload);
+    await writeFile(join(root,'fixture'),payload);
+    await writeFile(join(root,'bin/gh'),`#!/usr/bin/env node
+const fs=require('node:fs'),path=require('node:path');const args=process.argv.slice(2);
+if(args[0]==='api')console.log(JSON.stringify({workflow_runs:[{id:321,event:'workflow_dispatch',display_title:'Plugin publication v0.0.8',created_at:new Date().toISOString(),status:'completed',conclusion:'success',html_url:'https://github.com/moewolf-dev/moe-icons-plugins/actions/runs/321'}]}));
+if(args[0]==='release')fs.writeFileSync(path.join(args[args.indexOf('--dir')+1],'vsix.sha256'),process.env.FIXTURE_DIGEST+'  moe-icons-plugins-0.0.8.vsix\\n');
+`,{mode:0o755});
+    await writeFile(join(root,'bin/curl'),`#!/usr/bin/env node
+require('node:fs').createReadStream(process.env.FIXTURE_FILE).pipe(process.stdout);
+`,{mode:0o755});
+    await run(process.execPath,['scripts/publish-resource-update.mjs'],{cwd:root,timeout:15000,env:{...process.env,PATH:join(root,'bin')+':'+process.env.PATH,RUNNER_TEMP:root,GITHUB_RUN_ID:'123',RELEASE_TAG:'v0.0.8',EVENT_ID:'resource:0.0.19:cli:0.0.5',RESOURCE_VERSION:'0.0.19',CLI_VERSION:'0.0.5',DESCRIPTOR_SHA256:'a'.repeat(64),FIXTURE_DIGEST:digest,FIXTURE_FILE:join(root,'fixture')}});
+    const receipt=JSON.parse(await readFile(join(root,'plugin-readback-123/plugin-publication-receipt.json'),'utf8'));
+    assert.equal(receipt.marketplaceVerified,true);assert.equal(receipt.vsixSha256,digest);assert.equal(receipt.runId,'321');assert.equal(receipt.resourceVersion,'0.0.19');
+  } finally {await rm(root,{recursive:true,force:true});}
+});
