@@ -33,9 +33,9 @@ export class LanguageService implements vscode.Disposable {
   }
   private async fileChanged(file: string): Promise<void> {
     // A new install may create a project that was previously absent.
-    if (file.endsWith("/.moeicons/install-metadata.json")) {
+    if (file.replace(/\\/g, "/").endsWith("/.moeicons/install-metadata.json")) {
       this.roots.clear();
-      if (!this.projects.size) this.invalidate();
+      this.scheduleRefresh();
     }
     for (const [root, pending] of this.projects) {
       const snapshot = await pending;
@@ -53,6 +53,10 @@ export class LanguageService implements vscode.Disposable {
       for (const key of this.projects.keys()) this.epochs.set(key, (this.epochs.get(key) ?? 0) + 1);
       this.roots.clear(); this.projects.clear(); this.documents.clear();
     }
+    this.scheduleRefresh();
+  }
+  private scheduleRefresh(): void {
+    if (this.disposed) return;
     if (this.refreshTimer) clearTimeout(this.refreshTimer);
     this.refreshTimer = setTimeout(() => { this.refreshTimer = undefined; this.changed.fire(); }, 100);
   }

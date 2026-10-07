@@ -22,5 +22,10 @@
     "pluginVersion": "0.0.5",
     "libraryVersion": "0.0.18",
     "cliVersion": "0.0.4"
+  },
+  {
+    "pluginVersion": "0.0.6",
+    "libraryVersion": "0.0.18",
+    "cliVersion": "0.0.4"
   }
 ]

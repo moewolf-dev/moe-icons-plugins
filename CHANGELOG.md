@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.6
+
+- Refresh already open files when a nested CLI project is installed.
+- Recognize installation metadata changes with Windows path separators.
+- Add a VS Code host regression for new child installations without text edits.
+
 ## 0.0.5
 
 - Load only verified artifact modules reached from generated exports, allowing full Vanilla installations with thousands of unused modules.
