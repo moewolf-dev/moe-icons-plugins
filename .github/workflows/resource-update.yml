@@ -1,0 +1,99 @@
+name: Update from Moe Icons resource release
+
+on:
+  repository_dispatch:
+    types: [moe-icons-code-library-release]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: plugin-resource-update
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  update:
+    if: github.repository == 'moewolf-dev/moe-icons-plugins'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RESOURCE_VERSION: ${{ github.event.client_payload.resourceVersion }}
+      SOURCE_COMMIT: ${{ github.event.client_payload.sourceCommit }}
+      CLI_VERSION: ${{ github.event.client_payload.cliVersion }}
+      RESOURCE_DIGEST: ${{ github.event.client_payload.resourceDigest }}
+      DESCRIPTOR_SHA256: ${{ github.event.client_payload.descriptorSha256 }}
+      PRODUCTION_ARTIFACT_ID: ${{ github.event.client_payload.productionArtifactId }}
+      EVENT_ID: ${{ github.event.client_payload.eventId }}
+      UPSTREAM_RUN_ID: ${{ github.event.client_payload.upstreamRunId }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ github.token }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Validate immutable resource event
+        run: |
+          set -euo pipefail
+          [[ "$RESOURCE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$CLI_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$RESOURCE_DIGEST" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$DESCRIPTOR_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$PRODUCTION_ARTIFACT_ID" =~ ^[0-9]+$ ]]
+          [[ "$UPSTREAM_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$EVENT_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$ ]]
+          test -n "${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}"
+      - name: Download and verify the exact production artifact
+        env:
+          GH_TOKEN: ${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/moe-icons-plugin-release"
+          mkdir -p "$root"
+          gh api "repos/moewolf-dev/moe-icons-code-library/actions/artifacts/$PRODUCTION_ARTIFACT_ID/zip" > "$root/artifact.zip"
+          unzip -q "$root/artifact.zip" -d "$root/artifact"
+          descriptor="$root/artifact/release-descriptor.json"
+          test -f "$descriptor"
+          printf '%s  %s\n' "$DESCRIPTOR_SHA256" "$descriptor" | sha256sum --check
+          for tier in free pro; do
+            archive="$root/artifact/moe-icons-${tier}-${RESOURCE_VERSION}.tgz"
+            test -f "$archive"
+            mkdir -p "$root/$tier"
+            tar -xzf "$archive" -C "$root/$tier" --strip-components=1
+          done
+          cp "$descriptor" "$root/release-descriptor.json"
+          node -e 'const fs=require("node:fs");const root=process.argv[1];const d=JSON.parse(fs.readFileSync(`${root}/release-descriptor.json`,`utf8`));if(d.fullVersion!==process.env.RESOURCE_VERSION||d.sourceCommit!==process.env.SOURCE_COMMIT)throw new Error("descriptor identity mismatch");fs.writeFileSync(`${root}/release-input.json`,JSON.stringify({schemaVersion:1,descriptorSha256:process.env.DESCRIPTOR_SHA256,resourceDigest:process.env.RESOURCE_DIGEST,sourceCommit:process.env.SOURCE_COMMIT,resourceVersion:process.env.RESOURCE_VERSION})+"\n")' "$root"
+          echo "MOE_ICONS_RELEASE_ROOT=$root" >> "$GITHUB_ENV"
+      - name: Install and generate verified metadata
+        run: |
+          set -euo pipefail
+          npm ci
+          node scripts/generate-icons-data.mjs "$MOE_ICONS_RELEASE_ROOT"
+          npm run compile
+          npm test
+          npm run build
+          npm run release:validate
+      - name: Allocate version and commit the exact update
+        id: allocate
+        run: |
+          set -euo pipefail
+          event="$RUNNER_TEMP/moe-icons-plugin-release/event.json"
+          node -e 'const fs=require("node:fs");fs.writeFileSync(process.argv[1],JSON.stringify({schemaVersion:1,eventId:process.env.EVENT_ID,sourceRepository:"moewolf-dev/moe-icons-code-library",sourceVersion:process.env.RESOURCE_VERSION,sourceCommit:process.env.SOURCE_COMMIT,cliVersion:process.env.CLI_VERSION,resourceVersion:process.env.RESOURCE_VERSION,resourceDigest:process.env.RESOURCE_DIGEST,descriptorSha256:process.env.DESCRIPTOR_SHA256})+"\n")' "$event"
+          result="$(node scripts/release-state.mjs allocate "$event")"
+          plugin_version="$(node -e 'process.stdout.write(JSON.parse(process.argv[1]).pluginVersion)' "$result")"
+          echo "plugin_version=$plugin_version" >> "$GITHUB_OUTPUT"
+          node scripts/validate-release-state.mjs
+          git config user.name moe-icons-release-bot
+          git config user.email moe-icons-release-bot@users.noreply.github.com
+          git add data/icons.json data/version-map.json data/release-state.json package.json package-lock.json
+          git diff --cached --quiet && { echo 'no plugin files changed'; exit 1; }
+          git commit -m "chore(release): v${plugin_version}"
+          git tag -a "v${plugin_version}" -m "Moe Icons plugin v${plugin_version}"
+          git push origin HEAD:main
+          git push origin "v${plugin_version}"
