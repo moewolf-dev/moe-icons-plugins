@@ -56,7 +56,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       names.set(name, icon.id); names.set(name.charAt(0).toLowerCase() + name.slice(1), icon.id);
     }
     const files = new Map<string, string>();
-    const candidates = Object.entries(managed).filter(([path, hash]) => path.startsWith(`${outputDir}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
+    const candidates = Object.entries(managed).filter(([path, hash]) => (path.startsWith(`${outputDir}/`) || path.startsWith(`.moeicons/artifact/${metadata.target}/`)) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
     if (candidates.length > 3000) return missing();
     let totalBytes = 0;
     for (const [path, hash] of candidates) {
@@ -105,7 +105,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
               if (element.isTypeOnly) continue;
               const name = element.name.text;
               const imported = element.propertyName?.text ?? name;
-              const own = specifier ? child?.exports.get(imported) : symbolFor(imported);
+              const own = specifier ? child?.exports.get(imported) : symbolFor(imported) ?? symbolFor(name) ?? (name === "default" ? symbolFor(file.split(sep).pop()?.replace(/\.(tsx?|jsx?|vue)$/, "") ?? "") : undefined);
               if (own) exports.set(name, own);
               else if (specifier) complete = false;
               else exports.set(name, { kind: "keyword" });

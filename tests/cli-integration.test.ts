@@ -13,8 +13,8 @@ const cliRoot = process.env.MOEICONS_CLI_REPO || resolve('../moe-icons-cli');
 const available = fs.existsSync(join(cliRoot, 'src/core/generate.ts'));
 if (process.env.MOEICONS_CLI_REPO && !available) throw new Error('Required CLI checkout is missing');
 const sha = (text: string) => createHash('sha256').update(text).digest('hex');
-for (const [target, bitmap] of [['react', true], ['vue', true], ['react', false], ['vue', false], ['vanilla', false]] as const) {
-  test(`real CLI ${target} ${bitmap ? "bitmap" : "SVG"} generation is understood by the plugin in a nested project`, { skip: !available }, async () => {
+for (const [target, bitmap, compiledFactory] of [['react', true, false], ['vue', true, false], ['react', false, false], ['vue', false, false], ['vanilla', false, false], ['vanilla', false, true]] as const) {
+  test(`real CLI ${target} ${bitmap ? "bitmap" : "SVG"} ${compiledFactory ? "compiled factory" : "source"} generation is understood by the plugin in a nested project`, { skip: !available }, async () => {
     const root = await mkdtemp(join(tmpdir(), 'moe-cli-plugin-'));
     try {
       const project = join(root, 'apps/site');
@@ -29,6 +29,17 @@ for (const [target, bitmap] of [['react', true], ['vue', true], ['react', false]
       await writeFile(join(project, 'moeicons.config.json'), JSON.stringify({ schemaVersion: 2, tier: 'pro', target, outputDir: 'src/moeicons', defaultTheme: 'metal', themes: { metal: !bitmap ? { styleGroup: group, format: 'svg' } : { styleGroup: group, format: 'webp', imageSize: 256 } }, icons: ['archive-box'] }));
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0L24 24"/></svg>';
       const archive = !bitmap ? { 'assets/moe-outline/archive-box.svg': Buffer.from(svg), 'assets/manifest.json': Buffer.from(JSON.stringify({schemaVersion:1,assets:[{path:'moe-outline/archive-box.svg',size:Buffer.byteLength(svg),sha256:sha(svg)}]})) } : { 'assets/moe-3d-metal-256-webp/archive-box.webp': new Uint8Array([82,73,70,70,1]) };
+      if (compiledFactory) {
+        const factory = 'function n() { return document.createElementNS("http://www.w3.org/2000/svg", "svg"); } export { n as createArchiveBox, n as default };';
+        const artifactPath = '.moeicons/artifact/vanilla/moe-outline/ArchiveBox.js';
+        await mkdir(join(project, '.moeicons/artifact/vanilla/moe-outline'), { recursive: true });
+        await writeFile(join(project, artifactPath), factory);
+        const metadataPath = join(project, '.moeicons/install-metadata.json');
+        const metadata = JSON.parse(await fs.promises.readFile(metadataPath, 'utf8'));
+        metadata.managedFiles[artifactPath] = sha(factory);
+        await writeFile(metadataPath, JSON.stringify(metadata));
+        Object.assign(archive, { 'vanilla/moe-outline/ArchiveBox.js': Buffer.from(factory) });
+      }
       const { runGenerateUseCase } = await import(pathToFileURL(join(cliRoot, 'src/core/generate.ts')).href);
       const result = await runGenerateUseCase({ cwd: project, env: {}, signal: new AbortController().signal, now: () => new Date('2026-10-07T00:00:00Z'), ui: { select: async () => 'pro', confirm: async () => true, text: async () => '', note() {}, progress: () => ({ stop() {} }) } }, fs, { noTailwind: true, archiveFiles: archive });
       assert.equal(result.ok, true, JSON.stringify(result));

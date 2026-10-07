@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.4
+
+- Resolve verified compiled artifact modules imported by CLI-generated Vanilla factories.
+- Recognize canonical public exports even when the library build shortens local names.
+- Add a real CLI generation regression with an installed compiled factory.
+
 ## 0.0.3
 
 - Find CLI installations in nested projects and resolve safe local path aliases.
