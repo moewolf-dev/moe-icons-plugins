@@ -56,7 +56,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       names.set(name, icon.id); names.set(name.charAt(0).toLowerCase() + name.slice(1), icon.id);
     }
     const files = new Map<string, string>();
-    const candidates = Object.entries(managed).filter(([path, hash]) => (path.startsWith(`${outputDir}/`) || path.startsWith(`.moeicons/artifact/${metadata.target}/`)) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
+    const candidates = Object.entries(managed).filter(([path, hash]) => path.startsWith(`${outputDir}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
     if (candidates.length > 3000) return missing();
     let totalBytes = 0;
     for (const [path, hash] of candidates) {
@@ -65,6 +65,29 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       if (totalBytes > 8_000_000) return missing();
       // A modified module is unknown, not an empty authoritative surface.
       if (digest(bytes) === hash) files.set(resolve(root, path), bytes);
+    }
+    // Follow only artifact modules actually re-exported by generated proxies.
+    // Full installations may contain thousands of other icons; do not read them.
+    const artifacts = new Map(Object.entries(managed).filter(([path, hash]) => path.startsWith(`.moeicons/artifact/${metadata.target}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash)).map(([path, hash]) => [resolve(root, path), hash]));
+    const sources = new Map<string, ts.SourceFile>();
+    const pending = [...files.keys()];
+    const owned = new Set(candidates.map(([name]) => resolve(root, name)));
+    for (let index = 0; index < pending.length; index++) {
+      const file = pending[index];
+      const source = ts.createSourceFile(file, files.get(file)!, ts.ScriptTarget.Latest, true, file.endsWith(".tsx") || file.endsWith(".jsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+      sources.set(file, source);
+      for (const statement of source.statements) {
+        if (!ts.isExportDeclaration(statement) || !statement.moduleSpecifier || !ts.isStringLiteral(statement.moduleSpecifier) || !statement.moduleSpecifier.text.startsWith(".")) continue;
+        const base = resolve(dirname(file), statement.moduleSpecifier.text);
+        const artifact = [base, `${base}.js`, `${base}.ts`, resolve(base, "index.js"), resolve(base, "index.ts")].find(path => artifacts.has(path));
+        if (!artifact || owned.has(artifact)) continue;
+        owned.add(artifact);
+        if (owned.size > 3000) return missing();
+        const bytes = await readWithin(artifact);
+        totalBytes += Buffer.byteLength(bytes);
+        if (totalBytes > 8_000_000) return missing();
+        if (digest(bytes) === artifacts.get(artifact)) { files.set(artifact, bytes); pending.push(artifact); }
+      }
     }
     const modules = new Map<string, PublicModule>();
     const active = new Set<string>();
@@ -80,7 +103,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       active.add(file);
       const exports = new Map<string, PublicSymbol>();
       let complete = true;
-      const source = ts.createSourceFile(file, bytes, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+      const source = sources.get(file) ?? ts.createSourceFile(file, bytes, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
       const symbolFor = (name: string): PublicSymbol | undefined => {
         if (keywordNames.has(name)) return { kind: "keyword" };
         const stem = metadataTarget === "vanilla" && name.startsWith("create") && !ids.has(name) ? name.slice(6) : name;
@@ -163,7 +186,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
     for (const file of files.keys()) moduleAt(file);
     const canonicalPath = (path: string): string => inside(resolve(workspaceRoot), path) ? resolve(root, relative(resolve(workspaceRoot), path)) : path;
     return {
-      owns: path => candidates.some(([name]) => resolve(root, name) === canonicalPath(path)),
+      owns: path => owned.has(canonicalPath(path)),
       watches: path => { const file = canonicalPath(path); return file.startsWith(resolve(root, outputDir) + sep) || file.startsWith(resolve(root, ".moeicons") + sep) || configs.includes(file); },
       styleGroups: Array.isArray(catalog.styleGroups) ? catalog.styleGroups.filter(record).flatMap(group => typeof group.id === "string" ? [group.id] : []) : [],
       version: metadata.artifactVersion, target: metadataTarget, modules,

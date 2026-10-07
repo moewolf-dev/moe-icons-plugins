@@ -37,6 +37,11 @@ for (const [target, bitmap, compiledFactory] of [['react', true, false], ['vue',
         const metadataPath = join(project, '.moeicons/install-metadata.json');
         const metadata = JSON.parse(await fs.promises.readFile(metadataPath, 'utf8'));
         metadata.managedFiles[artifactPath] = sha(factory);
+        for (let i = 0; i < 3100; i++) {
+          const path = `.moeicons/artifact/vanilla/moe-outline/Unused${i}.js`;
+          metadata.managedFiles[path] = sha("unused");
+          await writeFile(join(project, path), "unused");
+        }
         await writeFile(metadataPath, JSON.stringify(metadata));
         Object.assign(archive, { 'vanilla/moe-outline/ArchiveBox.js': Buffer.from(factory) });
       }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.5
+
+- Load only verified artifact modules reached from generated exports, allowing full Vanilla installations with thousands of unused modules.
+- Reuse parsed source files and bound analysis by the modules a project actually imports.
+- Cover an installed compiled factory alongside 3100 unrelated artifact files.
+
 ## 0.0.4
 
 - Resolve verified compiled artifact modules imported by CLI-generated Vanilla factories.
