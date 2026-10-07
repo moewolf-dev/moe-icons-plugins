@@ -89,3 +89,22 @@ test("renamed re-exports retain icon identity and changed children lose authorit
     assert.equal(module?.exports.has("SearchAlias"), false);
   } finally { await rm(root, { recursive: true, force: true }); }
 });
+
+test("nearest CLI-managed subproject and bounded aliases identify actual installed modules", async () => {
+  const { root } = await project();
+  try {
+    const { findManagedProjectRoot } = await import("../src/language/project");
+    await mkdir(join(root, "src/nested"));
+    assert.equal(await findManagedProjectRoot(join(root, "src/nested"), root), root);
+    assert.equal(await findManagedProjectRoot(root, join(root, "src")), undefined);
+    await writeFile(join(root, "tsconfig.json"), JSON.stringify({ compilerOptions: { baseUrl: ".", paths: { "@/*": ["src/*"], "icons": ["src/custom-icons"] } } }));
+    const snapshot = await readProjectSnapshot(root);
+    const resolver = snapshot.resolver(join(root, "src/App.tsx"));
+    assert.equal(resolver("@/custom-icons")?.exports.get("UiSearch")?.iconId, "ui-search");
+    assert.ok(resolver("icons"));
+    assert.equal(resolver("iconsOther"), undefined);
+    assert.equal(resolver("@/../outside"), undefined);
+    assert.equal(snapshot.watches(join(root, "src/Business.tsx")), false);
+    assert.equal(snapshot.watches(join(root, "src/custom-icons/icons/UiSearch.tsx")), true);
+  } finally { await rm(root, { recursive: true, force: true }); }
+});

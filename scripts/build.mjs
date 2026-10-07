@@ -1,4 +1,4 @@
-import { build } from "esbuild";
+import { build, context } from "esbuild";
 
 const watch = process.argv.includes("--watch");
 
@@ -7,22 +7,25 @@ const options = {
   entryPoints: ["src/extension.ts"],
   bundle: true,
   outfile: "dist/extension.js",
-  external: ["vscode"],
+  external: ["vscode", "./engine.js"],
   format: "cjs",
   platform: "node",
   target: "node16",
   sourcemap: true,
-  minify: false,
+  minify: true,
 };
 
+const engine = { ...options, entryPoints: ["src/language/engine.ts"], outfile: "dist/engine.js", external: [] };
+
 if (watch) {
-  const ctx = await build({
+  const ctx = await context({
     ...options,
     sourcemap: true,
   });
-  await ctx.watch();
+  const engineContext = await context(engine);
+  await Promise.all([ctx.watch(), engineContext.watch()]);
   console.log("watching for changes...");
 } else {
-  await build(options);
+  await Promise.all([build(options), build(engine)]);
   console.log("build complete: dist/extension.js");
 }

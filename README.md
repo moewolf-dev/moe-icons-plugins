@@ -114,3 +114,16 @@ version synchronization, and policy setup.
 If you encounter a bug, an installation problem, or any other issue, email
 [info@moeicons.com](mailto:info@moeicons.com). Include your VS Code, extension and
 CLI versions, reproduction steps, and any relevant error messages.
+
+## Project discovery and releases
+
+The nearest CLI installation inside the workspace is used for each file. Local
+`paths` and `baseUrl` in tsconfig.json, tsconfig.app.json or jsconfig.json are
+supported when they resolve to verified generated modules. Inherited `extends`
+configuration and arbitrary JavaScript configuration are not evaluated.
+
+The style/version commands show the active project's installed data. The old
+manual style and library-version settings are ignored. Plugin releases remain
+independent: a CLI or resource release does not automatically publish a plugin.
+The version map records a tested combination, rather than forcing every project
+to use the bundled resource version.

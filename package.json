@@ -3,7 +3,7 @@
   "displayName": "Moe Icons",
   "icon": "moeicons-logo-192x192.png",
   "description": "Code completion and semantic highlighting for the Moe Icons library (React & Vue).",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "moewolf",
   "license": "Apache-2.0",
   "repository": {
@@ -101,12 +101,14 @@
         "moeicons.styleGroup": {
           "type": "string",
           "default": "outline",
-          "markdownDescription": "Style library used for completion and highlighting. Use `all` to include every style group."
+          "markdownDescription": "Legacy setting. Completion and highlighting use verified CLI-generated project modules.",
+          "deprecationMessage": "Completion and highlighting use verified CLI-managed project files. This legacy setting is ignored."
         },
         "moeicons.libraryVersion": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Icon library version to match. Leave empty to use the latest bundled version. See the version map for available mappings."
+          "markdownDescription": "Legacy setting. The installed version is read from CLI project metadata.",
+          "deprecationMessage": "Completion and highlighting use verified CLI-managed project files. This legacy setting is ignored."
         },
         "moeicons.websiteUrl": {
           "type": "string",

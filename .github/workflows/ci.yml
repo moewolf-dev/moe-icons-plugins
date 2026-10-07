@@ -21,6 +21,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run compile
+      - name: Checkout tested CLI generation implementation
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: moewolf-dev/moe-icons-cli
+          ref: 280c212de44ee3b2f3de2dbaf8e748519f260aad
+          path: .tmp/cli-integration
+          persist-credentials: false
+      - name: Prepare real CLI integration checks
+        run: |
+          npm ci --prefix .tmp/cli-integration
+          echo "MOEICONS_CLI_REPO=$GITHUB_WORKSPACE/.tmp/cli-integration" >> "$GITHUB_ENV"
       - run: npm test
       - run: npm run build
       - run: npm run release:validate

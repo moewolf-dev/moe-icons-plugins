@@ -14,6 +14,8 @@ test("manifest extraction finds real Vanilla aliases and preserves output on mis
   try {
     await mkdir(join(root, "scripts")); await mkdir(join(root, "data"));
     await copyFile("scripts/generate-icons-data.mjs", join(root, "scripts/generate-icons-data.mjs"));
+    await mkdir(join(root, "src/language"), { recursive: true });
+    await copyFile("src/language/naming.cjs", join(root, "src/language/naming.cjs"));
     await writeFile(join(root, "data/icons.json"), "[]\n");
     const catalog = JSON.stringify({ sourceCommit: "a".repeat(40), sourceVersion: "0.0.18", styleGroups: [{ id: "moe-outline", tiers: ["free", "pro"], formats: ["svg"] }], icons: [{ id: "ui-search", availableIn: ["moe-outline"], targets: ["react", "vue", "vanilla", "assets"] }] });
     const tier = { metadata: { files: { "catalog.json": { sha256: hash(catalog) } } } };
@@ -37,9 +39,22 @@ test("manifest extraction finds real Vanilla aliases and preserves output on mis
     assert.equal(manifest.entries[0].minimumTier, "free");
     await run(process.execPath, [join(root, "scripts/generate-icons-data.mjs"), root]);
     assert.equal(await readFile(join(root, "data/icons.json"), "utf8"), output);
+    const proCatalog = JSON.stringify({ ...JSON.parse(catalog), styleGroups: [...JSON.parse(catalog).styleGroups, { id: "moe-3d-metal", type: "bitmap", tiers: ["pro"], formats: ["png", "webp"], variants: ["moe-3d-metal-256-png", "moe-3d-metal-256-webp"] }], icons: [{ id: "ui-search", targets: ["react", "vue", "assets"], availableIn: ["moe-3d-metal"] }] });
+    const descriptorValue = JSON.parse(descriptor);
+    descriptorValue.pro.metadata.files["catalog.json"].sha256 = hash(proCatalog);
+    descriptorValue.bitmapShards = ["png", "webp"].map(format => ({ tier: "pro", styleGroupId: "moe-3d-metal", resourceVersion: "0.0.18", format, imageSize: { width: 256, height: 256 }, manifestSha256: "c".repeat(64) }));
+    const bitmapDescriptor = JSON.stringify(descriptorValue);
+    await writeFile(join(root, "pro/catalog.json"), proCatalog);
+    await writeFile(join(root, "release-descriptor.json"), bitmapDescriptor);
+    await writeFile(join(root, "release-input.json"), JSON.stringify({ schemaVersion: 1, descriptorSha256: hash(bitmapDescriptor), resourceDigest: "b".repeat(64), sourceCommit: "a".repeat(40), resourceVersion: "0.0.18" }));
+    await run(process.execPath, [join(root, "scripts/generate-icons-data.mjs"), root]);
+    const bitmapOutput = await readFile(join(root, "data/icons.json"), "utf8");
+    const variants = JSON.parse(bitmapOutput).entries.filter((entry: { styleGroup: string }) => entry.styleGroup.startsWith("moe-3d-metal"));
+    assert.equal(variants.length, 2);
+    assert.ok(variants.every((entry: { bindings: { target: string }[] }) => entry.bindings.length === 1 && entry.bindings[0].target === "assets"));
     await rm(join(root, "free/react/moe-outline/index.d.ts"));
     await assert.rejects(run(process.execPath, [join(root, "scripts/generate-icons-data.mjs"), root]), /missing react declarations/);
-    assert.equal(await readFile(join(root, "data/icons.json"), "utf8"), output);
+    assert.equal(await readFile(join(root, "data/icons.json"), "utf8"), bitmapOutput);
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 

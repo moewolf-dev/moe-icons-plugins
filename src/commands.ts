@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import type { LanguageService } from "./language/service";
 import { loadIcons, type IconEntry } from "./data";
 import { getSettings } from "./settings";
 import { getVersionMap } from "./version";
@@ -25,8 +26,14 @@ function summarizeStyleGroups(entries: IconEntry[]): StyleGroupSummary[] {
   );
 }
 
-export function registerListStyleLibrariesCommand(): vscode.Disposable {
+export function registerListStyleLibrariesCommand(service: LanguageService): vscode.Disposable {
   return vscode.commands.registerCommand("moeicons.listStyleLibraries", async () => {
+    const document = vscode.window.activeTextEditor?.document;
+    const project = document ? await service.project(document) : undefined;
+    if (project) {
+      void vscode.window.showInformationMessage(`Moe Icons: installed resource ${project.snapshot.version ?? "unknown"}; target ${project.snapshot.target ?? "unknown"}; styles: ${project.snapshot.styleGroups?.join(", ") || "none"}`);
+      return;
+    }
     const summaries = summarizeStyleGroups(loadIcons());
     if (summaries.length === 0) {
       void vscode.window.showInformationMessage("Moe Icons: no style libraries found.");
@@ -39,23 +46,17 @@ export function registerListStyleLibrariesCommand(): vscode.Disposable {
       styleGroup: summary.styleGroup,
     }));
 
-    const picked = await vscode.window.showQuickPick(items, {
-      placeHolder: "Select a style library to use for completion/highlighting",
+    await vscode.window.showQuickPick(items, {
+      placeHolder: "Bundled reference only. Completion follows verified project imports; install icons with the CLI.",
     });
-
-    if (picked !== undefined) {
-      await vscode.workspace
-        .getConfiguration("moeicons")
-        .update("styleGroup", picked.styleGroup, vscode.ConfigurationTarget.Global);
-      void vscode.window.showInformationMessage(
-        `Moe Icons: style library set to "${picked.styleGroup}".`,
-      );
-    }
   });
 }
 
-export function registerShowVersionMapCommand(): vscode.Disposable {
-  return vscode.commands.registerCommand("moeicons.showVersionMap", () => {
+export function registerShowVersionMapCommand(service: LanguageService): vscode.Disposable {
+  return vscode.commands.registerCommand("moeicons.showVersionMap", async () => {
+    const document = vscode.window.activeTextEditor?.document;
+    const project = document ? await service.project(document) : undefined;
+    if (project) { void vscode.window.showInformationMessage(`Moe Icons: installed resource ${project.snapshot.version ?? "unknown"} (${project.snapshot.target ?? "unknown"})`); return; }
     const map = getVersionMap();
     if (map.length === 0) {
       void vscode.window.showInformationMessage("Moe Icons: version map is empty.");
@@ -69,8 +70,8 @@ export function registerShowVersionMapCommand(): vscode.Disposable {
   });
 }
 
-export function registerCommands(): vscode.Disposable[] {
-  return [registerListStyleLibrariesCommand(), registerShowVersionMapCommand()];
+export function registerCommands(service: LanguageService): vscode.Disposable[] {
+  return [registerListStyleLibrariesCommand(service), registerShowVersionMapCommand(service)];
 }
 
 export function detectVersionLog(): string {

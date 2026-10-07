@@ -20,9 +20,13 @@ export interface ProjectSnapshot {
   readonly target?: LanguageTarget;
   readonly modules: ReadonlyMap<string, PublicModule>;
   owns(documentPath: string): boolean;
+  watches(documentPath: string): boolean;
+  readonly styleGroups?: readonly string[];
   resolver(documentPath: string): ModuleResolver;
 }
-const missing = (): ProjectSnapshot => ({ modules: new Map(), owns: () => false, resolver: () => () => undefined });
+const missing = (): ProjectSnapshot => ({ modules: new Map(), owns: () => false, watches: path => path.includes("/.moeicons/") || /(?:ts|js)config.*\.json$/.test(path), resolver: () => () => undefined });
+
+export { findManagedProjectRoot } from "./project-root";
 
 /** Only hashed CLI-managed modules are authoritative. Never execute project config. */
 export async function readProjectSnapshot(workspaceRoot: string): Promise<ProjectSnapshot> {
@@ -43,11 +47,13 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
     const catalog: unknown = JSON.parse(catalogText);
     if (!record(catalog) || catalog.schemaVersion !== 1 || !Array.isArray(catalog.icons)) return missing();
     const ids = new Map<string, string>();
+    const names = new Map<string, string>();
     for (const icon of catalog.icons) if (record(icon) && typeof icon.id === "string") {
       const name = proxyName(icon.id);
       // Ambiguous names must not produce a false icon identity.
       if (ids.has(name) && ids.get(name) !== icon.id) return missing();
       ids.set(name, icon.id);
+      names.set(name, icon.id); names.set(name.charAt(0).toLowerCase() + name.slice(1), icon.id);
     }
     const files = new Map<string, string>();
     const candidates = Object.entries(managed).filter(([path, hash]) => path.startsWith(`${outputDir}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
@@ -55,7 +61,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
     let totalBytes = 0;
     for (const [path, hash] of candidates) {
       const bytes = await readWithin(resolve(root, path));
-      totalBytes += bytes.length;
+      totalBytes += Buffer.byteLength(bytes);
       if (totalBytes > 8_000_000) return missing();
       // A modified module is unknown, not an empty authoritative surface.
       if (digest(bytes) === hash) files.set(resolve(root, path), bytes);
@@ -78,7 +84,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       const symbolFor = (name: string): PublicSymbol | undefined => {
         if (keywordNames.has(name)) return { kind: "keyword" };
         const stem = metadataTarget === "vanilla" && name.startsWith("create") && !ids.has(name) ? name.slice(6) : name;
-        const id = ids.get(stem) ?? [...ids].find(([key]) => key.charAt(0).toLowerCase() + key.slice(1) === stem)?.[1];
+        const id = names.get(stem);
         return id ? { kind: metadataTarget === "vanilla" ? "factory" : "component", iconId: id } : undefined;
       };
       for (const statement of source.statements) {
@@ -135,22 +141,47 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       active.delete(file);
       return module;
     }
+    const aliases: { prefix: string; suffix: string; targets: string[]; base: string; wildcard: boolean }[] = [];
+    const configs: string[] = [];
+    // Read bounded JSONC only; never load JS or invoke TypeScript resolution.
+    for (const name of ["tsconfig.json", "tsconfig.app.json", "jsconfig.json"]) {
+      const file = resolve(root, name); configs.push(file);
+      try {
+        const parsed = ts.parseConfigFileTextToJson(file, await readWithin(file));
+        const options = parsed.config?.compilerOptions;
+        if (parsed.error || !record(options) || !record(options.paths)) continue;
+        const base = resolve(root, typeof options.baseUrl === "string" ? options.baseUrl : ".");
+        if (!inside(root, base)) continue;
+        for (const [key, paths] of Object.entries(options.paths)) {
+          if ((key.match(/\*/g) ?? []).length > 1 || !Array.isArray(paths) || !paths.every(path => typeof path === "string" && (path.match(/\*/g) ?? []).length <= 1)) continue;
+          const [prefix, suffix = ""] = key.split("*");
+          aliases.push({ prefix, suffix, targets: paths, base, wildcard: key.includes("*") });
+        }
+      } catch { /* Optional aliases; unknown paths retain conservative behaviour. */ }
+    }
     const metadataTarget = metadata.target;
     for (const file of files.keys()) moduleAt(file);
     const canonicalPath = (path: string): string => inside(resolve(workspaceRoot), path) ? resolve(root, relative(resolve(workspaceRoot), path)) : path;
     return {
-      owns: path => modules.has(canonicalPath(path)),
+      owns: path => candidates.some(([name]) => resolve(root, name) === canonicalPath(path)),
+      watches: path => { const file = canonicalPath(path); return file.startsWith(resolve(root, outputDir) + sep) || file.startsWith(resolve(root, ".moeicons") + sep) || configs.includes(file); },
+      styleGroups: Array.isArray(catalog.styleGroups) ? catalog.styleGroups.filter(record).flatMap(group => typeof group.id === "string" ? [group.id] : []) : [],
       version: metadata.artifactVersion, target: metadataTarget, modules,
       resolver(documentPath) {
         // macOS /var and /private/var can identify the same workspace.
         const canonicalDocument = canonicalPath(documentPath);
         return specifier => {
-          // Relative generated modules only; arbitrary aliases/packages need a separate verified adapter.
-          if (!specifier.startsWith(".")) return undefined;
-          const candidate = resolve(dirname(canonicalDocument), specifier);
-          if (!inside(root, candidate)) return undefined;
-          const file = findModule(candidate);
-          return file ? modules.get(file) : undefined;
+          const candidates = specifier.startsWith(".") ? [resolve(dirname(canonicalDocument), specifier)] : aliases.flatMap(alias => {
+            if ((!alias.wildcard && specifier !== alias.prefix) || !specifier.startsWith(alias.prefix) || !specifier.endsWith(alias.suffix)) return [];
+            const middle = specifier.slice(alias.prefix.length, alias.suffix ? -alias.suffix.length : undefined);
+            return alias.targets.map(target => resolve(alias.base, target.replace("*", middle)));
+          });
+          for (const candidate of candidates) {
+            if (!inside(root, candidate)) continue;
+            const file = findModule(candidate);
+            if (file) return modules.get(file);
+          }
+          return undefined;
         };
       },
     };

@@ -16,3 +16,5 @@ tsconfig.json
 release-artifact/**
 
 candidate/**
+
+.tmp/**
