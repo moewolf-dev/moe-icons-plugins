@@ -1,0 +1,32 @@
+name: Verify private resource reader
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_id:
+        description: Exact code-library candidate artifact to check without publishing
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify configured private Actions reader
+        env:
+          GH_TOKEN: ${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          test -n "$GH_TOKEN"
+          [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          gh api "repos/moewolf-dev/moe-icons-code-library/actions/artifacts/$ARTIFACT_ID" > "$RUNNER_TEMP/artifact.json"
+          node - "$RUNNER_TEMP/artifact.json" <<'NODE'
+          const fs=require('node:fs');
+          const a=JSON.parse(fs.readFileSync(process.argv[2]));
+          if(String(a.id)!==process.env.ARTIFACT_ID||a.expired||!/^sha256:[a-f0-9]{64}$/.test(a.digest))throw Error('invalid artifact identity');
+          console.log(JSON.stringify({id:a.id,digest:a.digest,sizeBytes:a.size_in_bytes,producer:a.workflow_run}));
+          NODE
+          run="$(node -p 'require(process.argv[1]).workflow_run.id' "$RUNNER_TEMP/artifact.json")"
+          gh api "repos/moewolf-dev/moe-icons-code-library/actions/runs/$run" --jq '{id,path,head_sha,status,conclusion}'
