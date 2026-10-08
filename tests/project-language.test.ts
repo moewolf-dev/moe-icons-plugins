@@ -124,3 +124,17 @@ test("large full-package metadata does not force scanning unrelated artifacts", 
     assert.ok(snapshot.modules.size<10);
   } finally { await rm(root,{recursive:true,force:true}); }
 });
+
+test('Pro rights follow verified SVG imports and bitmap wrapper imports, not the whole catalog', async () => {
+ const {root,metadata}=await project();
+ try{
+  const catalog=JSON.stringify({schemaVersion:1,styleGroups:[{id:'moe-outline',tiers:['free','pro']},{id:'moe-3d-metal',tiers:['pro']}],icons:[{id:'ui-search'}]});
+  const proxy='import {MetalUiSearch} from "../wrappers/MetalUiSearch"; export const UiSearch = () => MetalUiSearch();';
+  const wrapper='import asset from "../assets/moe-3d-metal-128-webp/ui-search.webp"; export const MetalUiSearch=()=>asset;';
+  await mkdir(join(root,'src/custom-icons/wrappers'),{recursive:true});
+  await writeFile(join(root,'.moeicons/catalog.json'),catalog);await writeFile(join(root,'src/custom-icons/icons/UiSearch.tsx'),proxy);await writeFile(join(root,'src/custom-icons/wrappers/MetalUiSearch.tsx'),wrapper);
+  await writeFile(join(root,'.moeicons/install-metadata.json'),JSON.stringify({...metadata,catalogSha256:hash(catalog),managedFiles:{...metadata.managedFiles,'.moeicons/catalog.json':hash(catalog),'src/custom-icons/icons/UiSearch.tsx':hash(proxy),'src/custom-icons/wrappers/MetalUiSearch.tsx':hash(wrapper)}}));
+  const snapshot=await readProjectSnapshot(root);assert.equal(snapshot.resolver(join(root,'src/App.tsx'))('./custom-icons')?.exports.get('UiSearch')?.kind,'component');
+  const symbol=snapshot.resolver(join(root,'src/App.tsx'))('./custom-icons')?.exports.get('UiSearch');assert.ok(symbol?.kind!=='namespace' && symbol?.requiresPro);
+ }finally{await rm(root,{recursive:true,force:true});}
+});

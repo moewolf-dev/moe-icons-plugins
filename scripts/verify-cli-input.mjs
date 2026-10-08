@@ -1,0 +1,44 @@
+import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {join,resolve} from 'node:path';
+const env=process.env;
+const assert=(v,m)=>{if(!v)throw new Error(m);};
+const api=path=>JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8',timeout:30000,maxBuffer:1024*1024}));
+const root=resolve(process.argv[2]);fs.mkdirSync(root,{recursive:true});
+for(const name of ['CLI_PUBLISH_HEAD','CLI_RELEASE_COMMIT'])assert(/^[a-f0-9]{40}$/.test(env[name]||''),`${name} invalid`);
+assert(/^[1-9]\d*$/.test(env.CLI_PUBLISH_RUN_ID||''),'CLI publish run invalid');
+assert(/^\d+\.\d+\.\d+$/.test(env.CLI_VERSION||''),'CLI version invalid');
+const run=api(`repos/moewolf-dev/moe-icons-cli/actions/runs/${env.CLI_PUBLISH_RUN_ID}`);
+assert(run.path==='.github/workflows/publish.yml' && run.conclusion==='success' && run.head_sha===env.CLI_PUBLISH_HEAD,'CLI producer mismatch');
+const commit=api(`repos/moewolf-dev/moe-icons-cli/commits/v${env.CLI_VERSION}`);
+assert(commit.sha===env.CLI_RELEASE_COMMIT,'CLI tag differs from frozen publisher commit');
+const release=api(`repos/moewolf-dev/moe-icons-cli/releases/tags/v${env.CLI_VERSION}`);
+assert(!release.draft && release.tag_name===`v${env.CLI_VERSION}`,'CLI release not public');
+const pinEntry=api(`repos/moewolf-dev/moe-icons-cli/contents/src/catalog/resource-release.json?ref=${env.CLI_RELEASE_COMMIT}`);
+const pin=JSON.parse(Buffer.from(pinEntry.content,'base64').toString());
+const state=JSON.parse(fs.readFileSync('data/release-state.json','utf8'));
+const accepted=state.events.filter(item=>item.phase==='verified' && item.event.resourceVersion===state.current.resourceVersion).at(-1);
+assert(accepted,'no verified resource baseline; complete resource release first');
+const identity=accepted.event;
+assert(pin.resourceVersion===env.RESOURCE_VERSION && pin.resourceVersion===identity.resourceVersion && pin.privateDescriptorSha256===env.DESCRIPTOR_SHA256 && pin.privateDescriptorSha256===identity.descriptorSha256 && pin.sourceCommit===identity.sourceCommit,'CLI does not pin the verified resource baseline');
+const git=(...args)=>execFileSync('git',args,{encoding:'utf8',timeout:30000}).trim();
+assert(git('rev-parse',`${accepted.tag}:data/icons.json`)===git('hash-object','data/icons.json'),'bundled metadata changed from verified resource baseline');
+const request=async(url)=>{const r=await fetch(url,{redirect:'error',signal:AbortSignal.timeout(30000)});assert(r.ok,'published evidence unavailable');const text=await r.text();assert(Buffer.byteLength(text)<=1024*1024,'evidence exceeds size limit');return JSON.parse(text);};
+const registry=await request(`https://registry.npmjs.org/@moewolf%2fmoe-icons-cli/${env.CLI_VERSION}`);
+assert(registry.dist?.integrity===env.CLI_NPM_INTEGRITY,'CLI npm integrity mismatch');
+const versions=await request('https://api.moeicons.com/v1/icon-library/versions');
+assert(versions.pro?.version===pin.resourceVersion && versions.pro?.descriptorSha256===pin.privateDescriptorSha256,'live resource pointer differs from accepted baseline');
+// A publish receipt binds the tag, tarball and integrity to this exact run.
+const receipts=join(root,'receipt');fs.mkdirSync(receipts);
+if (Array.isArray(release.assets) && release.assets.some(asset => asset.name === 'cli-publish-receipt.json')) {
+  execFileSync('gh',['release','download',`v${env.CLI_VERSION}`,'--repo','moewolf-dev/moe-icons-cli','--pattern','cli-publish-receipt.json','--dir',receipts],{stdio:'inherit',timeout:60000});
+} else execFileSync('gh',['run','download',env.CLI_PUBLISH_RUN_ID,'--repo','moewolf-dev/moe-icons-cli','--pattern','cli-publish-receipt-*','--dir',receipts],{stdio:'inherit',timeout:60000});
+const candidates=fs.readdirSync(receipts).flatMap(name=>{const p=join(receipts,name);return fs.statSync(p).isDirectory()?[join(p,'cli-publish-receipt.json')]:name==='cli-publish-receipt.json'?[p]:[];}).filter(p=>fs.existsSync(p));
+assert(candidates.length===1 && fs.statSync(candidates[0]).size<16384,'ambiguous publisher receipt');
+const receipt=JSON.parse(fs.readFileSync(candidates[0],'utf8'));
+assert(receipt.version===env.CLI_VERSION && receipt.releaseCommit===env.CLI_RELEASE_COMMIT && String(receipt.runId)===env.CLI_PUBLISH_RUN_ID && receipt.npmIntegrity===env.CLI_NPM_INTEGRITY && receipt.provenance===true && receipt.conclusion==='success','publisher receipt differs from notification');
+const eventId=`resource:${pin.resourceVersion}:cli:${env.CLI_VERSION}`;
+assert(env.EVENT_ID===eventId,'delivery event identity mismatch');
+// Canonical identity matches the resource coordinator, so duplicate joint delivery reuses the version.
+fs.writeFileSync(join(root,'event.json'),JSON.stringify({...identity,eventId,cliVersion:env.CLI_VERSION})+'\n');
+console.log(`Verified CLI-only delivery ${eventId}; retaining existing resource metadata`);

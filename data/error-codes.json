@@ -11,23 +11,23 @@
     "key": "MALFORMED_USAGE",
     "code": "MOE-ICON-0002",
     "severity": "info",
-    "message": "Moe Icons usage is incomplete.",
-    "hint": "Finish the component or factory expression before checking it.",
+    "message": "Moe Icons opening and closing component tags do not match.",
+    "hint": "Use matching opening and closing component names.",
     "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
   },
   {
     "key": "INVALID_SYMBOL_NAME",
     "code": "MOE-ICON-0003",
     "severity": "warning",
-    "message": "Moe Icons symbol '{name}' does not match an export in this installed module.",
-    "hint": "Use a symbol exported by the installed generated module.",
+    "message": "Moe Icons symbol '{name}' cannot be used as a JSX component.",
+    "hint": "Use a component export in JSX; call Vanilla factories as functions.",
     "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
   },
   {
     "key": "ACCOUNT_TIER_MISMATCH",
     "code": "MOE-ICON-0004",
     "severity": "warning",
-    "message": "This icon requires an active Pro entitlement.",
+    "message": "This icon's configured styles include Pro resources; the current account has no active Pro entitlement.",
     "hint": "Check the account panel or installed resource version.",
     "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
   },

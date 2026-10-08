@@ -116,6 +116,16 @@ export function analyzeDocument(text: string, language: string, resolve: ModuleR
   }
   function visit(node: ts.Node): void {
     if (ts.isImportDeclaration(node)) return;
+    if (ts.isJsxElement(node) && node.closingElement.getText(source).endsWith(">") && node.openingElement.tagName.getText(source) !== node.closingElement.tagName.getText(source) && lookup(node.openingElement.tagName as ts.Expression)?.symbol) {
+      const tag = node.closingElement.tagName;
+      issues.push({key:"MALFORMED_USAGE",start:tag.getStart(source),end:tag.getEnd(),name:tag.getText(source)});
+    }
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+      const binding = lookup(node.tagName as ts.Expression);
+      if (binding?.symbol?.kind === "factory" || binding?.symbol?.kind === "namespace") {
+        issues.push({key:"INVALID_SYMBOL_NAME",start:node.tagName.getStart(source),end:node.tagName.getEnd(),name:node.tagName.getText(source)});
+      }
+    }
     if (ts.isPropertyAccessExpression(node)) {
       const binding = lookup(node);
       if (binding) record(node.name, binding);

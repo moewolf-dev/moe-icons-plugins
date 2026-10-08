@@ -1,3 +1,4 @@
+import { selectedStore, missingCredential } from "./session-policy.cjs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { join } from "node:path";
@@ -17,7 +18,7 @@ function parse(value: string): SessionRead {
   } catch { return { kind: "unknown" }; }
 }
 
-async function readKeychain(): Promise<SessionRead> {
+export async function readKeychain(): Promise<SessionRead> {
   const platform = process.platform;
   try {
     let value: string;
@@ -26,22 +27,24 @@ async function readKeychain(): Promise<SessionRead> {
     } else if (platform === "linux") {
       ({ stdout: value } = await run("secret-tool", ["lookup", "service", "moeicons", "account", "active-session"], { timeout: 2500, maxBuffer: 64_000 }));
     } else if (platform === "win32") {
-      const prefix = "[void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime];$v=[Windows.Security.Credentials.PasswordVault]::new();$c=$v.Retrieve('moeicons','active-session');$c.RetrievePassword();[Console]::Out.Write($c.Password)";
+      const prefix = "[void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime];$v=[Windows.Security.Credentials.PasswordVault]::new();try{$c=$v.Retrieve('moeicons','active-session');$c.RetrievePassword();[Console]::Out.Write($c.Password)}catch{$e=$_.Exception;while($e){if($e.HResult -eq -2147023728){exit 44};$e=$e.InnerException};exit 45}";
       ({ stdout: value } = await run("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", prefix], { timeout: 2500, maxBuffer: 64_000 }));
     } else return { kind: "unknown" };
     return parse(value.trim());
-  } catch { return { kind: "unknown" }; }
+  } catch (error) { return { kind: missingCredential(platform, error as never) ? "signedOut" : "unknown" }; }
 }
 
 /** Mirrors CLI store selection: never fall back to a file after keychain failure. */
 export async function readCliAccessToken(): Promise<SessionRead> {
-  if (process.env.MOEICONS_DISABLE_SYSTEM_KEYCHAIN === "1") {
-    const configured = process.env.MOEICONS_TOKEN_STORE_DIR;
-    if (!configured) return { kind: "signedOut" };
+  let selection: ReturnType<typeof selectedStore>;
+  try { selection = selectedStore(process.env); } catch { return { kind: "unknown" }; }
+  if (selection.mode === "none") return { kind: "signedOut" };
+  if (selection.mode === "file") {
+    const configured = selection.rootDir!;
     try {
       const file = join(configured, "token-store.json");
       const metadata = await stat(file);
-      if ((metadata.mode & 0o077) !== 0 || (typeof process.getuid === "function" && metadata.uid !== process.getuid())) return { kind: "unknown" };
+      if ((process.platform !== "win32" && (metadata.mode & 0o077) !== 0) || (typeof process.getuid === "function" && metadata.uid !== process.getuid())) return { kind: "unknown" };
       if (metadata.size > 1_000_000) return { kind: "unknown" };
       const value = await readFile(file, "utf8");
       const raw: unknown = JSON.parse(value);

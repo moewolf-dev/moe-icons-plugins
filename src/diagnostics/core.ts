@@ -31,3 +31,9 @@ export function formatIssue(issue: LanguageIssue): { definition: ErrorCode; mess
   if (!definition) throw new Error("Missing error code");
   return { definition, message: `${definition.message.replace("{name}", () => issue.name)} ${definition.hint}` };
 }
+
+/** Unknown account rights never become a guessed Free entitlement. */
+export function entitlementIssues(occurrences: readonly import("../language/contracts").SymbolOccurrence[], state: import("../account/service").AccountState): LanguageIssue[] {
+  if (state.kind !== "authenticated" || state.effectivePro) return [];
+  return occurrences.filter(item => item.symbol.kind !== "namespace" && item.symbol.requiresPro === true).map(item => ({key:"ACCOUNT_TIER_MISMATCH",start:item.start,end:item.end,name:item.name}));
+}

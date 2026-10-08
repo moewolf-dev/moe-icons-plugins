@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
 import { HIGHLIGHT_LANGUAGE_IDS } from "../constants";
 import type { LanguageService } from "../language/service";
-import { formatIssue } from "./core";
+import type { AccountService } from "../account/service";
+import { entitlementIssues, formatIssue } from "./core";
 
-export function registerDiagnostics(service: LanguageService): vscode.Disposable {
+export function registerDiagnostics(service: LanguageService, account: AccountService): vscode.Disposable {
   const collection = vscode.languages.createDiagnosticCollection("moeicons");
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
   let disposed = false;
@@ -19,7 +20,7 @@ export function registerDiagnostics(service: LanguageService): vscode.Disposable
       const version = document.version;
       void service.analyze(document).then(analysis => {
         if (!analysis || disposed || document.isClosed || document.version !== version || timers.has(uri)) return;
-        const diagnostics = analysis.issues.map(issue => {
+        const diagnostics = [...analysis.issues, ...entitlementIssues(analysis.occurrences, account.current)].map(issue => {
           const { definition, message } = formatIssue(issue);
           const severity = definition.severity === "error" ? vscode.DiagnosticSeverity.Error : definition.severity === "warning" ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information;
           const diagnostic = new vscode.Diagnostic(new vscode.Range(document.positionAt(issue.start), document.positionAt(issue.end)), message, severity);
@@ -35,6 +36,7 @@ export function registerDiagnostics(service: LanguageService): vscode.Disposable
     vscode.workspace.onDidOpenTextDocument(schedule),
     vscode.workspace.onDidChangeTextDocument(event => schedule(event.document)),
     vscode.workspace.onDidSaveTextDocument(schedule),
+    account.onDidChange(() => vscode.workspace.textDocuments.forEach(schedule)),
     service.onDidChange(() => vscode.workspace.textDocuments.forEach(schedule)),
     vscode.workspace.onDidCloseTextDocument(document => {
       const key = document.uri.toString(), timer = timers.get(key);

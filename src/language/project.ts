@@ -55,6 +55,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       ids.set(name, icon.id);
       names.set(name, icon.id); names.set(name.charAt(0).toLowerCase() + name.slice(1), icon.id);
     }
+    const proGroups = Array.isArray(catalog.styleGroups) ? catalog.styleGroups.filter(record).filter(group => Array.isArray(group.tiers) && group.tiers.includes("pro") && !group.tiers.includes("free") && typeof group.id === "string").map(group => String(group.id)) : [];
     const files = new Map<string, string>();
     const candidates = Object.entries(managed).filter(([path, hash]) => path.startsWith(`${outputDir}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
     if (candidates.length > 3000) return missing();
@@ -94,6 +95,17 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
     function findModule(path: string): string | undefined {
       return [path, `${path}.ts`, `${path}.tsx`, `${path}.js`, `${path}.jsx`, `${path}.vue`, resolve(path, "index.ts"), resolve(path, "index.js")].find(candidate => files.has(candidate));
     }
+    const proUsage = new Map<string, boolean>();
+    function usesProResource(file: string, seen = new Set<string>()): boolean {
+      if (proUsage.has(file)) return proUsage.get(file)!;
+      if (seen.has(file) || !files.has(file)) return false;
+      seen.add(file);
+      const source = sources.get(file) ?? ts.createSourceFile(file, files.get(file)!, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+      const imports = source.statements.flatMap(statement => ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier) && statement.moduleSpecifier.text.startsWith(".") ? [resolve(dirname(file), statement.moduleSpecifier.text)] : []);
+      const proPath = (path: string): boolean => (inside(resolve(root, ".moeicons/artifact"), path) || inside(resolve(root, String(outputDir), "assets"), path)) && proGroups.some(group => path.split(sep).some(part => part === group || part.startsWith(group + "-")));
+      const required = proPath(file) || imports.some(path => proPath(path) || (findModule(path) ? usesProResource(findModule(path)!, seen) : false));
+      proUsage.set(file, required); return required;
+    }
     function moduleAt(file: string): PublicModule | undefined {
       const cached = modules.get(file);
       if (cached) return cached;
@@ -108,7 +120,8 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
         if (keywordNames.has(name)) return { kind: "keyword" };
         const stem = metadataTarget === "vanilla" && name.startsWith("create") && !ids.has(name) ? name.slice(6) : name;
         const id = names.get(stem);
-        return id ? { kind: metadataTarget === "vanilla" ? "factory" : "component", iconId: id } : undefined;
+        const usesPro = usesProResource(file);
+        return id ? { requiresPro: usesPro, kind: metadataTarget === "vanilla" ? "factory" : "component", iconId: id } : undefined;
       };
       for (const statement of source.statements) {
         if (ts.isExportDeclaration(statement)) {

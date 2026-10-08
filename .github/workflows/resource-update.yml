@@ -2,7 +2,7 @@ name: Update from Moe Icons resource release
 run-name: Plugin resource ${{ github.event.client_payload.eventId }}
 on:
   repository_dispatch:
-    types: [moe-icons-code-library-release]
+    types: [moe-icons-code-library-release, moe-icons-cli-release]
 permissions:
   contents: write
   actions: write
@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
+      DELIVERY_KIND: ${{ github.event.action }}
+      CLI_RELEASE_COMMIT: ${{ github.event.client_payload.delivery.cliReleaseCommit }}
       RESOURCE_VERSION: ${{ github.event.client_payload.delivery.resourceVersion }}
       SOURCE_COMMIT: ${{ github.event.client_payload.delivery.sourceCommit }}
       GENERATOR_COMMIT: ${{ github.event.client_payload.delivery.generatorCommit }}
@@ -43,10 +45,14 @@ jobs:
           GH_TOKEN: ${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}
         run: |
           set -euo pipefail
-          test -n "$GH_TOKEN" || { echo 'Configure LIBRARY_ARTIFACT_READ_TOKEN with code-library Actions read permission'; exit 1; }
           root="$RUNNER_TEMP/moe-icons-plugin-release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "MOE_ICONS_RELEASE_ROOT=$root" >> "$GITHUB_ENV"
-          node scripts/verify-resource-input.mjs "$root"
+          if [ "$DELIVERY_KIND" = moe-icons-cli-release ]; then
+            GH_TOKEN="${{ github.token }}" node scripts/verify-cli-input.mjs "$root"
+          else
+            test -n "$GH_TOKEN" || { echo 'Configure LIBRARY_ARTIFACT_READ_TOKEN with code-library Actions read permission'; exit 1; }
+            node scripts/verify-resource-input.mjs "$root"
+          fi
       - name: Allocate or resume the verified joint delivery
         run: |
           node scripts/release-state.mjs allocate "$MOE_ICONS_RELEASE_ROOT/event.json"
@@ -54,7 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          node scripts/generate-icons-data.mjs "$MOE_ICONS_RELEASE_ROOT"
+          if [ "$DELIVERY_KIND" != moe-icons-cli-release ]; then node scripts/generate-icons-data.mjs "$MOE_ICONS_RELEASE_ROOT"; fi
           npm run compile
           npm test
           npm run build

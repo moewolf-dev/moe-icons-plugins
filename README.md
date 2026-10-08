@@ -1,7 +1,7 @@
 # Moe Icons for VS Code
 
 Code completion, semantic highlighting and icon diagnostics for Moe Icons in
-React and Vue projects.
+React and Vue projects. Requires VS Code 1.85 or newer (Node 18 extension host).
 
 - [Official website](https://moeicons.com/)
 - [Documentation](https://moeicons.com/docs/)
@@ -57,20 +57,27 @@ or downloading icon resources.
 - Report unavailable exports in verified generated modules.
 - Inspect style libraries and the plugin/library version map.
 
-This is an early release. Relative imports from CLI-generated modules are
-supported; automatic imports, npm/path-alias import resolution and Assets
-reference completion are still in development. Dynamic or unverified inputs are
-skipped. The bundled legacy catalog maps to resource version 0.0.17; it does not
-replace the project's installed catalog. Account features await production
-endpoint rollout and validation.
+Relative imports and bounded local `paths` aliases in JSON/JSONC tsconfig or
+jsconfig are supported. Config `extends`, automatic imports, npm import
+resolution and Assets reference completion are not supported. Dynamic or
+unverified inputs are skipped. The installed catalog and verified generated
+files are authoritative; bundled metadata is a reference.
+
+The Moe Icons Account view reads the CLI session on the extension host and has
+a refresh command. Log in with `moeicons login` on that same host. Remote SSH,
+WSL and containers do not copy local credentials automatically. Unknown account
+rights never produce a guessed Free entitlement warning. Verified icon proxies
+that include Pro resources in their configured themes warn when the current
+account has a confirmed inactive Pro entitlement; this is an editor hint and
+does not replace the server's download authorization.
 
 ## Settings
 
 | Setting | Default | Description |
 | --- | --- | --- |
 | `moeicons.highlightColorMode` | `auto` | Follow the editor theme, or force `light` / `dark` semantic-token modifiers. Override colors in `editor.semanticTokenColorCustomizations`. |
-| `moeicons.styleGroup` | `outline` | Style library used for completion/highlighting. |
-| `moeicons.libraryVersion` | `""` | Library version to match (empty = latest bundled). |
+| `moeicons.styleGroup` | `outline` | Deprecated; completion uses verified project exports. |
+| `moeicons.libraryVersion` | `""` | Deprecated; installed resource version is read from the active project. |
 | `moeicons.websiteUrl` | `https://moeicons.com` | Official website link. |
 | `moeicons.repositoryUrl` | `https://github.com/moewolf-dev/moe-icons` | Public repo link. |
 | `moeicons.pluginRepositoryUrl` | `https://github.com/moewolf-dev/moe-icons-plugins` | Plugin repo link. |
@@ -79,7 +86,7 @@ endpoint rollout and validation.
 ## Commands
 
 - `Moe Icons: List Style Libraries` — list style libraries with `free`/`pro` markers.
-- `Moe Icons: Show Plugin/Library Version Map` — show the 1:1 version mapping.
+- `Moe Icons: Show Plugin/Library Version Map` — show plugin, CLI and resource delivery versions.
 - `Moe Icons: Show Account` — focus the account/version view.
 - `Moe Icons: Refresh Account` — read the current CLI session and refresh entitlement status.
 

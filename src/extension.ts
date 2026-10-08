@@ -16,9 +16,9 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(language);
   context.subscriptions.push(...registerCompletionProviders(language));
   context.subscriptions.push(registerHighlightProvider(language));
-  context.subscriptions.push(registerDiagnostics(language));
+  context.subscriptions.push(registerDiagnostics(language, account));
   context.subscriptions.push(...registerCommands(language));
-  context.subscriptions.push(...registerAccountView(context, account));
+  context.subscriptions.push(...registerAccountView(context, account, language));
 }
 
 export function deactivate(): void {
