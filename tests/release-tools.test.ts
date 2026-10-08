@@ -99,10 +99,19 @@ test("release allocation is idempotent and interrupted writes recover before the
     await writeFile(eventFile, JSON.stringify({ ...delivery, eventId: 'delivery:backwards', sourceVersion: '0.0.20', resourceVersion: '0.0.20', cliVersion: '0.0.3' }));
     await assert.rejects(run(process.execPath, args), /cannot move backwards/);
     await writeFile(eventFile, JSON.stringify(delivery));
+    const repair = { ...delivery, eventId: 'delivery:0.0.19:0.0.5', cliVersion: '0.0.5' };
+    await writeFile(eventFile, JSON.stringify(repair));
+    await assert.rejects(run(process.execPath, args), /verified resource identity/);
+    for (const phase of ['packaged','published','verified']) await run(process.execPath, [join(root, 'scripts/release-state.mjs'), 'mark', delivery.eventId, phase]);
+    await writeFile(eventFile, JSON.stringify({ ...repair, descriptorSha256: 'f'.repeat(64) }));
+    await assert.rejects(run(process.execPath, args), /verified resource identity/);
+    await writeFile(eventFile, JSON.stringify(repair));
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).pluginVersion, '0.0.4');
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).duplicate, true);
     await mkdir(join(root, ".release-state-lock"));
     await writeFile(join(root, ".release-state-lock/owner.json"), JSON.stringify({ pid: process.pid }));
     await assert.rejects(run(process.execPath, args), /another release operation is running/);
-    assert.equal(JSON.parse(await readFile(files[0].path, "utf8")).version, '0.0.3');
+    assert.equal(JSON.parse(await readFile(files[0].path, "utf8")).version, '0.0.4');
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
@@ -150,7 +159,7 @@ test('plugin version/tag is reused on retry and changed same-version metadata is
     await copyFile('scripts/commit-resource-update.mjs',join(root,'scripts/commit-resource-update.mjs'));
     const event={eventId:'delivery:0.0.19:cli:0.0.5',descriptorSha256:'a'.repeat(64),cliVersion:'0.0.5'};
     const record={eventId:event.eventId,event,pluginVersion:'0.0.8',phase:'versionAllocated'};
-    for(const [name,value] of Object.entries({'data/release-state.json':{current:{pluginVersion:'0.0.8'},events:[record]},'data/icons.json':{entries:[]},'data/version-map.json':[],'package.json':{version:'0.0.8'},'package-lock.json':{version:'0.0.8'}}))await writeFile(join(root,name),JSON.stringify(value));
+    for(const [name,value] of Object.entries({'data/release-state.json':{current:{pluginVersion:'0.0.8'},events:[record]},'data/icons.json':{entries:[],largeMetadata:'x'.repeat(2*1024*1024)},'data/version-map.json':[],'package.json':{version:'0.0.8'},'package-lock.json':{version:'0.0.8'}}))await writeFile(join(root,name),JSON.stringify(value));
     await writeFile(join(root,'event.json'),JSON.stringify(event));
     const git=(...args:string[])=>run('git',args,{cwd:root});
     await git('init','-b','main');await git('config','user.name','audit');await git('config','user.email','audit@example.test');

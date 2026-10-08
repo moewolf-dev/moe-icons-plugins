@@ -11,7 +11,7 @@ const tags = git('tag', '--list', tag);
 if (tags) {
   const original = JSON.parse(git('show', `${tag}:data/release-state.json`)).events.find(item => item.eventId === event.eventId);
   if (!original || original.event.descriptorSha256 !== event.descriptorSha256 || original.event.cliVersion !== event.cliVersion) throw new Error('existing tag does not match release event');
-  if (git('show', `${tag}:data/icons.json`) !== fs.readFileSync('data/icons.json', 'utf8').trim()) throw new Error('existing tag metadata differs; refusing same-version replacement');
+  if (git('rev-parse', `${tag}:data/icons.json`) !== git('hash-object', 'data/icons.json')) throw new Error('existing tag metadata differs; refusing same-version replacement');
   git('merge-base', '--is-ancestor', `${tag}^{commit}`, 'HEAD');
 } else {
   git('add', 'data/icons.json', 'data/version-map.json', 'data/release-state.json', 'package.json', 'package-lock.json');
