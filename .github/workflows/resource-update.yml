@@ -16,19 +16,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
-      RESOURCE_VERSION: ${{ github.event.client_payload.resourceVersion }}
-      SOURCE_COMMIT: ${{ github.event.client_payload.sourceCommit }}
-      GENERATOR_COMMIT: ${{ github.event.client_payload.generatorCommit }}
-      CLI_VERSION: ${{ github.event.client_payload.cliVersion }}
-      CLI_PUBLISH_RUN_ID: ${{ github.event.client_payload.cliPublishRunId }}
-      CLI_PUBLISH_HEAD: ${{ github.event.client_payload.cliPublishHead }}
-      CLI_NPM_INTEGRITY: ${{ github.event.client_payload.cliNpmIntegrity }}
-      RESOURCE_DIGEST: ${{ github.event.client_payload.resourceDigest }}
-      DESCRIPTOR_SHA256: ${{ github.event.client_payload.descriptorSha256 }}
-      PRODUCTION_ARTIFACT_ID: ${{ github.event.client_payload.productionArtifactId }}
-      EVENT_ID: ${{ github.event.client_payload.eventId }}
-      UPSTREAM_RUN_ID: ${{ github.event.client_payload.upstreamRunId }}
-      UPSTREAM_RUN_ATTEMPT: ${{ github.event.client_payload.upstreamRunAttempt }}
+      RESOURCE_VERSION: ${{ github.event.client_payload.delivery.resourceVersion }}
+      SOURCE_COMMIT: ${{ github.event.client_payload.delivery.sourceCommit }}
+      GENERATOR_COMMIT: ${{ github.event.client_payload.delivery.generatorCommit }}
+      CLI_VERSION: ${{ github.event.client_payload.delivery.cliVersion }}
+      CLI_PUBLISH_RUN_ID: ${{ github.event.client_payload.delivery.cliPublishRunId }}
+      CLI_PUBLISH_HEAD: ${{ github.event.client_payload.delivery.cliPublishHead }}
+      CLI_NPM_INTEGRITY: ${{ github.event.client_payload.delivery.cliNpmIntegrity }}
+      RESOURCE_DIGEST: ${{ github.event.client_payload.delivery.resourceDigest }}
+      DESCRIPTOR_SHA256: ${{ github.event.client_payload.delivery.descriptorSha256 }}
+      PRODUCTION_ARTIFACT_ID: ${{ github.event.client_payload.delivery.productionArtifactId }}
+      EVENT_ID: ${{ github.event.client_payload.delivery.eventId }}
+      UPSTREAM_RUN_ID: ${{ github.event.client_payload.delivery.upstreamRunId }}
+      UPSTREAM_RUN_ATTEMPT: ${{ github.event.client_payload.delivery.upstreamRunAttempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:

@@ -184,3 +184,11 @@ require('node:fs').createReadStream(process.env.FIXTURE_FILE).pipe(process.stdou
     assert.equal(receipt.marketplaceVerified,true);assert.equal(receipt.vsixSha256,digest);assert.equal(receipt.runId,'321');assert.equal(receipt.resourceVersion,'0.0.19');
   } finally {await rm(root,{recursive:true,force:true});}
 });
+
+
+test("resource receiver reads bounded nested dispatch provenance", async () => {
+  const workflow = await readFile(".github/workflows/resource-update.yml", "utf8");
+  assert.match(workflow, /run-name: Plugin resource \$\{\{ github\.event\.client_payload\.eventId/);
+  for (const name of ["eventId", "resourceVersion", "sourceCommit", "generatorCommit", "cliVersion", "cliPublishRunId", "cliPublishHead", "cliNpmIntegrity", "descriptorSha256", "productionArtifactId", "upstreamRunId", "upstreamRunAttempt"])
+    assert.ok(workflow.includes(`github.event.client_payload.delivery.${name}`), `missing nested ${name}`);
+});
