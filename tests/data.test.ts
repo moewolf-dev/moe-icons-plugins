@@ -31,10 +31,13 @@ test("searchIcons matches by name prefix", () => {
 });
 
 test("searchIcons matches by component-name prefix", () => {
-  const results = searchIcons("ArrowChevron");
+  const known = loadIcons().find(icon => icon.name.includes("-"));
+  assert.ok(known, "published metadata must contain a compound canonical icon ID");
+  const prefix = toComponentName(known.name);
+  const results = searchIcons(prefix);
   assert.ok(results.length > 0);
   for (const icon of results) {
-    assert.ok(toComponentName(icon.name).startsWith("ArrowChevron"));
+    assert.ok(toComponentName(icon.name).startsWith(prefix));
   }
 });
 
