@@ -6,6 +6,7 @@ import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
 
 const plugin = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const extension = process.env.MOEICONS_CORE_TEST_EXTENSION_DIR ? resolve(process.env.MOEICONS_CORE_TEST_EXTENSION_DIR) : plugin;
 const temporary = await mkdtemp(join(tmpdir(), "moe-core-host-"));
 const workspace = join(temporary, "workspace");
 const result = join(temporary, "result.json");
@@ -29,7 +30,7 @@ try {
   }));
   await writeFile(join(workspace, "src/App.tsx"), "import * as Icons from './moeicons';\nimport { Missing } from './moeicons';\nconst node = <Icons.UiSearch />;\n");
   const child = spawn(code, [
-    `--extensionDevelopmentPath=${plugin}`, `--extensionTestsPath=${testRoot}`,
+    `--extensionDevelopmentPath=${extension}`, `--extensionTestsPath=${testRoot}`,
     `--user-data-dir=${join(temporary, "user")}`, `--extensions-dir=${join(temporary, "extensions")}`,
     "--disable-extensions", "--disable-workspace-trust", "--skip-welcome", "--skip-release-notes", workspace,
   ], { env: { ...process.env, MOEICONS_CORE_TEST_RESULT: result }, stdio: "inherit" });
