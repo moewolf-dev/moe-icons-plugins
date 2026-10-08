@@ -40,7 +40,9 @@
         "verifiedDelivery": true
       },
       "pluginVersion": "0.0.9",
-      "phase": "versionAllocated"
+      "phase": "verified",
+      "tag": "v0.0.9",
+      "vsixSha256": "8fc36121b93d16abaae37f097cf5f9cb8f3fca4db2d7e7b4cbb561fd6d36625c"
     }
   ]
 }
