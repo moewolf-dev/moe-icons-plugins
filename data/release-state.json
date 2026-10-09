@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "current": {
-    "pluginVersion": "0.0.12",
-    "cliVersion": "0.0.8",
+    "pluginVersion": "0.0.13",
+    "cliVersion": "0.0.9",
     "resourceVersion": "0.0.19"
   },
   "events": [
@@ -62,6 +62,23 @@
       "phase": "verified",
       "tag": "v0.0.10",
       "vsixSha256": "72cf74fb4756c3c75f1c2edc96e4a35aad170cf7286a6865b3ceb706c9daffa3"
+    },
+    {
+      "eventId": "resource:0.0.19:cli:0.0.9",
+      "event": {
+        "schemaVersion": 1,
+        "eventId": "resource:0.0.19:cli:0.0.9",
+        "sourceRepository": "moewolf-dev/moe-icons-code-library",
+        "sourceVersion": "0.0.19",
+        "sourceCommit": "678b0ceec3ff1f5c925418365cecef6c083a26a0",
+        "cliVersion": "0.0.9",
+        "resourceVersion": "0.0.19",
+        "resourceDigest": "3f47ae8b977366ea5e5270696b1e450a25c1f17fab0b0d25f5402fa6ff935200",
+        "descriptorSha256": "3f47ae8b977366ea5e5270696b1e450a25c1f17fab0b0d25f5402fa6ff935200",
+        "verifiedDelivery": true
+      },
+      "pluginVersion": "0.0.13",
+      "phase": "versionAllocated"
     }
   ]
 }
