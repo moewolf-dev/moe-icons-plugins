@@ -108,11 +108,18 @@ Press `F5` in VS Code to launch an Extension Development Host.
 
 Publisher: `moewolf`; extension ID: `moewolf.moe-icons-plugins`.
 Development and packaging require Node.js 22 or newer.
-PRs and branch pushes run CI. A matching `vX.Y.Z` tag dispatches the release
-workflow on `main`, which checks out the tagged code, tests and packages it,
-publishes the same VSIX to GitHub Release and Marketplace, and authenticates using
-Microsoft Entra ID federation. The Entra application must have Contributor
-permission on the `moewolf` Marketplace publisher. No long-lived secret is used.
+The normal CLI/resource update is automated: after an upstream delivery has
+been verified, this repository builds the extension and publishes the same
+VSIX to GitHub Release and the Visual Studio Marketplace. Resource updates do
+not require a manually created plugin tag. Users receive Marketplace updates
+according to their VS Code update settings.
+
+A separate tag-driven path remains for maintainer-initiated standalone plugin
+releases. PRs and branch pushes run CI without publishing. Both paths publish
+through Microsoft Entra ID federation; the Entra application must have
+Contributor permission on the `moewolf` Marketplace publisher. No long-lived
+secret is used. See [the publishing runbook](docs/marketplace-publishing.md)
+for the exact event paths and recovery procedures.
 See [the publishing runbook](docs/marketplace-publishing.md) for first VSIX upload,
 version synchronization, and policy setup.
 
@@ -130,7 +137,7 @@ supported when they resolve to verified generated modules. Inherited `extends`
 configuration and arbitrary JavaScript configuration are not evaluated.
 
 The style/version commands show the active project's installed data. The old
-manual style and library-version settings are ignored. Plugin releases remain
-independent: a CLI or resource release does not automatically publish a plugin.
-The version map records a tested combination, rather than forcing every project
-to use the bundled resource version.
+manual style and library-version settings are ignored. Verified CLI and resource
+deliveries trigger the plugin's automatic release path; the version map records
+the tested plugin/CLI/resource combination. Marketplace publication does not
+override each user's VS Code update settings.
