@@ -74,7 +74,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: moewolf-dev/moe-icons-cli
-          ref: 7934c8ad569c7598a0fa61032ff9719d7e9af32f
+          ref: 51077371d48940132abc544c10309e45babb9cf1
           path: .tmp/cli-integration
           persist-credentials: false
       - name: Prepare real CLI integration checks
