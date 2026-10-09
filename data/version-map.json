@@ -55,6 +55,14 @@
       "descriptorSha256": "3f47ae8b977366ea5e5270696b1e450a25c1f17fab0b0d25f5402fa6ff935200",
       "resourceDigest": "3f47ae8b977366ea5e5270696b1e450a25c1f17fab0b0d25f5402fa6ff935200",
       "eventId": "resource:0.0.19:cli:0.0.8"
+    },
+    {
+      "pluginVersion": "0.0.11",
+      "cliVersion": "0.0.8",
+      "resourceVersion": "0.0.19",
+      "sourceCommit": "678b0ceec3ff1f5c925418365cecef6c083a26a0",
+      "descriptorSha256": "3f47ae8b977366ea5e5270696b1e450a25c1f17fab0b0d25f5402fa6ff935200",
+      "resourceDigest": "3f47ae8b977366ea5e5270696b1e450a25c1f17fab0b0d25f5402fa6ff935200"
     }
   ]
 }

@@ -50,7 +50,7 @@ export function registerAccountView(context: vscode.ExtensionContext, account: A
     await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: "Checking Moe Icons account" }, () => account.refresh(true));
   });
   const open = vscode.commands.registerCommand("moeicons.showAccount", async () => {
-    await vscode.commands.executeCommand("workbench.view.extension.explorer");
+    await vscode.commands.executeCommand("workbench.view.explorer");
     await vscode.commands.executeCommand("moeicons.account.focus");
     await account.refresh();
   });

@@ -5,6 +5,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve,ms));
 exports.run = async function() {
   const plugin = vscode.extensions.getExtension('moewolf.moe-icons-plugins');
   assert.ok(plugin);await plugin.activate();
+  await vscode.commands.executeCommand('moeicons.showAccount');
   assert.ok(vscode.workspace.isTrusted);
   const root = vscode.workspace.workspaceFolders[0].uri;
   const uri = vscode.Uri.joinPath(root,'src/App.tsx');
@@ -40,5 +41,5 @@ exports.run = async function() {
   let nestedDiagnostics=[];
   for(let i=0;i<100;i++){nestedDiagnostics=vscode.languages.getDiagnostics(nestedUri).filter(item=>item.source==='moeicons');if(nestedDiagnostics.length)break;await sleep(100);}
   assert.equal(nestedDiagnostics.length,1,'new nested install must refresh an already open document');
-  fs.writeFileSync(process.env.MOEICONS_CORE_TEST_RESULT,JSON.stringify({extensionHost:'pass',vscode:vscode.version,checks:['activation','trusted local module','coded diagnostic and exact range','namespace completion','stale diagnostic cleared after edit','new nested install refreshes without editing']},null,2));
+  fs.writeFileSync(process.env.MOEICONS_CORE_TEST_RESULT,JSON.stringify({extensionHost:'pass',vscode:vscode.version,checks:['activation', 'account panel command','trusted local module','coded diagnostic and exact range','namespace completion','stale diagnostic cleared after edit','new nested install refreshes without editing']},null,2));
 };
