@@ -28,7 +28,9 @@ individually, or disable update checks with `extensions.autoCheckUpdates`. VS
 Code also delays automatic installation by 12 hours by default
 (`extensions.autoUpdateDelay`); selecting Update installs it immediately.
 Extensions installed from a VSIX have auto-update disabled by default, so users
-must enable it or update manually. Validate publisher-side publication/readback
+must enable it or update manually. See the [VS Code extension update
+documentation](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace)
+for the current controls. Validate publisher-side publication/readback
 separately from client update behavior.
 
 ## Standalone maintainer release by tag
