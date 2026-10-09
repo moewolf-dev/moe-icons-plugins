@@ -59,7 +59,9 @@
         "verifiedDelivery": true
       },
       "pluginVersion": "0.0.10",
-      "phase": "versionAllocated"
+      "phase": "verified",
+      "tag": "v0.0.10",
+      "vsixSha256": "72cf74fb4756c3c75f1c2edc96e4a35aad170cf7286a6865b3ceb706c9daffa3"
     }
   ]
 }
