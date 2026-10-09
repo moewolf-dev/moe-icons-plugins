@@ -108,10 +108,28 @@ test("release allocation is idempotent and interrupted writes recover before the
     await writeFile(eventFile, JSON.stringify(repair));
     assert.equal(JSON.parse((await run(process.execPath, args)).stdout).pluginVersion, '0.0.4');
     assert.equal(JSON.parse((await run(process.execPath, args)).stdout).duplicate, true);
+    for (const phase of ['packaged','published','verified']) await run(process.execPath, [join(root, 'scripts/release-state.mjs'), 'mark', repair.eventId, phase]);
+    // Source-only plugin patches can advance the plugin version without a delivery event.
+    const statePath = join(root, 'data/release-state.json');
+    const state = JSON.parse(await readFile(statePath, 'utf8'));
+    state.current.pluginVersion = '0.0.5';
+    await writeFile(statePath, JSON.stringify(state));
+    const mapPath = join(root, 'data/version-map.json');
+    const map = JSON.parse(await readFile(mapPath, 'utf8'));
+    map.history.push({ ...map.history.at(-1), pluginVersion: '0.0.5' });
+    await writeFile(mapPath, JSON.stringify(map));
+    for (const file of ['package.json', 'package-lock.json']) {
+      const path = join(root, file), value = JSON.parse(await readFile(path, 'utf8'));
+      value.version = '0.0.5';
+      if (value.packages?.['']) value.packages[''].version = '0.0.5';
+      await writeFile(path, JSON.stringify(value));
+    }
+    await writeFile(eventFile, JSON.stringify({ ...repair, eventId: 'delivery:0.0.19:0.0.6', cliVersion: '0.0.6' }));
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).pluginVersion, '0.0.6');
     await mkdir(join(root, ".release-state-lock"));
     await writeFile(join(root, ".release-state-lock/owner.json"), JSON.stringify({ pid: process.pid }));
     await assert.rejects(run(process.execPath, args), /another release operation is running/);
-    assert.equal(JSON.parse(await readFile(files[0].path, "utf8")).version, '0.0.4');
+    assert.equal(JSON.parse(await readFile(files[0].path, "utf8")).version, '0.0.6');
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 

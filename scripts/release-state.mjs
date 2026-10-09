@@ -79,8 +79,10 @@ async function saveRelease(event) {
     assert(resourceChange >= 0, 'resource version cannot move backwards');
     if (resourceChange === 0) {
       assert(compare(event.cliVersion, current.cliVersion) > 0, 'joint delivery must advance CLI or resource');
-      const accepted = state.events.find(item => item.pluginVersion === current.pluginVersion && item.phase === 'verified');
-      assert(accepted && ['resourceVersion','sourceCommit','descriptorSha256','resourceDigest'].every(key => accepted.event[key] === event[key]), 'CLI repair requires the same verified resource identity');
+      const identityKeys = ['resourceVersion','sourceCommit','descriptorSha256','resourceDigest'];
+      const currentMap = Array.isArray(map.history) && map.history.find(item => item.pluginVersion === current.pluginVersion);
+      const accepted = state.events.find(item => item.phase === 'verified' && item.event.cliVersion === current.cliVersion && identityKeys.every(key => item.event[key] === event[key]));
+      assert(currentMap && identityKeys.every(key => currentMap[key] === event[key]) && accepted, 'CLI repair requires the same verified resource identity');
     }
   } else if (event.sourceRepository.endsWith("moe-icons-code-library")) {
     assert(event.cliVersion === current.cliVersion, "resource event does not reference the accepted CLI baseline");
