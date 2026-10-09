@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
-import {missingCredential} from '../src/account/session-policy.cjs';
+import {missingCredential,selectedStore} from '../src/account/session-policy.cjs';
 import {readCliAccessToken} from '../src/account/session';
 import {mkdtempSync,writeFileSync,rmSync,symlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -8,6 +8,11 @@ test('only known missing credentials become signed out',()=>{
  assert.equal(missingCredential('darwin',{code:44}),true);assert.equal(missingCredential('darwin',{code:'ETIMEDOUT'}),false);
  assert.equal(missingCredential('linux',{code:1,stderr:''}),true);assert.equal(missingCredential('linux',{code:1,stderr:'permission denied'}),false);
  assert.equal(missingCredential('win32',{stderr:'0x80070490'}),true);
+});
+test('a dangling storage preference cannot select an unrelated backend',()=>{
+ const root=mkdtempSync(join(tmpdir(),'moeicons-plugin-preference-'));
+ try{symlinkSync(join(root,'absent'),join(root,'session-store.json'));assert.throws(()=>selectedStore({MOEICONS_STATE_DIR:root,MOEICONS_DISABLE_SYSTEM_KEYCHAIN:'1'}),/not readable securely/);assert.throws(()=>selectedStore({MOEICONS_STATE_DIR:root}),/not readable securely/);}
+ finally{rmSync(root,{recursive:true,force:true});}
 });
 
 test('file fallback treats only an absent or empty store as signed out', async()=>{
