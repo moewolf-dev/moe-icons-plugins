@@ -4,11 +4,40 @@
 
 - Extension: `moewolf.moe-icons-plugins`
 - GitHub: `moewolf-dev/moe-icons-plugins`
-- Current plugin version: 0.0.2
-- Accepted CLI baseline: 0.0.3; bundled legacy resource baseline: 0.0.17
+- Plugin package version: `package.json`
+- Accepted CLI/resource baseline: `data/release-state.json` → `current`
 
-The plugin version and resource version are independent. This is an early release
-and does not claim completion of the four-target iteration.
+The plugin, CLI and resource versions are tracked independently. The release
+state file is authoritative for the accepted tuple; do not copy old version
+numbers into release instructions.
+
+## Normal automated CLI/resource delivery
+
+Verified resource deliveries from code-library and verified CLI publication
+events enter `resource-update.yml`. The workflow checks the exact producer,
+resource or CLI package identity, descriptor/content digest and prior accepted
+state before allocating or resuming a plugin version. It then builds a VSIX,
+publishes it to GitHub Release and Visual Studio Marketplace, and verifies the
+published Marketplace bytes against the packaged VSIX digest. This is the
+ordinary update path; users do not create a plugin version or tag for a resource
+update. Marketplace publication confirms the version is available in the
+channel; it does not prove every installed client has updated. VS Code
+auto-updates enabled extensions by default, but users can disable auto-update
+globally with `extensions.autoUpdate`, disable it for this extension
+individually, or disable update checks with `extensions.autoCheckUpdates`. VS
+Code also delays automatic installation by 12 hours by default
+(`extensions.autoUpdateDelay`); selecting Update installs it immediately.
+Extensions installed from a VSIX have auto-update disabled by default, so users
+must enable it or update manually. See the [VS Code extension update
+documentation](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace)
+for the current controls. Validate publisher-side publication/readback
+separately from client update behavior.
+
+## Standalone maintainer release by tag
+
+The tag procedure below is for a maintainer-initiated plugin-only release. It
+does not replace the verified resource/CLI event path and must not be used to
+pretend a resource delivery occurred.
 
 ## Authentication: GitHub → Entra ID → Marketplace
 
@@ -36,7 +65,7 @@ The legacy command name `verify-pat` also supports Entra; it does not create a
 PAT. Its access check alone does not prove write rights: actual publication
 requires Contributor or Owner access. No access token is printed in these steps.
 
-## One tag, two release destinations
+### One tag, two release destinations
 
 1. Review changes and synchronize package.json, package-lock.json, the version
    map and release baseline. Run compile, tests, build and release validation.
@@ -60,8 +89,8 @@ Marketplace job can obtain an Azure identity. There is no PAT fallback.
 
 ## Recovery without a new version
 
-Dispatch `release.yml` on `main` with `release_tag=v0.0.2` and `publish=true`
-to publish the existing reviewed 0.0.2 package. `publish=false` validates and
+Dispatch `release.yml` on `main` with `release_tag=vX.Y.Z` and `publish=true`
+to publish an existing reviewed package for that exact tag. `publish=false` validates and
 packages without creating a GitHub Release or obtaining an Azure credential.
 Do not move existing tags or allocate a new version just to test authentication.
 `--skip-duplicate` permits recovery when the Marketplace version already exists;
@@ -70,7 +99,9 @@ it does not replace that version. A new change needs a higher patch version.
 Authentication failure leaves the GitHub Release and reviewed VSIX available.
 After fixing membership or federation, rerun the same dispatch. GitHub Release
 is not evidence of Marketplace publication; check the Marketplace version and
-verification status separately. Updates follow each user's VS Code settings.
+verification status separately. Those checks confirm publisher-side
+availability, not client installation. Updates follow each user's VS Code
+settings and installation source.
 
 ## Evidence and migration history
 
