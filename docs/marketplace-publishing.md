@@ -20,8 +20,16 @@ state before allocating or resuming a plugin version. It then builds a VSIX,
 publishes it to GitHub Release and Visual Studio Marketplace, and verifies the
 published Marketplace bytes against the packaged VSIX digest. This is the
 ordinary update path; users do not create a plugin version or tag for a resource
-update. End users receive Marketplace updates under their existing VS Code
-update settings.
+update. Marketplace publication confirms the version is available in the
+channel; it does not prove every installed client has updated. VS Code
+auto-updates enabled extensions by default, but users can disable auto-update
+globally with `extensions.autoUpdate`, disable it for this extension
+individually, or disable update checks with `extensions.autoCheckUpdates`. VS
+Code also delays automatic installation by 12 hours by default
+(`extensions.autoUpdateDelay`); selecting Update installs it immediately.
+Extensions installed from a VSIX have auto-update disabled by default, so users
+must enable it or update manually. Validate publisher-side publication/readback
+separately from client update behavior.
 
 ## Standalone maintainer release by tag
 
@@ -89,7 +97,9 @@ it does not replace that version. A new change needs a higher patch version.
 Authentication failure leaves the GitHub Release and reviewed VSIX available.
 After fixing membership or federation, rerun the same dispatch. GitHub Release
 is not evidence of Marketplace publication; check the Marketplace version and
-verification status separately. Updates follow each user's VS Code settings.
+verification status separately. Those checks confirm publisher-side
+availability, not client installation. Updates follow each user's VS Code
+settings and installation source.
 
 ## Evidence and migration history
 

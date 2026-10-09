@@ -111,8 +111,10 @@ Development and packaging require Node.js 22 or newer.
 The normal CLI/resource update is automated: after an upstream delivery has
 been verified, this repository builds the extension and publishes the same
 VSIX to GitHub Release and the Visual Studio Marketplace. Resource updates do
-not require a manually created plugin tag. Users receive Marketplace updates
-according to their VS Code update settings.
+not require a manually created plugin tag. Marketplace publication makes the
+new version available; each VS Code client installs it according to its
+extension auto-update settings. Extensions installed from a VSIX have
+auto-update disabled by default.
 
 A separate tag-driven path remains for maintainer-initiated standalone plugin
 releases. PRs and branch pushes run CI without publishing. Both paths publish
