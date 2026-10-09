@@ -2,7 +2,7 @@ import { selectedStore, missingCredential } from "./session-policy.cjs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { join } from "node:path";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, lstat } from "node:fs/promises";
 
 const run = promisify(execFile);
 export type SessionRead = { readonly kind: "token"; readonly accessToken: string; readonly expiresAt: number } | { readonly kind: "signedOut" | "expired" | "unknown" };
@@ -12,7 +12,9 @@ function parse(value: string): SessionRead {
     const raw: unknown = JSON.parse(value);
     if (typeof raw !== "object" || raw === null) return { kind: "unknown" };
     const session = raw as Record<string, unknown>;
-    if (typeof session.accessToken !== "string" || typeof session.expiresAt !== "number" || !Number.isFinite(session.expiresAt)) return { kind: "unknown" };
+    if (typeof session.accountId !== "string" || typeof session.accessToken !== "string" ||
+        typeof session.refreshToken !== "string" || typeof session.expiresAt !== "number" || !Number.isFinite(session.expiresAt) ||
+        typeof session.scope !== "string" || typeof session.storedAt !== "number" || !Number.isFinite(session.storedAt)) return { kind: "unknown" };
     if (session.expiresAt <= Date.now()) return { kind: "expired" };
     return { kind: "token", accessToken: session.accessToken, expiresAt: session.expiresAt };
   } catch { return { kind: "unknown" }; }
@@ -43,14 +45,17 @@ export async function readCliAccessToken(): Promise<SessionRead> {
     const configured = selection.rootDir!;
     try {
       const file = join(configured, "token-store.json");
-      const metadata = await stat(file);
-      if ((process.platform !== "win32" && (metadata.mode & 0o077) !== 0) || (typeof process.getuid === "function" && metadata.uid !== process.getuid())) return { kind: "unknown" };
+      const metadata = await lstat(file);
+      if (!metadata.isFile() || metadata.isSymbolicLink() || (process.platform !== "win32" && (metadata.mode & 0o077) !== 0) || (typeof process.getuid === "function" && metadata.uid !== process.getuid())) return { kind: "unknown" };
       if (metadata.size > 1_000_000) return { kind: "unknown" };
       const value = await readFile(file, "utf8");
       const raw: unknown = JSON.parse(value);
       if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return { kind: "unknown" };
-      const sessions = Object.values(raw as Record<string, unknown>).filter((item): item is Record<string, unknown> => typeof item === "object" && item !== null && typeof (item as Record<string, unknown>).storedAt === "number").sort((a, b) => Number(b.storedAt) - Number(a.storedAt));
-      return sessions.length ? parse(JSON.stringify({ accessToken: sessions[0].accessToken, expiresAt: sessions[0].expiresAt })) : { kind: "signedOut" };
+      const sessions = Object.values(raw as Record<string, unknown>);
+      if (sessions.some(item => parse(JSON.stringify(item)).kind === "unknown")) return { kind: "unknown" };
+      if (sessions.length === 0) return { kind: "signedOut" };
+      const active = sessions.map(item => item as Record<string, unknown>).sort((a, b) => Number(b.storedAt) - Number(a.storedAt))[0];
+      return parse(JSON.stringify(active));
     } catch (error) {
       return (error as NodeJS.ErrnoException).code === "ENOENT" ? { kind: "signedOut" } : { kind: "unknown" };
     }
