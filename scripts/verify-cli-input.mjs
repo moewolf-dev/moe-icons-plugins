@@ -1,3 +1,4 @@
+import { workflowRunPathMatches } from './workflow-run-path.cjs';
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {join,resolve} from 'node:path';
@@ -9,7 +10,7 @@ for(const name of ['CLI_PUBLISH_HEAD','CLI_RELEASE_COMMIT'])assert(/^[a-f0-9]{40
 assert(/^[1-9]\d*$/.test(env.CLI_PUBLISH_RUN_ID||''),'CLI publish run invalid');
 assert(/^\d+\.\d+\.\d+$/.test(env.CLI_VERSION||''),'CLI version invalid');
 const run=api(`repos/moewolf-dev/moe-icons-cli/actions/runs/${env.CLI_PUBLISH_RUN_ID}`);
-assert(run.path==='.github/workflows/publish.yml' && run.conclusion==='success' && run.head_sha===env.CLI_PUBLISH_HEAD,'CLI producer mismatch');
+assert(workflowRunPathMatches(run, '.github/workflows/publish.yml') && run.conclusion==='success' && run.head_sha===env.CLI_PUBLISH_HEAD,'CLI producer mismatch');
 const commit=api(`repos/moewolf-dev/moe-icons-cli/commits/v${env.CLI_VERSION}`);
 assert(commit.sha===env.CLI_RELEASE_COMMIT,'CLI tag differs from frozen publisher commit');
 const release=api(`repos/moewolf-dev/moe-icons-cli/releases/tags/v${env.CLI_VERSION}`);

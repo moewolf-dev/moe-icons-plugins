@@ -12,7 +12,7 @@ concurrency:
   queue: max
 jobs:
   update:
-    if: github.repository == 'moewolf-dev/moe-icons-plugins'
+    if: github.repository == 'moewolf-dev/moe-icons-plugins' && vars.MOEICONS_AUTO_RELEASE_ENABLED != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
@@ -79,7 +79,7 @@ jobs:
       - name: Persist verified release stages
         run: |
           set -euo pipefail
-          receipt="$RUNNER_TEMP/plugin-readback-${GITHUB_RUN_ID}/plugin-publication-receipt.json"
+          receipt="$RUNNER_TEMP/plugin-readback-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/plugin-publication-receipt.json"
           node --input-type=module - "$receipt" <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
@@ -101,8 +101,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: plugin-publication-receipt
-          path: ${{ runner.temp }}/plugin-readback-${{ github.run_id }}/plugin-publication-receipt.json
+          name: plugin-publication-receipt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plugin-readback-${{ github.run_id }}-${{ github.run_attempt }}/plugin-publication-receipt.json
           if-no-files-found: warn
           retention-days: 90
       - name: Clean private input

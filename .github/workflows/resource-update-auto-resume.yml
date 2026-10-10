@@ -1,0 +1,32 @@
+name: Auto-resume plugin resource update
+on:
+  workflow_run:
+    workflows: [Update from Moe Icons resource release]
+    types: [completed]
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: plugin-resource-recovery-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+jobs:
+  resume:
+    if: >-
+      github.repository == 'moewolf-dev/moe-icons-plugins' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      (github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'timed_out') &&
+      vars.MOEICONS_AUTO_RELEASE_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Retry only the exact original receiver once
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/auto-resume-resource-update.mjs
