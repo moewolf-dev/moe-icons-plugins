@@ -207,7 +207,7 @@ if(args[0]==='release')fs.writeFileSync(path.join(args[args.indexOf('--dir')+1],
 require('node:fs').createReadStream(process.env.FIXTURE_FILE).pipe(process.stdout);
 `,{mode:0o755});
     await run(process.execPath,['scripts/publish-resource-update.mjs'],{cwd:root,timeout:15000,env:{...process.env,PATH:join(root,'bin')+':'+process.env.PATH,RUNNER_TEMP:root,GITHUB_RUN_ID:'123',RELEASE_TAG:'v0.0.8',EVENT_ID:'resource:0.0.19:cli:0.0.5',RESOURCE_VERSION:'0.0.19',CLI_VERSION:'0.0.5',DESCRIPTOR_SHA256:'a'.repeat(64),FIXTURE_DIGEST:digest,FIXTURE_FILE:join(root,'fixture')}});
-    const receipt=JSON.parse(await readFile(join(root,'plugin-readback-123/plugin-publication-receipt.json'),'utf8'));
+    const receipt=JSON.parse(await readFile(join(root,'plugin-readback-123-1/plugin-publication-receipt.json'),'utf8'));
     assert.equal(receipt.marketplaceVerified,true);assert.equal(receipt.vsixSha256,digest);assert.equal(receipt.runId,'321');assert.equal(receipt.resourceVersion,'0.0.19');
   } finally {await rm(root,{recursive:true,force:true});}
 });

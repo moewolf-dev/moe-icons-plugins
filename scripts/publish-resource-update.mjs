@@ -28,7 +28,7 @@ while (Date.now() < deadline) {
   await sleep(15000);
 }
 if (!publication || publication.conclusion !== 'success') throw new Error('plugin publication deadline reached; retry same event');
-const out = join(process.env.RUNNER_TEMP, `plugin-readback-${process.env.GITHUB_RUN_ID}`);
+const out = join(process.env.RUNNER_TEMP, `plugin-readback-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT || 1}`);
 fs.mkdirSync(out, { recursive: true });
 gh(['release', 'download', tag, '--repo', repo, '--pattern', 'vsix.sha256', '--dir', out, '--clobber']);
 const sidecar = fs.readFileSync(join(out, 'vsix.sha256'), 'utf8').trim();
