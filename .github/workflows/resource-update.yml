@@ -11,8 +11,19 @@ concurrency:
   cancel-in-progress: false
   queue: max
 jobs:
+  small-pack-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - name: Reject retired aggregate resource delivery
+        run: |
+          echo "::error::Resource delivery is paused during the small-package migration."
+          exit 78
+
   update:
-    if: github.repository == 'moewolf-dev/moe-icons-plugins' && vars.MOEICONS_AUTO_RELEASE_ENABLED != 'false'
+    if: false
+    needs: [small-pack-policy]
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:

@@ -11,11 +11,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   resume:
-    if: >-
-      github.repository == 'moewolf-dev/moe-icons-plugins' &&
-      github.event.workflow_run.head_branch == 'main' &&
-      (github.event.workflow_run.conclusion == 'failure' || github.event.workflow_run.conclusion == 'timed_out') &&
-      vars.MOEICONS_AUTO_RELEASE_ENABLED != 'false'
+    # Retired aggregate delivery must not be automatically replayed.
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
