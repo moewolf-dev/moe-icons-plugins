@@ -6,14 +6,27 @@ import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
 
 const plugin = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const extension = process.env.MOEICONS_CORE_TEST_EXTENSION_DIR ? resolve(process.env.MOEICONS_CORE_TEST_EXTENSION_DIR) : plugin;
 const temporary = await mkdtemp(join(tmpdir(), "moe-core-host-"));
+const suppliedExtension = process.env.MOEICONS_CORE_TEST_EXTENSION_DIR;
+const extension = suppliedExtension ? resolve(suppliedExtension) : join(temporary, "extension");
 const workspace = join(temporary, "workspace");
 const result = join(temporary, "result.json");
 const testRoot = join(temporary, "tests");
 const code = process.env.MOEICONS_VSCODE_BIN ?? (process.platform === "darwin" ? "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" : "code");
 const hash = value => createHash("sha256").update(value).digest("hex");
 try {
+  if (!suppliedExtension) {
+    // Exercise normal activation with the bundled catalog deliberately absent.
+    // Project completion and diagnostics must start from the CLI-managed
+    // workspace; the reference catalog is read only by its explicit command.
+    await mkdir(join(extension, "dist"), { recursive: true });
+    await mkdir(join(extension, "data"), { recursive: true });
+    await copyFile(join(plugin, "package.json"), join(extension, "package.json"));
+    await copyFile(join(plugin, "dist/extension.js"), join(extension, "dist/extension.js"));
+    await copyFile(join(plugin, "dist/engine.js"), join(extension, "dist/engine.js"));
+    await copyFile(join(plugin, "data/version-map.json"), join(extension, "data/version-map.json"));
+    await copyFile(join(plugin, "moeicons-logo-192x192.png"), join(extension, "moeicons-logo-192x192.png"));
+  }
   await mkdir(join(workspace, ".moeicons"), { recursive: true });
   await mkdir(join(workspace, "src/moeicons"), { recursive: true });
   await mkdir(testRoot);
@@ -44,7 +57,7 @@ try {
     await new Promise(resolve => setTimeout(resolve, 200));
   }
   if (!report || report.extensionHost !== "pass") throw new Error(`Extension Host did not pass. Inspect ${temporary}/user/logs`);
-  console.log(JSON.stringify(report, null, 2));
+  console.log(JSON.stringify({ ...report, startupCatalog: suppliedExtension ? "caller-supplied extension" : "omitted from isolated extension" }, null, 2));
   // CLI success alone is not test success: require the host-written report above.
   // Electron may still be flushing logs after the test report is written.
   try { await rm(temporary, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); }

@@ -1,4 +1,3 @@
-import rawIcons from "../../data/icons.json";
 import { proxyName } from "../language/naming";
 import { parseIconManifest, type IconManifest } from "./manifest";
 export { parseIconManifest } from "./manifest";
@@ -15,8 +14,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export function loadIconManifest(value: unknown = rawIcons): IconManifest | undefined {
-  if (!isRecord(value) || value.schemaVersion !== 1 || !Array.isArray(value.entries)) return undefined;
+export function loadIconManifest(value: unknown): IconManifest | undefined {
+  if (!isRecord(value) || (value.schemaVersion !== 1 && value.schemaVersion !== 2) || !Array.isArray(value.entries)) return undefined;
   return parseIconManifest(value);
 }
 
@@ -28,8 +27,8 @@ export function toComponentName(iconName: string): string {
   return proxyName(iconName);
 }
 
-export function loadIcons(): IconEntry[] {
-  const raw = rawIcons as unknown;
+export function loadIcons(value: unknown = []): IconEntry[] {
+  const raw = value;
   const manifest = loadIconManifest(raw);
   if (manifest) return manifest.entries.map(entry => ({ name: entry.id, styleGroup: entry.styleGroup, tier: entry.minimumTier }));
   if (!Array.isArray(raw)) {
@@ -56,12 +55,12 @@ function matchesPrefix(value: string, prefix: string): boolean {
   return value.toLowerCase().startsWith(prefix.toLowerCase());
 }
 
-export function searchIcons(prefix: string): IconEntry[] {
+export function searchIcons(prefix: string, value: unknown = []): IconEntry[] {
   const trimmed = prefix.trim();
   if (trimmed.length === 0) {
-    return loadIcons();
+    return loadIcons(value);
   }
-  return loadIcons().filter(
+  return loadIcons(value).filter(
     (entry) =>
       matchesPrefix(entry.name, trimmed) ||
       matchesPrefix(toComponentName(entry.name), trimmed),

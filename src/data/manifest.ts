@@ -32,19 +32,42 @@ export interface IconManifestEntry {
   readonly mediaType: ManifestMediaType;
   readonly bindings: readonly IconBinding[];
 }
-export interface IconManifest {
+export interface LegacyIconManifest {
   readonly schemaVersion: 1;
   readonly resourceVersion: string;
   readonly sourceCommit: string;
   readonly sourceDigest: string;
   readonly entries: readonly IconManifestEntry[];
 }
+export interface PackageSetBinding {
+  readonly tier: ManifestTier;
+  readonly fullVersion: string;
+  readonly sourceCommit: string;
+  readonly generatorCommit: string;
+  readonly packageSetSha256: string;
+  readonly candidateRootSha256: string;
+  readonly candidateRootBytes: number;
+}
+export interface PackageSetIconManifestEntry {
+  readonly id: string;
+  readonly styleGroup: string;
+  readonly minimumTier: ManifestTier;
+}
+export interface PackageSetIconManifest {
+  readonly schemaVersion: 2;
+  readonly resourceVersion: string;
+  readonly sourceCommit: string;
+  readonly candidateSets: Readonly<{ free: PackageSetBinding; pro: PackageSetBinding }>;
+  readonly entries: readonly PackageSetIconManifestEntry[];
+}
+export type IconManifest = LegacyIconManifest | PackageSetIconManifest;
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const safeRelative = (value: unknown): value is string => typeof value === "string" && value.length > 0 && value.length <= 512 && /^[A-Za-z0-9._/-]+$/.test(value) && !value.startsWith("/") && !value.includes("\\") && value.split("/").every(part => part.length > 0 && part !== "." && part !== "..");
 const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const GROUP = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SEMVER = /^\d+\.\d+\.\d+$/;
+const RESOURCE_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:alpha|beta)(?:\.(0|[1-9]\d*))?)?$/;
 const SHA = /^[a-f0-9]{64}$/;
 const NAME = /^[A-Za-z_$][\w$]*$/;
 const MEDIA = new Set<ManifestMediaType>(["image/svg+xml", "image/png", "image/webp", "image/jpeg"]);
@@ -72,6 +95,7 @@ function parseBinding(value: unknown): IconBinding {
 
 export function parseIconManifest(value: unknown): IconManifest {
   if (!isRecord(value)) throw new Error("icon manifest must be an object");
+  if (value.schemaVersion === 2) return parsePackageSetIconManifest(value);
   requireOnlyKeys(value, ["schemaVersion", "resourceVersion", "sourceCommit", "sourceDigest", "entries"], "icon manifest");
   if (value.schemaVersion !== 1 || typeof value.resourceVersion !== "string" || !SEMVER.test(value.resourceVersion) || typeof value.sourceCommit !== "string" || !/^[a-f0-9]{40}$/.test(value.sourceCommit) || typeof value.sourceDigest !== "string" || !SHA.test(value.sourceDigest) || !Array.isArray(value.entries)) throw new Error("invalid icon manifest header");
   const keys = new Set<string>();
@@ -91,4 +115,40 @@ export function parseIconManifest(value: unknown): IconManifest {
     return { id: raw.id, styleGroup: raw.styleGroup, minimumTier: raw.minimumTier, mediaType: raw.mediaType as ManifestMediaType, bindings };
   });
   return { schemaVersion: 1, resourceVersion: value.resourceVersion, sourceCommit: value.sourceCommit, sourceDigest: value.sourceDigest, entries };
+}
+
+function parsePackageSetIconManifest(value: Record<string, unknown>): PackageSetIconManifest {
+  requireOnlyKeys(value, ["schemaVersion", "resourceVersion", "sourceCommit", "candidateSets", "entries"], "package-set icon manifest");
+  if (value.schemaVersion !== 2 || typeof value.resourceVersion !== "string" || !RESOURCE_VERSION.test(value.resourceVersion)
+      || typeof value.sourceCommit !== "string" || !/^[a-f0-9]{40}$/.test(value.sourceCommit) || !Array.isArray(value.entries)
+      || !isRecord(value.candidateSets)) throw new Error("invalid package-set icon manifest header");
+  requireOnlyKeys(value.candidateSets, ["free", "pro"], "package-set candidateSets");
+  const parseCandidate = (raw: unknown, tier: ManifestTier): PackageSetBinding => {
+    if (!isRecord(raw)) throw new Error(`invalid ${tier} candidate binding`);
+    requireOnlyKeys(raw, ["tier", "fullVersion", "sourceCommit", "generatorCommit", "packageSetSha256", "candidateRootSha256", "candidateRootBytes"], `${tier} candidate binding`);
+    if (raw.tier !== tier || raw.fullVersion !== value.resourceVersion || raw.sourceCommit !== value.sourceCommit
+        || typeof raw.generatorCommit !== "string" || !/^[a-f0-9]{40}$/.test(raw.generatorCommit)
+        || typeof raw.packageSetSha256 !== "string" || !SHA.test(raw.packageSetSha256)
+        || typeof raw.candidateRootSha256 !== "string" || !SHA.test(raw.candidateRootSha256)
+        || !Number.isSafeInteger(raw.candidateRootBytes) || (raw.candidateRootBytes as number) < 1 || (raw.candidateRootBytes as number) > 1024 * 1024) {
+      throw new Error(`invalid ${tier} candidate binding`);
+    }
+    return raw as unknown as PackageSetBinding;
+  };
+  const free = parseCandidate(value.candidateSets.free, "free");
+  const pro = parseCandidate(value.candidateSets.pro, "pro");
+  if (free.packageSetSha256 === pro.packageSetSha256) throw new Error("Free and Pro candidate sets must be distinct");
+  const keys = new Set<string>();
+  const entries = value.entries.map((raw): PackageSetIconManifestEntry => {
+    if (!isRecord(raw)) throw new Error("invalid package-set icon entry");
+    requireOnlyKeys(raw, ["id", "styleGroup", "minimumTier"], "package-set icon entry");
+    if (typeof raw.id !== "string" || !ID.test(raw.id) || typeof raw.styleGroup !== "string" || !/^moe-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw.styleGroup)
+        || (raw.minimumTier !== "free" && raw.minimumTier !== "pro")) throw new Error("invalid package-set icon entry fields");
+    const key = `${raw.styleGroup}\0${raw.id}`;
+    if (keys.has(key)) throw new Error("duplicate styleGroup/id entry");
+    keys.add(key);
+    return { id: raw.id, styleGroup: raw.styleGroup, minimumTier: raw.minimumTier };
+  });
+  if (entries.length === 0) throw new Error("package-set icon manifest has no entries");
+  return { schemaVersion: 2, resourceVersion: value.resourceVersion, sourceCommit: value.sourceCommit, candidateSets: { free, pro }, entries };
 }

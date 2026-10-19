@@ -1,31 +1,26 @@
 name: Update from Moe Icons resource release
+
+# Package-set releases verify exact candidate roots/pages and fetch only scoped
+# metadata packages. The legacy aggregate receiver remains permanently closed.
 run-name: Plugin resource ${{ github.event.client_payload.eventId }}
 on:
   repository_dispatch:
-    types: [moe-icons-code-library-release, moe-icons-cli-release]
-permissions:
-  contents: write
-  actions: write
+    types: [moe-icons-code-library-release, moe-icons-cli-release, moe-icons-package-set-release]
+permissions: {}
 concurrency:
   group: plugin-resource-update
   cancel-in-progress: false
   queue: max
 jobs:
-  small-pack-policy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    permissions: {}
-    steps:
-      - name: Reject retired aggregate resource delivery
-        run: |
-          echo "::error::Resource delivery is paused during the small-package migration."
-          exit 78
-
   update:
-    if: false
-    needs: [small-pack-policy]
+    # Legacy aggregate events stay closed. The package-set receiver is gated by
+    # the repository's existing explicit auto-release switch.
+    if: github.repository == 'moewolf-dev/moe-icons-plugins' && vars.MOEICONS_AUTO_RELEASE_ENABLED == 'true' && (github.event.action == 'moe-icons-cli-release' || github.event.action == 'moe-icons-package-set-release')
     runs-on: ubuntu-latest
     timeout-minutes: 70
+    permissions:
+      actions: write
+      contents: write
     env:
       DELIVERY_KIND: ${{ github.event.action }}
       CLI_RELEASE_COMMIT: ${{ github.event.client_payload.delivery.cliReleaseCommit }}
@@ -38,10 +33,13 @@ jobs:
       CLI_NPM_INTEGRITY: ${{ github.event.client_payload.delivery.cliNpmIntegrity }}
       RESOURCE_DIGEST: ${{ github.event.client_payload.delivery.resourceDigest }}
       DESCRIPTOR_SHA256: ${{ github.event.client_payload.delivery.descriptorSha256 }}
+      SOURCE_DISPATCH_ID: ${{ github.event.client_payload.delivery.sourceDispatchId }}
+      PACKAGE_SET_FREE_SHA256: ${{ github.event.client_payload.delivery.packageSets.free.packageSetSha256 || github.event.client_payload.delivery.free.packageSetSha256 }}
+      PACKAGE_SET_PRO_SHA256: ${{ github.event.client_payload.delivery.packageSets.pro.packageSetSha256 || github.event.client_payload.delivery.pro.packageSetSha256 }}
       PRODUCTION_ARTIFACT_ID: ${{ github.event.client_payload.delivery.productionArtifactId }}
       EVENT_ID: ${{ github.event.client_payload.delivery.eventId }}
-      UPSTREAM_RUN_ID: ${{ github.event.client_payload.delivery.upstreamRunId }}
-      UPSTREAM_RUN_ATTEMPT: ${{ github.event.client_payload.delivery.upstreamRunAttempt }}
+      UPSTREAM_RUN_ID: ${{ github.event.client_payload.delivery.upstreamRunId || github.event.client_payload.delivery.producer.runId }}
+      UPSTREAM_RUN_ATTEMPT: ${{ github.event.client_payload.delivery.upstreamRunAttempt || github.event.client_payload.delivery.producer.runAttempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -54,24 +52,36 @@ jobs:
       - name: Verify exact producer and published CLI, retain metadata only
         env:
           GH_TOKEN: ${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}
+          PRO_PACKAGE_SET_WORKFLOW_TOKEN: ${{ secrets.PRO_PACKAGE_SET_WORKFLOW_TOKEN }}
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/moe-icons-plugin-release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "MOE_ICONS_RELEASE_ROOT=$root" >> "$GITHUB_ENV"
           if [ "$DELIVERY_KIND" = moe-icons-cli-release ]; then
-            GH_TOKEN="${{ github.token }}" node scripts/verify-cli-input.mjs "$root"
-          else
+            test -n "$GH_TOKEN" || { echo 'Configure LIBRARY_ARTIFACT_READ_TOKEN with code-library Actions read access'; exit 1; }
+            node scripts/verify-cli-input.mjs "$root"
+          elif [ "$DELIVERY_KIND" = moe-icons-package-set-release ]; then
             test -n "$GH_TOKEN" || { echo 'Configure LIBRARY_ARTIFACT_READ_TOKEN with code-library Actions read permission'; exit 1; }
-            node scripts/verify-resource-input.mjs "$root"
+            test -n "$PRO_PACKAGE_SET_WORKFLOW_TOKEN" || { echo 'Configure PRO_PACKAGE_SET_WORKFLOW_TOKEN for exact Pro package-set reads'; exit 1; }
+            node scripts/verify-small-pack-pin.mjs
+            node scripts/verify-package-set-input.mjs "$root"
+          else
+            echo 'Aggregate resource receiver is retired; use moe-icons-package-set-release' >&2
+            exit 1
           fi
       - name: Allocate or resume the verified joint delivery
         run: |
           node scripts/release-state.mjs allocate "$MOE_ICONS_RELEASE_ROOT/event.json"
       - name: Generate metadata and validate
+        env:
+          PRO_PACKAGE_SET_WORKFLOW_TOKEN: ${{ secrets.PRO_PACKAGE_SET_WORKFLOW_TOKEN }}
+          MOEICONS_API_BASE_URL: https://api.moeicons.com
         run: |
           set -euo pipefail
           npm ci
-          if [ "$DELIVERY_KIND" != moe-icons-cli-release ]; then node scripts/generate-icons-data.mjs "$MOE_ICONS_RELEASE_ROOT"; fi
+          if [ "$DELIVERY_KIND" = moe-icons-package-set-release ] || { [ "$DELIVERY_KIND" = moe-icons-cli-release ] && [ -f "$MOE_ICONS_RELEASE_ROOT/package-set-binding.json" ]; }; then
+            node scripts/generate-icons-data-from-package-sets.mjs "$MOE_ICONS_RELEASE_ROOT/package-set-binding.json"
+          fi
           npm run compile
           npm test
           npm run build

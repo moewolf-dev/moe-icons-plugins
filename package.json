@@ -187,12 +187,12 @@
     "compile": "tsc -p ./ --noEmit",
     "build": "node scripts/build.mjs",
     "watch": "node scripts/build.mjs --watch",
-    "test": "node --import tsx --test tests/*.test.ts",
+    "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
     "vscode:prepublish": "npm run build",
     "package": "vsce package",
     "test:core-host": "npm run build && node scripts/test-core-host.mjs",
     "release:state": "node scripts/release-state.mjs",
-    "release:validate": "node scripts/validate-release-state.mjs",
+    "release:validate": "node scripts/verify-small-pack-pin.mjs && node scripts/validate-release-state.mjs",
     "data:generate": "node scripts/generate-icons-data.mjs"
   },
   "devDependencies": {

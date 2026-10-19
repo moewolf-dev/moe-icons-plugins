@@ -16,6 +16,7 @@ const journalPath = resolve(root, ".release-state-transaction.json");
 const lockDirectory = resolve(root, ".release-state-lock");
 const writablePaths = new Set([packagePath, lockPath, mapPath, statePath]);
 const phases = ["received", "validated", "versionAllocated", "packaged", "published", "verified"];
+const HEX_ID = /^[a-f0-9]{64}$/;
 
 function assert(value, message) { if (!value) throw new Error(message); }
 function record(value) { return typeof value === "object" && value !== null && !Array.isArray(value); }
@@ -29,7 +30,13 @@ function compare(a, b) {
   return 0;
 }
 function sha(value) { return typeof value === "string" && /^[a-f0-9]{64}$/.test(value); }
-function canonical(value) { return JSON.stringify(Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)))); }
+function canonicalDeep(value) {
+  if (Array.isArray(value)) return value.map(canonicalDeep);
+  if (record(value)) return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalDeep(value[key])]));
+  return value;
+}
+function canonical(value) { return JSON.stringify(canonicalDeep(value)); }
+function canonicalBytes(value) { return Buffer.from(`${JSON.stringify(canonicalDeep(value))}\n`); }
 async function readJson(path) { return JSON.parse(await readFile(path, "utf8")); }
 async function atomicWrite(path, content) {
   const temp = `${path}.${process.pid}.${randomUUID()}.tmp`;
@@ -40,7 +47,7 @@ async function atomicWrite(path, content) {
 
 function validateEvent(event) {
   assert(record(event) && event.schemaVersion === 1, "unsupported event schema");
-  const allowed = ["schemaVersion", "eventId", "sourceRepository", "sourceVersion", "sourceCommit", "cliVersion", "resourceVersion", "resourceDigest", "descriptorSha256", "verifiedDelivery"];
+  const allowed = ["schemaVersion", "eventId", "sourceRepository", "sourceVersion", "sourceCommit", "cliVersion", "resourceVersion", "resourceDigest", "descriptorSha256", "verifiedDelivery", "sourceDispatchId", "packageSets", "producer"];
   assert(Object.keys(event).every(key => allowed.includes(key)), "event contains unsupported data");
   assert(typeof event.eventId === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$/.test(event.eventId), "invalid eventId");
   assert(repos.has(event.sourceRepository), "untrusted source repository");
@@ -51,6 +58,36 @@ function validateEvent(event) {
   if (event.verifiedDelivery !== undefined) assert(event.verifiedDelivery === true && event.sourceRepository.endsWith('moe-icons-code-library'), 'joint delivery requires verified resource input');
   if (event.sourceRepository.endsWith("moe-icons-code-library")) assert(event.sourceVersion === event.resourceVersion, "resource event version mismatch");
   else assert(event.sourceVersion === event.cliVersion, "CLI event version mismatch");
+  if (event.packageSets !== undefined) {
+    const binding = event.packageSets;
+    assert(event.sourceRepository === "moewolf-dev/moe-icons-code-library"
+      && HEX_ID.test(event.sourceDispatchId || "") && record(binding) && binding.schemaVersion === 1
+      && binding.resourceVersion === event.resourceVersion && binding.sourceCommit === event.sourceCommit
+      && /^[a-f0-9]{40}$/.test(binding.generatorCommit || "") && record(event.producer), "package-set resource event identity is invalid");
+    for (const tier of ["free", "pro"]) {
+      const candidate = binding[tier];
+      assert(record(candidate) && Object.keys(candidate).sort().join(",") === "candidateRootBytes,candidateRootSha256,packageSetSha256"
+        && sha(candidate.packageSetSha256) && sha(candidate.candidateRootSha256)
+        && Number.isSafeInteger(candidate.candidateRootBytes) && candidate.candidateRootBytes > 0 && candidate.candidateRootBytes <= 1024 * 1024,
+      `${tier} package-set resource binding is invalid`);
+    }
+    assert(binding.free.packageSetSha256 !== binding.pro.packageSetSha256, "Free and Pro package-set identities must be distinct");
+    const producer = event.producer;
+    assert(Object.keys(producer).sort().join(",") === "headSha,repository,runAttempt,runId,workflowPath"
+      && producer.repository === "moewolf-dev/moe-icons-code-library" && producer.workflowPath === ".github/workflows/small-pack-candidate.yml"
+      && /^[1-9]\d*$/.test(String(producer.runId)) && Number.isSafeInteger(producer.runAttempt) && producer.runAttempt > 0
+      && producer.headSha === binding.generatorCommit, "package-set producer reference is invalid");
+    const identity = createHash("sha256").update(`moe-icons-small-package-plugin-v1\n${event.sourceDispatchId}\n${binding.free.packageSetSha256}\n${binding.pro.packageSetSha256}\n`).digest("hex");
+    const expectedEventId = `package-set:${event.resourceVersion}:${identity}`;
+    const expectedResourceDigest = createHash("sha256").update(`moe-icons-package-set-resource-v1\n${event.resourceVersion}\n${event.sourceCommit}\n${binding.generatorCommit}\n${binding.free.packageSetSha256}\n${binding.pro.packageSetSha256}\n`).digest("hex");
+    const expectedDescriptorSha = createHash("sha256").update(canonicalBytes(binding)).digest("hex");
+    if (event.verifiedDelivery !== true) {
+      assert(event.eventId === expectedEventId && event.resourceDigest === expectedResourceDigest && event.descriptorSha256 === expectedDescriptorSha,
+        "package-set resource event digest or correlation identity mismatch");
+    } else assert(event.eventId === `resource:${event.resourceVersion}:cli:${event.cliVersion}`, "package-set CLI repair event ID mismatch");
+  } else {
+    assert(event.sourceDispatchId === undefined && event.producer === undefined, "package-set provenance fields require packageSets");
+  }
 }
 
 function nextPluginVersion(currentPlugin, nextCli) {
@@ -67,7 +104,9 @@ async function saveRelease(event) {
   assert(state.schemaVersion === 1 && record(state.current) && Array.isArray(state.events), "invalid release state");
   const prior = state.events.find(item => item.eventId === event.eventId);
   if (prior) {
-    assert(canonical(prior.event) === canonical(event), "eventId was reused with different payload");
+    const priorEvent = event.packageSets && record(prior.event) ? Object.fromEntries(Object.entries(prior.event).filter(([key]) => key !== "producer")) : prior.event;
+    const nextEvent = event.packageSets ? Object.fromEntries(Object.entries(event).filter(([key]) => key !== "producer")) : event;
+    assert(canonical(priorEvent) === canonical(nextEvent), "eventId was reused with different payload");
     process.stdout.write(JSON.stringify({ pluginVersion: prior.pluginVersion, phase: prior.phase, duplicate: true }) + "\n");
     return;
   }
@@ -79,10 +118,11 @@ async function saveRelease(event) {
     assert(resourceChange >= 0, 'resource version cannot move backwards');
     if (resourceChange === 0) {
       assert(compare(event.cliVersion, current.cliVersion) > 0, 'joint delivery must advance CLI or resource');
-      const identityKeys = ['resourceVersion','sourceCommit','descriptorSha256','resourceDigest'];
+      const identityKeys = ['resourceVersion','sourceCommit','descriptorSha256','resourceDigest','packageSets'];
       const currentMap = Array.isArray(map.history) && map.history.find(item => item.pluginVersion === current.pluginVersion);
-      const accepted = state.events.find(item => item.phase === 'verified' && item.event.cliVersion === current.cliVersion && identityKeys.every(key => item.event[key] === event[key]));
-      assert(currentMap && identityKeys.every(key => currentMap[key] === event[key]) && accepted, 'CLI repair requires the same verified resource identity');
+      const sameIdentity = value => identityKeys.every(key => canonical(value[key]) === canonical(event[key]));
+      const accepted = state.events.find(item => item.phase === 'verified' && item.event.cliVersion === current.cliVersion && sameIdentity(item.event));
+      assert(currentMap && sameIdentity(currentMap) && accepted, 'CLI repair requires the same verified resource identity');
     }
   } else if (event.sourceRepository.endsWith("moe-icons-code-library")) {
     assert(event.cliVersion === current.cliVersion, "resource event does not reference the accepted CLI baseline");
@@ -92,7 +132,7 @@ async function saveRelease(event) {
     assert(event.resourceVersion === current.resourceVersion, "CLI release references an unaccepted resource version");
   }
   const pluginVersion = nextPluginVersion(current.pluginVersion, event.cliVersion);
-  const entry = { pluginVersion, cliVersion: event.cliVersion, resourceVersion: event.resourceVersion, sourceCommit: event.sourceCommit, descriptorSha256: event.descriptorSha256, resourceDigest: event.resourceDigest, eventId: event.eventId };
+  const entry = { pluginVersion, cliVersion: event.cliVersion, resourceVersion: event.resourceVersion, sourceCommit: event.sourceCommit, descriptorSha256: event.descriptorSha256, resourceDigest: event.resourceDigest, ...(event.packageSets ? { packageSets: event.packageSets } : {}), eventId: event.eventId };
   const oldHistory = Array.isArray(map) ? map.map(item => ({ pluginVersion: item.pluginVersion, resourceVersion: item.libraryVersion })) : map.history;
   assert(Array.isArray(oldHistory), "invalid version map history");
   const updatedMap = { schemaVersion: 1, history: [...oldHistory, entry] };

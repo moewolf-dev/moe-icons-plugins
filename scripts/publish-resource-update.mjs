@@ -48,8 +48,17 @@ for (let attempt = 0; attempt < 20; attempt++) {
     } }))]); actual = hash.digest('hex'); } finally { child.kill(); }
     if (actual !== match[1]) throw new Error('Marketplace bytes differ from reviewed VSIX');
     break;
-  } catch (error) { if (attempt === 19) throw error; await sleep(30000); }
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.warn(`Marketplace VSIX readback attempt ${attempt + 1}/20 failed: ${detail}`);
+    if (attempt === 19) throw error;
+    await sleep(30000);
+  }
 }
-const receipt = { schemaVersion: 1, eventId: process.env.EVENT_ID, resourceVersion: process.env.RESOURCE_VERSION, cliVersion: process.env.CLI_VERSION, descriptorSha256: process.env.DESCRIPTOR_SHA256, tag, runId: String(publication.id), vsixSha256: actual, marketplaceVerified: true };
+const hasPackageSetFree = Boolean(process.env.PACKAGE_SET_FREE_SHA256), hasPackageSetPro = Boolean(process.env.PACKAGE_SET_PRO_SHA256);
+if (hasPackageSetFree !== hasPackageSetPro || (hasPackageSetFree && (!/^[a-f0-9]{64}$/.test(process.env.PACKAGE_SET_FREE_SHA256) || !/^[a-f0-9]{64}$/.test(process.env.PACKAGE_SET_PRO_SHA256)))) throw new Error('incomplete package-set publication identity');
+const receipt = { schemaVersion: 1, eventId: process.env.EVENT_ID, resourceVersion: process.env.RESOURCE_VERSION, cliVersion: process.env.CLI_VERSION, descriptorSha256: process.env.DESCRIPTOR_SHA256,
+  ...(hasPackageSetFree ? { packageSetDigests: { free: process.env.PACKAGE_SET_FREE_SHA256, pro: process.env.PACKAGE_SET_PRO_SHA256 } } : {}),
+  tag, runId: String(publication.id), vsixSha256: actual, marketplaceVerified: true };
 fs.writeFileSync(join(out, 'plugin-publication-receipt.json'), JSON.stringify(receipt, null, 2) + '\n');
 console.log(JSON.stringify(receipt));

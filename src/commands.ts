@@ -26,7 +26,7 @@ function summarizeStyleGroups(entries: IconEntry[]): StyleGroupSummary[] {
   );
 }
 
-export function registerListStyleLibrariesCommand(service: LanguageService): vscode.Disposable {
+export function registerListStyleLibrariesCommand(service: LanguageService, extensionUri: vscode.Uri): vscode.Disposable {
   return vscode.commands.registerCommand("moeicons.listStyleLibraries", async () => {
     const document = vscode.window.activeTextEditor?.document;
     const project = document ? await service.project(document) : undefined;
@@ -34,7 +34,18 @@ export function registerListStyleLibrariesCommand(service: LanguageService): vsc
       void vscode.window.showInformationMessage(`Moe Icons: installed resource ${project.snapshot.version ?? "unknown"}; target ${project.snapshot.target ?? "unknown"}; styles: ${project.snapshot.styleGroups?.join(", ") || "none"}`);
       return;
     }
-    const summaries = summarizeStyleGroups(loadIcons());
+    // Keep the bundled catalog out of the extension-host startup path. It is
+    // only needed for this explicit reference command; project-aware features
+    // use the verified CLI installation already present in the workspace.
+    let bundledCatalog: unknown;
+    try {
+      const bytes = await vscode.workspace.fs.readFile(vscode.Uri.joinPath(extensionUri, "data", "icons.json"));
+      bundledCatalog = JSON.parse(new TextDecoder().decode(bytes));
+    } catch {
+      void vscode.window.showWarningMessage("Moe Icons: bundled style library metadata could not be read.");
+      return;
+    }
+    const summaries = summarizeStyleGroups(loadIcons(bundledCatalog));
     if (summaries.length === 0) {
       void vscode.window.showInformationMessage("Moe Icons: no style libraries found.");
       return;
@@ -70,8 +81,8 @@ export function registerShowVersionMapCommand(service: LanguageService): vscode.
   });
 }
 
-export function registerCommands(service: LanguageService): vscode.Disposable[] {
-  return [registerListStyleLibrariesCommand(service), registerShowVersionMapCommand(service)];
+export function registerCommands(service: LanguageService, extensionUri: vscode.Uri): vscode.Disposable[] {
+  return [registerListStyleLibrariesCommand(service, extensionUri), registerShowVersionMapCommand(service)];
 }
 
 export function detectVersionLog(): string {

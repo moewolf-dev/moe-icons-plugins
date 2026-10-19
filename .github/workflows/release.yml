@@ -92,7 +92,10 @@ jobs:
           version=$(node -p 'require("./package.json").version')
           name="moe-icons-plugins-${version}.vsix"
           mkdir -p release-artifact candidate
+          export SOURCE_DATE_EPOCH="$(git log -1 --format=%ct "${RELEASE_TAG}^{commit}")"
+          node -e 'if (!/^\d+$/.test(process.env.SOURCE_DATE_EPOCH || "")) process.exit(1)'
           npx --no-install vsce package --out "candidate/$name"
+          python3 scripts/verify-vsix-payload.py --require-package-set "candidate/$name"
           # API failure stops the job; only an absent release permits a new artifact.
           gh api repos/moewolf-dev/moe-icons-plugins/releases --paginate --jq '.[].tag_name' > candidate/release-tags.txt
           release_exists=$(node -e 'console.log(require("node:fs").readFileSync(process.argv[1], "utf8").split(/\r?\n/).includes(process.env.RELEASE_TAG))' candidate/release-tags.txt)

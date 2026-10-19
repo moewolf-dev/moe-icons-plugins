@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { mkdtemp, mkdir, copyFile, writeFile, readFile, rm } from "node:fs/promises";
+import { mkdtemp, mkdir, copyFile, writeFile, readFile, readdir, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join, relative } from "node:path";
@@ -133,40 +133,69 @@ test("release allocation is idempotent and interrupted writes recover before the
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
-test('plugin artifact extraction retains metadata only and rejects altered archives and links', async () => {
+test("package-set resource events bind both exact roots and tolerate a producer-run retry", async () => {
+  const root = await mkdtemp(join(tmpdir(), "moe-package-set-release-state-"));
+  try {
+    await mkdir(join(root, "scripts")); await mkdir(join(root, "data"));
+    await copyFile("scripts/release-state.mjs", join(root, "scripts/release-state.mjs"));
+    const baseline = {
+      "package.json": { version: "0.0.1" },
+      "package-lock.json": { version: "0.0.1", packages: { "": { version: "0.0.1" } } },
+      "data/version-map.json": { schemaVersion: 1, history: [{ pluginVersion: "0.0.1", cliVersion: "0.0.3", resourceVersion: "0.0.17" }] },
+      "data/release-state.json": { schemaVersion: 1, current: { pluginVersion: "0.0.1", cliVersion: "0.0.3", resourceVersion: "0.0.17" }, events: [] },
+    };
+    for (const [name, value] of Object.entries(baseline)) await writeFile(join(root, name), JSON.stringify(value));
+    const bindings = {
+      schemaVersion: 1, resourceVersion: "0.0.18", sourceCommit: "a".repeat(40), generatorCommit: "b".repeat(40),
+      free: { packageSetSha256: "c".repeat(64), candidateRootSha256: "d".repeat(64), candidateRootBytes: 512 },
+      pro: { packageSetSha256: "e".repeat(64), candidateRootSha256: "f".repeat(64), candidateRootBytes: 768 },
+    };
+    const sourceDispatchId = "1".repeat(64);
+    const digest = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
+    const canonical = (value: any): any => Array.isArray(value) ? value.map(canonical)
+      : value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
+    const descriptorSha256 = digest(Buffer.from(`${JSON.stringify(canonical(bindings))}\n`));
+    const resourceDigest = digest(`moe-icons-package-set-resource-v1\n0.0.18\n${bindings.sourceCommit}\n${bindings.generatorCommit}\n${bindings.free.packageSetSha256}\n${bindings.pro.packageSetSha256}\n`);
+    const eventId = `package-set:0.0.18:${digest(`moe-icons-small-package-plugin-v1\n${sourceDispatchId}\n${bindings.free.packageSetSha256}\n${bindings.pro.packageSetSha256}\n`)}`;
+    const event = {
+      schemaVersion: 1, eventId, sourceRepository: "moewolf-dev/moe-icons-code-library", sourceVersion: "0.0.18",
+      sourceCommit: bindings.sourceCommit, cliVersion: "0.0.3", resourceVersion: "0.0.18", resourceDigest,
+      descriptorSha256, sourceDispatchId, packageSets: bindings,
+      producer: { repository: "moewolf-dev/moe-icons-code-library", workflowPath: ".github/workflows/small-pack-candidate.yml", runId: "123", runAttempt: 1, headSha: bindings.generatorCommit },
+    };
+    const eventFile = join(root, "event.json");
+    await writeFile(eventFile, JSON.stringify(event));
+    const args = [join(root, "scripts/release-state.mjs"), "allocate", eventFile];
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).pluginVersion, "0.0.2");
+    const state = JSON.parse(await readFile(join(root, "data/release-state.json"), "utf8"));
+    assert.deepEqual(state.events[0].event.packageSets, bindings);
+    const map = JSON.parse(await readFile(join(root, "data/version-map.json"), "utf8"));
+    assert.deepEqual(map.history.at(-1).packageSets, bindings);
+    await writeFile(eventFile, JSON.stringify({ ...event, producer: { ...event.producer, runId: "456" } }));
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).duplicate, true);
+    for (const phase of ["packaged", "published", "verified"]) await run(process.execPath, [join(root, "scripts/release-state.mjs"), "mark", eventId, phase]);
+    const cliRepair = { ...event, eventId: "resource:0.0.18:cli:0.0.4", cliVersion: "0.0.4", verifiedDelivery: true };
+    await writeFile(eventFile, JSON.stringify(cliRepair));
+    assert.equal(JSON.parse((await run(process.execPath, args)).stdout).pluginVersion, "0.0.3");
+    await writeFile(eventFile, JSON.stringify({ ...event, packageSets: { ...bindings, pro: { ...bindings.pro, candidateRootSha256: "9".repeat(64) } } }));
+    await assert.rejects(run(process.execPath, args), /package-set resource event digest or correlation identity mismatch/);
+  } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test('retired aggregate plugin input fails closed without changing the output directory', async () => {
   const root = await mkdtemp(join(tmpdir(), 'moe-plugin-artifact-'));
   try {
-    const fixture = `
-import io,json,tarfile,zipfile,hashlib,sys
-from pathlib import Path
-root=Path(sys.argv[1]); refs={}
-for tier in ('free','pro'):
- data=io.BytesIO()
- with tarfile.open(fileobj=data,mode='w:gz') as tar:
-  for name,payload in [('catalog.json',b'{}'),('assets/manifest.json',b'{}'),('react/moe-outline/index.d.ts',b'export {}'),('assets/image.png',b'x'*3000000)]:
-   entry=tarfile.TarInfo(name);entry.size=len(payload);tar.addfile(entry,io.BytesIO(payload))
-  if sys.argv[2]=='link':
-   entry=tarfile.TarInfo('assets/link');entry.type=tarfile.SYMTYPE;entry.linkname='/etc/passwd';tar.addfile(entry)
- payload=data.getvalue(); name=f'moe-icons-{tier}-0.0.19.tgz'
- (root/name).write_bytes(payload);refs[tier]={'filename':name,'size':len(payload),'sha256':hashlib.sha256(payload).hexdigest()}
-descriptor=json.dumps(dict(fullVersion='0.0.19',sourceCommit='a'*40,generatorCommit='b'*40,**refs)).encode()
-with zipfile.ZipFile(root/'artifact.zip','w') as archive:
- archive.writestr('release-descriptor.json',descriptor)
- for ref in refs.values():
-  payload=(root/ref['filename']).read_bytes()
-  archive.writestr(ref['filename'],payload if sys.argv[2]!='corrupt' else payload+b'changed')
-print(hashlib.sha256(descriptor).hexdigest())
-`;
-    const check = async (mode: string) => {
-      const generated = await run('python3', ['-c', fixture, root, mode]);
-      const out = join(root, `out-${mode}`); await mkdir(out);
-      return run('python3', ['scripts/extract-resource-input.py', join(root, 'artifact.zip'), out], { env: { ...process.env, RESOURCE_VERSION: '0.0.19', SOURCE_COMMIT: 'a'.repeat(40), GENERATOR_COMMIT: 'b'.repeat(40), DESCRIPTOR_SHA256: generated.stdout.trim() } });
-    };
-    await check('valid');
-    assert.equal(await readFile(join(root,'out-valid/pro/react/moe-outline/index.d.ts'),'utf8'),'export {}');
-    await assert.rejects(readFile(join(root,'out-valid/pro/assets/image.png')),/ENOENT/);
-    await assert.rejects(check('corrupt'),/size mismatch|SHA mismatch/);
-    await assert.rejects(check('link'),/non-regular tar entry/);
+    const archive = join(root, 'aggregate.zip');
+    const out = join(root, 'out');
+    await writeFile(archive, 'legacy aggregate fixture');
+    await mkdir(out);
+    await writeFile(join(out, 'preserve.txt'), 'untouched');
+    await assert.rejects(
+      run('python3', ['scripts/extract-resource-input.py', archive, out]),
+      /aggregate resource extraction is retired; use candidate-set pages/,
+    );
+    assert.equal(await readFile(join(out, 'preserve.txt'), 'utf8'), 'untouched');
+    assert.deepEqual(await readdir(out), ['preserve.txt']);
   } finally { await rm(root,{recursive:true,force:true}); }
 });
 
@@ -204,9 +233,9 @@ if(args[0]==='api')console.log(JSON.stringify({workflow_runs:[{id:321,event:'wor
 if(args[0]==='release')fs.writeFileSync(path.join(args[args.indexOf('--dir')+1],'vsix.sha256'),process.env.FIXTURE_DIGEST+'  moe-icons-plugins-0.0.8.vsix\\n');
 `,{mode:0o755});
     await writeFile(join(root,'bin/curl'),`#!/usr/bin/env node
-require('node:fs').createReadStream(process.env.FIXTURE_FILE).pipe(process.stdout);
+const fs=require('node:fs');fs.writeFileSync(1,fs.readFileSync(process.env.FIXTURE_FILE));process.exit(0);
 `,{mode:0o755});
-    await run(process.execPath,['scripts/publish-resource-update.mjs'],{cwd:root,timeout:15000,env:{...process.env,PATH:join(root,'bin')+':'+process.env.PATH,RUNNER_TEMP:root,GITHUB_RUN_ID:'123',RELEASE_TAG:'v0.0.8',EVENT_ID:'resource:0.0.19:cli:0.0.5',RESOURCE_VERSION:'0.0.19',CLI_VERSION:'0.0.5',DESCRIPTOR_SHA256:'a'.repeat(64),FIXTURE_DIGEST:digest,FIXTURE_FILE:join(root,'fixture')}});
+    await run(process.execPath,['scripts/publish-resource-update.mjs'],{cwd:root,timeout:60000,env:{...process.env,PATH:join(root,'bin')+':'+process.env.PATH,RUNNER_TEMP:root,GITHUB_RUN_ID:'123',RELEASE_TAG:'v0.0.8',EVENT_ID:'resource:0.0.19:cli:0.0.5',RESOURCE_VERSION:'0.0.19',CLI_VERSION:'0.0.5',DESCRIPTOR_SHA256:'a'.repeat(64),FIXTURE_DIGEST:digest,FIXTURE_FILE:join(root,'fixture')}});
     const receipt=JSON.parse(await readFile(join(root,'plugin-readback-123-1/plugin-publication-receipt.json'),'utf8'));
     assert.equal(receipt.marketplaceVerified,true);assert.equal(receipt.vsixSha256,digest);assert.equal(receipt.runId,'321');assert.equal(receipt.resourceVersion,'0.0.19');
   } finally {await rm(root,{recursive:true,force:true});}
@@ -216,6 +245,10 @@ require('node:fs').createReadStream(process.env.FIXTURE_FILE).pipe(process.stdou
 test("resource receiver reads bounded nested dispatch provenance", async () => {
   const workflow = await readFile(".github/workflows/resource-update.yml", "utf8");
   assert.match(workflow, /run-name: Plugin resource \$\{\{ github\.event\.client_payload\.eventId/);
+  assert.match(workflow, /moe-icons-package-set-release/);
+  assert.match(workflow, /verify-package-set-input\.mjs/);
+  assert.match(workflow, /generate-icons-data-from-package-sets\.mjs/);
+  assert.match(workflow, /vars\.MOEICONS_AUTO_RELEASE_ENABLED == 'true'/);
   for (const name of ["eventId", "resourceVersion", "sourceCommit", "generatorCommit", "cliVersion", "cliPublishRunId", "cliPublishHead", "cliNpmIntegrity", "descriptorSha256", "productionArtifactId", "upstreamRunId", "upstreamRunAttempt"])
     assert.ok(workflow.includes(`github.event.client_payload.delivery.${name}`), `missing nested ${name}`);
 });

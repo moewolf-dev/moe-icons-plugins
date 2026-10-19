@@ -3,15 +3,13 @@ on:
   workflow_run:
     workflows: [Update from Moe Icons resource release]
     types: [completed]
-permissions:
-  contents: read
-  actions: write
+permissions: {}
 concurrency:
   group: plugin-resource-recovery-${{ github.event.workflow_run.id }}
   cancel-in-progress: false
 jobs:
   resume:
-    # Retired aggregate delivery must not be automatically replayed.
+    # Do not retry the retired aggregate-resource receiver after a failure.
     if: false
     runs-on: ubuntu-latest
     timeout-minutes: 10
