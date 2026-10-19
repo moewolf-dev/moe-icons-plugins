@@ -27,11 +27,15 @@ test("vendored candidate parsers are pinned to a full Generator commit and exact
   mkdirSync(vendor, { recursive: true });
   try {
     for (const name of ["PIN.json", "candidate-set.cjs", "candidate-set-v1.schema.json", "tar-read.cjs"]) copyFileSync(join(source, name), join(vendor, name));
+    const policySource = join(source, "moe-icons-release-policy");
+    const policyVendor = join(vendor, "moe-icons-release-policy");
+    mkdirSync(policyVendor);
+    for (const name of ["PIN.json", "free-style-groups.v1.json"]) copyFileSync(join(policySource, name), join(policyVendor, name));
     const run = () => spawnSync(process.execPath, [pinScript, root], { encoding: "utf8" });
     assert.equal(run().status, 0);
     const pinPath = join(vendor, "PIN.json");
     const pin = JSON.parse(readFileSync(pinPath, "utf8"));
-    pin.sourceCommit = "59d6d0d15c13203349efb8d1d615dec8fecd1db4".slice(0, 8);
+    pin.sourceCommit = "97864314e8cd4080e46443edb7abd398066042ba".slice(0, 8);
     writeFileSync(pinPath, `${JSON.stringify(pin, null, 2)}\n`);
     assert.notEqual(run().status, 0, "an abbreviated source commit must not pass the pin gate");
     copyFileSync(join(source, "PIN.json"), pinPath);
@@ -43,9 +47,30 @@ test("vendored candidate parsers are pinned to a full Generator commit and exact
     copyFileSync(join(source, "candidate-set.cjs"), candidatePath);
     writeFileSync(join(vendor, "candidate-set-v1.schema.json"), "{}\n");
     assert.notEqual(run().status, 0, "changed vendored schema bytes must not pass the pin gate");
+    copyFileSync(join(source, "candidate-set-v1.schema.json"), join(vendor, "candidate-set-v1.schema.json"));
+    writeFileSync(join(policyVendor, "free-style-groups.v1.json"), "{}\n");
+    assert.notEqual(run().status, 0, "changed release policy bytes must not pass the pin gate");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("Plugins consumer rejects cross-page digest aliases and unresolved dependency references", () => {
+  const digest = "f".repeat(64);
+  const first = { kind: "svg", tier: "free", styleGroupId: "moe-outline", packageSha256: digest, filename: `packages/${digest}.tgz`, resourceKey: "svg/free/moe-outline", fullVersion: version, compressedBytes: 1, expandedBytes: 1, fileCount: 1, dependencies: [] };
+  const second = { ...first, styleGroupId: "moe-solid", resourceKey: "svg/free/moe-solid" };
+  const pages = [first, second].map(row => candidateTools.canonicalBytes({ schemaVersion: 1, fullVersion: version, tier: "free", packages: [row] }));
+  const refs = pages.map((bytes, index) => ({ filename: `package-page-free-${String(index + 1).padStart(4, "0")}.json`, sha256: hash(bytes), sizeBytes: bytes.length, packageCount: 1 }));
+  const root = candidateTools.createCandidateSet({ fullVersion: version, tier: "free", sourceCommit, generatorCommit, packagePages: refs });
+  const pageMap = Object.fromEntries(refs.map((ref, index) => [ref.filename, pages[index]]));
+  assert.throws(() => candidateTools.validatePackagePages(root, pageMap), /duplicate package digest across candidate set/);
+
+  const danglingDigest = "d".repeat(64);
+  const dangling = { ...first, styleGroupId: "moe-game-blue", packageSha256: danglingDigest, filename: `packages/${danglingDigest}.tgz`, resourceKey: "svg/free/moe-game-blue", dependencies: ["e".repeat(64)] };
+  const danglingPage = candidateTools.canonicalBytes({ schemaVersion: 1, fullVersion: version, tier: "free", packages: [dangling] });
+  const danglingRef = { filename: "package-page-free-0001.json", sha256: hash(danglingPage), sizeBytes: danglingPage.length, packageCount: 1 };
+  const danglingRoot = candidateTools.createCandidateSet({ fullVersion: version, tier: "free", sourceCommit, generatorCommit, packagePages: [danglingRef] });
+  assert.throws(() => candidateTools.validatePackagePages(danglingRoot, { [danglingRef.filename]: danglingPage }), /missing dependency package/);
 });
 
 test("package-set receiver verifies the vendored parser pin before producer reads", () => {
@@ -141,11 +166,11 @@ function metadataPackage(tier: "free" | "pro", groupId: string, icons: string[],
   };
 }
 
-function fixture(trailingPaddingBytes = 0) {
+function fixture(trailingPaddingBytes = 0, freeGroupId = "moe-outline") {
   const archives = new Map<string, Buffer>();
   const sets: Record<string, any> = {};
   for (const tier of ["free", "pro"] as const) {
-    const groups = tier === "free" ? [["moe-outline", ["archive-box"]]] : [["moe-outline", ["archive-box"]], ["moe-game-blue", ["pixel-sword"]]];
+    const groups = tier === "free" ? [[freeGroupId, ["archive-box"]]] : [["moe-outline", ["archive-box"]], ["moe-game-blue", ["pixel-sword"]]];
     const rows = groups.map(([group, ids]) => {
       const item = metadataPackage(tier, group as string, ids as string[], trailingPaddingBytes);
       archives.set(item.row.packageSha256, item.archive);
@@ -220,6 +245,13 @@ test("fetches exact Free/Pro candidate sets and only verifies scoped metadata pa
   assert.ok(f.calls.every(url => url.searchParams.get("version") === version));
   assert.ok(f.calls.every(url => url.searchParams.get("packageSetSha256") === f.bindings[url.pathname.includes("/pro/") ? "pro" : "free"].packageSetSha256));
   t.diagnostic(`package-set-network-metrics ${JSON.stringify({ requests: f.calls.length, requestBodyBytes, responseBodyBytes, byTier: tierMetrics })}`);
+});
+
+test("Free metadata outside the pinned group allowlist is rejected before Free package downloads", async () => {
+  const { fetchPackageSetMetadata } = await metadataModule;
+  const f = fixture(0, "moe-game-blue");
+  await assert.rejects(fetchPackageSetMetadata({ bindings: f.bindings, proToken: "t".repeat(40), fetcher: f.fetcher }), /outside the pinned allowlist/);
+  assert.equal(f.calls.filter(url => url.pathname.includes("/free/package-set/packages/")).length, 0);
 });
 
 test("allows bounded tar record padding without weakening the expanded-file inventory", async () => {

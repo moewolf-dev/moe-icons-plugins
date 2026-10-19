@@ -7,6 +7,9 @@ const COMMIT = /^[a-f0-9]{40}$/;
 const SHA256 = /^[a-f0-9]{64}$/;
 const EXPECTED_FILES = ["candidate-set.cjs", "tar-read.cjs"];
 const EXPECTED_CONTRACTS = ["candidate-set-v1.schema.json"];
+const RELEASE_POLICY_REPOSITORY = "moewolf-dev/moe-icons";
+const RELEASE_POLICY_PATH = "contracts/release-policy/free-style-groups.v1.json";
+const STYLE_GROUP = /^moe-[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function assert(condition, message) {
@@ -50,7 +53,38 @@ export function verifySmallPackPin(root = DEFAULT_ROOT) {
     const digest = createHash("sha256").update(bytes).digest("hex");
     assert(digest === pin.contracts[name], `${name} differs from its pinned bytes`);
   }
-  return { sourceCommit: pin.sourceCommit, files: { ...pin.files }, contracts: { ...pin.contracts } };
+  const releasePolicy = verifyFreeStylePolicyPin(root);
+  return { sourceCommit: pin.sourceCommit, files: { ...pin.files }, contracts: { ...pin.contracts }, releasePolicy };
+}
+
+export function verifyFreeStylePolicyPin(root = DEFAULT_ROOT) {
+  const directory = join(root, "scripts", "vendor", "moe-icons-release-policy");
+  const pinBytes = readRegular(join(directory, "PIN.json"), 4096, "release policy PIN.json");
+  let pin;
+  try { pin = JSON.parse(pinBytes.toString("utf8")); }
+  catch { assert(false, "release policy PIN.json is invalid JSON"); }
+  exactKeys(pin, ["sourceRepo", "sourceCommit", "sourcePath", "sha256", "schemaVersion"], "release policy PIN");
+  assert(pin.schemaVersion === 1 && pin.sourceRepo === RELEASE_POLICY_REPOSITORY
+    && COMMIT.test(pin.sourceCommit || "") && pin.sourcePath === RELEASE_POLICY_PATH && SHA256.test(pin.sha256 || ""),
+  "release policy source identity is invalid");
+
+  const policyBytes = readRegular(join(directory, "free-style-groups.v1.json"), 64 * 1024, "Free style-group policy");
+  assert(createHash("sha256").update(policyBytes).digest("hex") === pin.sha256, "Free style-group policy differs from its pinned bytes");
+  let policy;
+  try { policy = JSON.parse(policyBytes.toString("utf8")); }
+  catch { assert(false, "Free style-group policy is invalid JSON"); }
+  exactKeys(policy, ["schemaVersion", "freeStyleGroups"], "Free style-group policy");
+  assert(policy.schemaVersion === 1 && Array.isArray(policy.freeStyleGroups)
+    && policy.freeStyleGroups.length > 0 && policy.freeStyleGroups.length <= 500,
+  "Free style-group policy inventory is invalid");
+  let previous = "";
+  for (const group of policy.freeStyleGroups) {
+    assert(typeof group === "string" && group.length <= 160 && STYLE_GROUP.test(group) && group > previous,
+      "Free style-group policy must contain unique, sorted group IDs");
+    previous = group;
+  }
+  return { sourceRepo: pin.sourceRepo, sourceCommit: pin.sourceCommit, sourcePath: pin.sourcePath,
+    sha256: pin.sha256, freeStyleGroups: [...policy.freeStyleGroups] };
 }
 
 const invokedPath = process.argv[1] ? resolve(process.argv[1]) : "";

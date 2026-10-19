@@ -12,7 +12,26 @@ const record = value => typeof value === 'object' && value !== null && !Array.is
 const canonical = value => Array.isArray(value) ? value.map(canonical) : record(value) ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 const canonicalBytes = value => Buffer.from(`${JSON.stringify(canonical(value))}\n`);
 const exactKeys = (value, keys, label) => assert(record(value) && Object.keys(value).sort().join(',') === [...keys].sort().join(','), `${label} has unexpected or missing fields`);
-const api = path => JSON.parse(execFileSync('gh', ['api', path], { encoding: 'utf8', timeout: 30000, maxBuffer: 1024 * 1024 }));
+const api = path => JSON.parse(execFileSync('gh', ['api', path], { encoding: 'utf8', timeout: 30000, maxBuffer: 2 * 1024 * 1024 }));
+const MAX_GENERATOR_JOBS = 300;
+const MAX_GENERATOR_JOB_PAGES = 3;
+function readGeneratorJobs(producer) {
+  const jobs = [];
+  let totalCount;
+  for (let page = 1; page <= MAX_GENERATOR_JOB_PAGES; page += 1) {
+    const result = api(`repos/moewolf-dev/moe-icons-code-library/actions/runs/${producer.runId}/attempts/${producer.runAttempt}/jobs?per_page=100&page=${page}`);
+    assert(result && Number.isSafeInteger(result.total_count) && result.total_count >= 0
+      && result.total_count <= MAX_GENERATOR_JOBS && Array.isArray(result.jobs) && result.jobs.length <= 100,
+    'package-set producer jobs are incomplete or exceed the 300-job bound');
+    if (totalCount === undefined) totalCount = result.total_count;
+    assert(result.total_count === totalCount, 'package-set producer job count changed between pages');
+    jobs.push(...result.jobs);
+    if (jobs.length >= totalCount) break;
+    assert(page < MAX_GENERATOR_JOB_PAGES, 'package-set producer jobs exceed the page bound');
+  }
+  assert(jobs.length === totalCount, 'package-set producer job listing is incomplete');
+  return jobs;
+}
 const root = resolve(process.argv[2]);
 fs.mkdirSync(root, { recursive: true });
 for (const name of ['CLI_PUBLISH_HEAD', 'CLI_RELEASE_COMMIT']) assert(/^[a-f0-9]{40}$/.test(env[name] || ''), `${name} invalid`);
@@ -51,10 +70,9 @@ if (pin.schemaVersion === 2 && pin.packageSets !== undefined) {
   assert(producer.repository === 'moewolf-dev/moe-icons-code-library' && producer.workflowPath === '.github/workflows/small-pack-candidate.yml' && /^[1-9]\d*$/.test(String(producer.runId)) && Number.isSafeInteger(producer.runAttempt) && producer.runAttempt > 0 && producer.headSha === pin.generatorCommit, 'package-set producer locator invalid');
   const producerRun = api(`repos/moewolf-dev/moe-icons-code-library/actions/runs/${producer.runId}/attempts/${producer.runAttempt}`);
   assert(workflowRunPathMatches(producerRun, '.github/workflows/small-pack-candidate.yml') && producerRun.repository?.full_name === producer.repository && producerRun.head_repository?.full_name === producer.repository && producerRun.head_branch === 'main' && String(producerRun.id) === String(producer.runId) && Number(producerRun.run_attempt) === producer.runAttempt && producerRun.head_sha === producer.headSha && ['workflow_dispatch', 'repository_dispatch'].includes(producerRun.event) && producerRun.display_title === `Source package-set ${pin.sourceCommit} ${pin.sourceDispatchId}`, 'package-set producer run differs from exact Source/Generator binding');
-  const jobs = api(`repos/moewolf-dev/moe-icons-code-library/actions/runs/${producer.runId}/attempts/${producer.runAttempt}/jobs?per_page=100`);
-  assert(Array.isArray(jobs.jobs) && jobs.jobs.length <= 100, 'package-set producer job list invalid');
+  const jobs = readGeneratorJobs(producer);
   for (const name of ['durable', 'dispatch-free', 'dispatch-pro', 'dispatch-website']) {
-    const matches = jobs.jobs.filter(job => job.name === name);
+    const matches = jobs.filter(job => job.name === name);
     assert(matches.length === 1 && matches[0].conclusion === 'success', `package-set producer job ${name} did not succeed`);
   }
   const descriptorSha256 = sha256(canonicalBytes(binding));

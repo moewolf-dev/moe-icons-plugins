@@ -1,10 +1,12 @@
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
+import { verifyFreeStylePolicyPin } from "./verify-small-pack-pin.mjs";
 
 const require = createRequire(import.meta.url);
 const candidateTools = require("./vendor/candidate-set.cjs");
 const tarTools = require("./vendor/tar-read.cjs");
+const freePolicy = require("./vendor/moe-icons-release-policy/free-style-groups.v1.json");
 
 const MAX_ROOT_BYTES = 1024 * 1024;
 const MAX_PAGE_BYTES = 8 * 1024 * 1024;
@@ -217,6 +219,10 @@ async function fetchTier({ tier, binding, baseUrl, token, fetcher }) {
   const metadataRows = rows.filter(row => row.kind === "metadata");
   assert(metadataRows.length > 0 && metadataRows.length <= MAX_METADATA_PACKAGES
     && metadataRows.every(row => row.tier === tier && GROUP.test(row.styleGroupId || "")), `${tier} metadata package inventory is invalid`);
+  if (tier === "free") {
+    const allowed = new Set(freePolicy.freeStyleGroups);
+    assert(metadataRows.every(row => allowed.has(row.styleGroupId)), "Free metadata inventory includes a group outside the pinned allowlist");
+  }
   assert(new Set(metadataRows.map(row => row.styleGroupId)).size === metadataRows.length, `${tier} has duplicate metadata groups`);
   const totalMetadataBytes = metadataRows.reduce((sum, row) => sum + row.compressedBytes, 0);
   assert(totalMetadataBytes <= 64 * 1024 * 1024, `${tier} metadata packages exceed the aggregate byte budget`);
@@ -233,6 +239,7 @@ async function fetchTier({ tier, binding, baseUrl, token, fetcher }) {
 
 /** Download and verify only Free/Pro metadata packages from the exact candidate sets. */
 export async function fetchPackageSetMetadata({ bindings, apiBaseUrl = "https://api.moeicons.com", proToken, fetcher = fetch }) {
+  verifyFreeStylePolicyPin();
   const binding = validateBindings(bindings);
   assert(typeof proToken === "string" && proToken.length >= 32 && proToken.length <= 256 && !/[\r\n]/.test(proToken), "Pro package-set workflow credential is required");
   const [free, pro] = await Promise.all([
