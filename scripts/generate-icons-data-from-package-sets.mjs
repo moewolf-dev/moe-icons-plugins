@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 #!/usr/bin/env node
 import { lstat, readFile, rename, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -18,10 +19,12 @@ async function main() {
   const inputPath = process.argv[2];
   if (!inputPath) fail("usage: node scripts/generate-icons-data-from-package-sets.mjs <verified-binding.json>");
   const bindings = await readBinding(resolve(inputPath));
+  const { ACTIONS_OIDC_MARKER, createActionsOidcFetch } = createRequire(import.meta.url)("./actions-oidc-fetch.cjs");
+  const apiBaseUrl = process.env.MOEICONS_API_BASE_URL || "https://api.moeicons.com";
+  const token = process.env.PRO_PACKAGE_SET_WORKFLOW_TOKEN;
   const manifest = await fetchPackageSetMetadata({
-    bindings,
-    apiBaseUrl: process.env.MOEICONS_API_BASE_URL || "https://api.moeicons.com",
-    proToken: process.env.PRO_PACKAGE_SET_WORKFLOW_TOKEN,
+    bindings, apiBaseUrl, proToken: token || ACTIONS_OIDC_MARKER,
+    ...(token ? {} : { fetcher: createActionsOidcFetch({ apiBaseUrl }) }),
   });
   const output = `${JSON.stringify(manifest, null, 2)}\n`;
   if (Buffer.byteLength(output) > 16 * 1024 * 1024) fail("generated icon index exceeds 16 MiB");
