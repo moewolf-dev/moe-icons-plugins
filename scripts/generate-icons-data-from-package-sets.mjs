@@ -1,5 +1,5 @@
-import { createRequire } from "node:module";
 #!/usr/bin/env node
+import { createRequire } from "node:module";
 import { lstat, readFile, rename, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
