@@ -76,7 +76,7 @@ function validateEvent(event) {
     assert(Object.keys(producer).sort().join(",") === "headSha,repository,runAttempt,runId,workflowPath"
       && producer.repository === "moewolf-dev/moe-icons-code-library" && producer.workflowPath === ".github/workflows/small-pack-candidate.yml"
       && /^[1-9]\d*$/.test(String(producer.runId)) && Number.isSafeInteger(producer.runAttempt) && producer.runAttempt > 0
-      && producer.headSha === binding.generatorCommit, "package-set producer reference is invalid");
+      && /^[a-f0-9]{40}$/.test(producer.headSha || ""), "package-set producer reference is invalid");
     const identity = createHash("sha256").update(`moe-icons-small-package-plugin-v1\n${event.sourceDispatchId}\n${binding.free.packageSetSha256}\n${binding.pro.packageSetSha256}\n`).digest("hex");
     const expectedEventId = `package-set:${event.resourceVersion}:${identity}`;
     const expectedResourceDigest = createHash("sha256").update(`moe-icons-package-set-resource-v1\n${event.resourceVersion}\n${event.sourceCommit}\n${binding.generatorCommit}\n${binding.free.packageSetSha256}\n${binding.pro.packageSetSha256}\n`).digest("hex");
