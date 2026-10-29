@@ -53,6 +53,7 @@ jobs:
       - name: Verify exact producer and published CLI, retain metadata only
         env:
           GH_TOKEN: ${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}
+          SMALL_PACK_WITNESS_TRANSPORT_REPORT: ${{ runner.temp }}/plugin-witness-transport.json
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/moe-icons-plugin-release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -68,6 +69,14 @@ jobs:
             echo 'Aggregate resource receiver is retired; use moe-icons-package-set-release' >&2
             exit 1
           fi
+      - name: Preserve execution witness transfer evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plugin-witness-transport-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plugin-witness-transport.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Allocate or resume the verified joint delivery
         run: |
           node scripts/release-state.mjs allocate "$MOE_ICONS_RELEASE_ROOT/event.json"

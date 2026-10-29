@@ -8,6 +8,7 @@ test('CLI-only verification reuses canonical resource identity and rejects a fai
  try{
   await mkdir(join(root,'scripts'));await mkdir(join(root,'data'));await mkdir(join(root,'bin'));
   await copyFile('scripts/verify-cli-input.mjs',join(root,'scripts/verify-cli-input.mjs'));await copyFile('scripts/workflow-run-path.cjs',join(root,'scripts/workflow-run-path.cjs'));await copyFile('scripts/verify-execution-witness.mjs',join(root,'scripts/verify-execution-witness.mjs'));
+  await copyFile('scripts/small-pack-consumer-transport.cjs',join(root,'scripts/small-pack-consumer-transport.cjs'));
   await writeFile(join(root,'data/release-state.json'),JSON.stringify({current:{resourceVersion:'0.0.19'},events:[{phase:'verified',tag:'v0.0.9',event:identity}]}));
   await writeFile(join(root,'bin/git'),`#!${process.execPath}\nconsole.log('fixture-blob');`,{mode:0o755});
   await writeFile(join(root,'bin/gh'),`#!${process.execPath}

@@ -111,6 +111,7 @@ test("CLI-only package-set pin verification reads required Generator jobs from p
   await copyFile("scripts/verify-cli-input.mjs", join(root, "scripts/verify-cli-input.mjs"));
   await copyFile("scripts/workflow-run-path.cjs", join(root, "scripts/workflow-run-path.cjs"));
   await copyFile("scripts/verify-execution-witness.mjs", join(root, "scripts/verify-execution-witness.mjs"));
+  await copyFile("scripts/small-pack-consumer-transport.cjs", join(root, "scripts/small-pack-consumer-transport.cjs"));
 
   const sourceCommit = "a".repeat(40), sourceDispatchId = "1".repeat(64), generatorCommit = "b".repeat(40);
   const binding = {
