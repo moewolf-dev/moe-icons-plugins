@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { workflowRunPathMatches } from './workflow-run-path.cjs';
+import { verifyExecutionWitness } from './verify-execution-witness.mjs';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -67,7 +68,7 @@ if (pin.schemaVersion === 2 && pin.packageSets !== undefined) {
   assert(binding.free.packageSetSha256 !== binding.pro.packageSetSha256, 'Free and Pro package-set identities must differ');
   const producer = pin.producer;
   exactKeys(producer, ['repository', 'workflowPath', 'runId', 'runAttempt', 'headSha'], 'package-set producer');
-  assert(producer.repository === 'moewolf-dev/moe-icons-code-library' && producer.workflowPath === '.github/workflows/small-pack-candidate.yml' && /^[1-9]\d*$/.test(String(producer.runId)) && Number.isSafeInteger(producer.runAttempt) && producer.runAttempt > 0 && producer.headSha === pin.generatorCommit, 'package-set producer locator invalid');
+  assert(producer.repository === 'moewolf-dev/moe-icons-code-library' && producer.workflowPath === '.github/workflows/small-pack-candidate.yml' && /^[1-9]\d*$/.test(String(producer.runId)) && Number.isSafeInteger(producer.runAttempt) && producer.runAttempt > 0 && /^[a-f0-9]{40}$/.test(producer.headSha || ''), 'package-set producer locator invalid');
   const producerRun = api(`repos/moewolf-dev/moe-icons-code-library/actions/runs/${producer.runId}/attempts/${producer.runAttempt}`);
   assert(workflowRunPathMatches(producerRun, '.github/workflows/small-pack-candidate.yml') && producerRun.repository?.full_name === producer.repository && producerRun.head_repository?.full_name === producer.repository && producerRun.head_branch === 'main' && String(producerRun.id) === String(producer.runId) && Number(producerRun.run_attempt) === producer.runAttempt && producerRun.head_sha === producer.headSha && ['workflow_dispatch', 'repository_dispatch'].includes(producerRun.event) && producerRun.display_title === `Source package-set ${pin.sourceCommit} ${pin.sourceDispatchId}`, 'package-set producer run differs from exact Source/Generator binding');
   const jobs = readGeneratorJobs(producer);
@@ -75,6 +76,7 @@ if (pin.schemaVersion === 2 && pin.packageSets !== undefined) {
     const matches = jobs.filter(job => job.name === name);
     assert(matches.length === 1 && matches[0].conclusion === 'success', `package-set producer job ${name} did not succeed`);
   }
+  if (producer.headSha !== pin.generatorCommit) verifyExecutionWitness({ binding, producer, sourceDispatchId: pin.sourceDispatchId, api });
   const descriptorSha256 = sha256(canonicalBytes(binding));
   const resourceDigest = sha256(`moe-icons-package-set-resource-v1\n${pin.resourceVersion}\n${pin.sourceCommit}\n${pin.generatorCommit}\n${binding.free.packageSetSha256}\n${binding.pro.packageSetSha256}\n`);
   assert(pin.packageSetDescriptorSha256 === descriptorSha256 && pin.packageSetResourceDigest === resourceDigest, 'package-set pin digest mismatch');

@@ -21,6 +21,7 @@ jobs:
     permissions:
       actions: write
       contents: write
+      id-token: write
     env:
       DELIVERY_KIND: ${{ github.event.action }}
       CLI_RELEASE_COMMIT: ${{ github.event.client_payload.delivery.cliReleaseCommit }}
@@ -52,7 +53,7 @@ jobs:
       - name: Verify exact producer and published CLI, retain metadata only
         env:
           GH_TOKEN: ${{ secrets.LIBRARY_ARTIFACT_READ_TOKEN }}
-          PRO_PACKAGE_SET_WORKFLOW_TOKEN: ${{ secrets.PRO_PACKAGE_SET_WORKFLOW_TOKEN }}
+          SMALL_PACK_WITNESS_TRANSPORT_REPORT: ${{ runner.temp }}/plugin-witness-transport.json
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/moe-icons-plugin-release-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
@@ -62,19 +63,25 @@ jobs:
             node scripts/verify-cli-input.mjs "$root"
           elif [ "$DELIVERY_KIND" = moe-icons-package-set-release ]; then
             test -n "$GH_TOKEN" || { echo 'Configure LIBRARY_ARTIFACT_READ_TOKEN with code-library Actions read permission'; exit 1; }
-            test -n "$PRO_PACKAGE_SET_WORKFLOW_TOKEN" || { echo 'Configure PRO_PACKAGE_SET_WORKFLOW_TOKEN for exact Pro package-set reads'; exit 1; }
             node scripts/verify-small-pack-pin.mjs
             node scripts/verify-package-set-input.mjs "$root"
           else
             echo 'Aggregate resource receiver is retired; use moe-icons-package-set-release' >&2
             exit 1
           fi
+      - name: Preserve execution witness transfer evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plugin-witness-transport-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plugin-witness-transport.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Allocate or resume the verified joint delivery
         run: |
           node scripts/release-state.mjs allocate "$MOE_ICONS_RELEASE_ROOT/event.json"
       - name: Generate metadata and validate
         env:
-          PRO_PACKAGE_SET_WORKFLOW_TOKEN: ${{ secrets.PRO_PACKAGE_SET_WORKFLOW_TOKEN }}
           MOEICONS_API_BASE_URL: https://api.moeicons.com
         run: |
           set -euo pipefail
