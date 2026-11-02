@@ -254,6 +254,23 @@ test("Free metadata outside the pinned group allowlist is rejected before Free p
   assert.equal(f.calls.filter(url => url.pathname.includes("/free/package-set/packages/")).length, 0);
 });
 
+test("accepts content-encoded candidate JSON whose Content-Length describes the compressed body", async () => {
+  const { fetchPackageSetMetadata } = await metadataModule;
+  const f = fixture();
+  const encodedFetcher: typeof fetch = async (request, init) => {
+    const url = new URL(request instanceof Request ? request.url : request.toString());
+    const response = await f.fetcher(request, init);
+    if (url.pathname.endsWith("/root") || /\/pages\/\d+$/.test(url.pathname)) {
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      return new Response(bytes, { headers: { "content-encoding": "gzip", "content-length": "100" } });
+    }
+    return response;
+  };
+  const manifest = await fetchPackageSetMetadata({ bindings: f.bindings, proToken: "t".repeat(40), fetcher: encodedFetcher });
+  assert.equal(manifest.schemaVersion, 2);
+  assert.equal(manifest.entries.length, 2);
+});
+
 test("allows bounded tar record padding without weakening the expanded-file inventory", async () => {
   const { fetchPackageSetMetadata } = await metadataModule;
   const f = fixture(4096);
