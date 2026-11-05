@@ -140,10 +140,20 @@ if (pin.schemaVersion === 2 && pin.packageSets !== undefined) {
 // A publish receipt binds the tag, tarball and integrity to this exact run.
 const receipts = join(root, 'receipt');
 fs.mkdirSync(receipts);
-if (Array.isArray(release.assets) && release.assets.some(asset => asset.name === 'cli-publish-receipt.json')) {
+const receiptCandidates = () => fs.readdirSync(receipts).flatMap(name => { const path = join(receipts, name); return fs.statSync(path).isDirectory() ? [join(path, 'cli-publish-receipt.json')] : name === 'cli-publish-receipt.json' ? [path] : []; }).filter(path => fs.existsSync(path));
+const bindsRun = path => { try { return String(JSON.parse(fs.readFileSync(path, 'utf8')).runId) === env.CLI_PUBLISH_RUN_ID; } catch { return false; } };
+// A publisher run that reused an already released payload still uploads its own
+// canonical receipt; prefer the artifact that binds this exact run and fall back
+// to the immutable release asset only when the run produced none.
+let candidates = [];
+try {
+  execFileSync('gh', ['run', 'download', env.CLI_PUBLISH_RUN_ID, '--repo', 'moewolf-dev/moe-icons-cli', '--pattern', 'cli-publish-receipt-*', '--dir', receipts], { stdio: 'inherit', timeout: 60000 });
+  candidates = receiptCandidates().filter(bindsRun);
+} catch { candidates = []; }
+if (!candidates.length && Array.isArray(release.assets) && release.assets.some(asset => asset.name === 'cli-publish-receipt.json')) {
   execFileSync('gh', ['release', 'download', `v${env.CLI_VERSION}`, '--repo', 'moewolf-dev/moe-icons-cli', '--pattern', 'cli-publish-receipt.json', '--dir', receipts], { stdio: 'inherit', timeout: 60000 });
-} else execFileSync('gh', ['run', 'download', env.CLI_PUBLISH_RUN_ID, '--repo', 'moewolf-dev/moe-icons-cli', '--pattern', 'cli-publish-receipt-*', '--dir', receipts], { stdio: 'inherit', timeout: 60000 });
-const candidates = fs.readdirSync(receipts).flatMap(name => { const path = join(receipts, name); return fs.statSync(path).isDirectory() ? [join(path, 'cli-publish-receipt.json')] : name === 'cli-publish-receipt.json' ? [path] : []; }).filter(path => fs.existsSync(path));
+  candidates = receiptCandidates();
+}
 assert(candidates.length === 1 && fs.statSync(candidates[0]).size < 16384, 'ambiguous publisher receipt');
 const receipt = JSON.parse(fs.readFileSync(candidates[0], 'utf8'));
 assert(receipt.version === env.CLI_VERSION && receipt.releaseCommit === env.CLI_RELEASE_COMMIT && String(receipt.runId) === env.CLI_PUBLISH_RUN_ID && receipt.npmIntegrity === env.CLI_NPM_INTEGRITY && receipt.provenance === true && receipt.conclusion === 'success', 'publisher receipt differs from notification');
