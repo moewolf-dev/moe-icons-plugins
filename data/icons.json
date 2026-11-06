@@ -1,25 +1,25 @@
 {
   "schemaVersion": 2,
-  "resourceVersion": "0.0.23",
-  "sourceCommit": "821c31a5dd5c45d16042af6f21b35f9dc671d8c6",
+  "resourceVersion": "0.0.24",
+  "sourceCommit": "6acdce92ead65332207ac6fc4bd27787b495dbed",
   "candidateSets": {
     "free": {
       "tier": "free",
-      "fullVersion": "0.0.23",
-      "sourceCommit": "821c31a5dd5c45d16042af6f21b35f9dc671d8c6",
-      "generatorCommit": "020799e22e4afc008e7b72ec9b17b894f2c32210",
+      "fullVersion": "0.0.24",
+      "sourceCommit": "6acdce92ead65332207ac6fc4bd27787b495dbed",
+      "generatorCommit": "28915a0c541ebeed1a135028f41f202ca34f06a3",
       "candidateRootBytes": 455,
-      "candidateRootSha256": "77271857d42857a9912c4ae501aa693d9bf0710e66ff983f6a3595f9fe2717f0",
-      "packageSetSha256": "c5da75b921d0279642b8fe562d331e8aeaceb5622767ed465346bfbc8e7c4714"
+      "candidateRootSha256": "c81113f53ade2c2522c066252daa4cc1c477350a9960980bb0b04abc3fe04c86",
+      "packageSetSha256": "f2ec98f40c356f6d82cf277ded8c1d7d5d0b23d78ac11f25502142667d27db1e"
     },
     "pro": {
       "tier": "pro",
-      "fullVersion": "0.0.23",
-      "sourceCommit": "821c31a5dd5c45d16042af6f21b35f9dc671d8c6",
-      "generatorCommit": "020799e22e4afc008e7b72ec9b17b894f2c32210",
+      "fullVersion": "0.0.24",
+      "sourceCommit": "6acdce92ead65332207ac6fc4bd27787b495dbed",
+      "generatorCommit": "28915a0c541ebeed1a135028f41f202ca34f06a3",
       "candidateRootBytes": 453,
-      "candidateRootSha256": "c3fb622fa04414787c07f4a8ac02d9ef52deb31d304ae3a89bc262a77708ec02",
-      "packageSetSha256": "c222ea300befd519c79b0cbad71145ecce9a6db6a0ae26408f28ca598b6e048c"
+      "candidateRootSha256": "c0c2ea006b214475dd4b7a27268530c2814e4456a54e6f8c8bda010631807363",
+      "packageSetSha256": "6252a44932f9aec35a92431efaaf4f519930aab2f713a4395dd97481f0e3c479"
     }
   },
   "entries": [
@@ -5561,6 +5561,2776 @@
     {
       "id": "weather-thermometer",
       "styleGroup": "moe-3d-game-blue",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-box-close-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-box-collection",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-box-collection-large",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-box-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-box-open-collection",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-shopping",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-shopping-saled",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-style1",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "archive-style3",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-bold-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-bold-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-bold-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-bold-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-bottom-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-bottom-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-collapse-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-collapse-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-collapse-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-collapse-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-decrease",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-bottom-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-bottom-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-collapse-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-collapse-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-collapse-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-collapse-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-top-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-top-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-double-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-drop-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-drop-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-drop-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-drop-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-escalate",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-move",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-play-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-play-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-play-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-play-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-top-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-top-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-bottom-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-bottom-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-left-bottom",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-left-top",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-right-bottom",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-right-top",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-up-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-turn-up-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-u-down-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-u-left-top",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-u-right-top",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-u-up-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "arrow-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "art-color",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-castle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-account",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-alert",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-analytics",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-automation",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-close",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-location",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-love",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-search",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-style2-city",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-home-style2-farm",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-office",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-office-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-office-location",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-office-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-office-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "building-shop",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-bottom-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-bottom-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-collapse-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-collapse-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-collapse-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-collapse-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-top-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-top-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "chevron-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-bar",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-bell-curve",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-bell-curve-cumulative",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-bubble",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-donut",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-histogram",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-poll",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-ppf",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-scatter-plot",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-scatter-plot-hexbin",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-timeline",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-chart-waterfall",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-high",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "dashboard-low",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-clock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-clock2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-style1",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-style3",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "date-calendar-style4",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-battery-charging",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-battery-charging-quick",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-battery-full",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-battery-low",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-battery-middle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-camera",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-camera-gopro",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-camera-movie",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-charging",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-charging-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-charging-high",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-charging-middle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-charging-quick",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-computer",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-computer-cd",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-game-controller",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-headphones",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-keyboard",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-laptop",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-microphone",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-monitor",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-monitor-account",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-monitor-dashboard",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-monitor-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-monitor-edit",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-monitor-multiple",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-mouse",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-mouse-bluetooth",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-mouse-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-mouse-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-mouse-vertical",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-mouse-wireless",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-pad",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-phone",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-phone-calculator",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-phone-elderly",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-phone-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-printer",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-smartwatch",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-tv",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-watch",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "device-webcam",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "download-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "download-cloud",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "download-tray",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-angry",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-close",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-confused",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-cute",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-happy",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-helpless",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-joy",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-lecherous",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-love",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-question",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-sleep",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-surprise",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-unhappy",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-wink",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-xd",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-robot-xx",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-thumb-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-thumb-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "emoji-thumb-up-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-code",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-collection",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-css",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-csv",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-excel",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-gif",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-html",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-image",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-jpg",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-js",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-json",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-movie",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-music",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-pdf",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-png",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-ppt",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-search",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-svg",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-system",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-txt",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-unable",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-webp",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "file-word",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-close",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-disable",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-info",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-key",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-like",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-lock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-lock-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-read",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-search",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-unlock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "folder-write",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-apple",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-banana",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-cake",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-chips",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-cupcake",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-fork-knife",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-grape",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-hamburger",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-ice-cream",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-ice-pop",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-pear",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-pineapple",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-pizza",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-watermelon",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "food-wine",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-face-mask",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-heart",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-medical-bag",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-pill",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-stethoscope",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-thermometer",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-water",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-water-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "health-water-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "image",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "image-360",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "image-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "image-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "image-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "image-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-arrow-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-arrow-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-disk",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-tray",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-tray-arrow-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-tray-arrow-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "inbox-tray-file",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-bluetooth",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-capacitor",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-conduit",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-cpu",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-alert",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-error",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-speed1",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-speed2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-speed3",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-speed4",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-fan-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-gpu",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-harddisk",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-internet",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-memory",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-access-point",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-console",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-disable",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-folder",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-help",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-ip",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-monitor",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-normal",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-pinter",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-port",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-router",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-network-router-wireless",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-resistance",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-resistance-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-rom",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-save",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-ssd",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-ssd-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-volume-large",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-volume-low",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-volume-middle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-volume-small",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "it-wifi",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "life-love",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-android",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-apple",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-aws",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-blender",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-digital-ocean",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-docker",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-dropbox",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-ethereum",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-facebook",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-finder",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-instagram",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-kubernetes",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-linkedin",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-linux",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-microsoft-azure",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-microsoft-windows",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-patreon",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-qq",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-react",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-redhat",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-ubuntu",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-vimeo",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-vuejs",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-wechat",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-x",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "logo-youtube",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-compass",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-compass-north",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-marker",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-marker-radius",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-style3",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-target",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-target-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-tree",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "map-tree-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "media-music",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "media-music-half",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "media-music-note",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "media-music-note-sixteenth",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "media-pause",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "media-play-pause",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-email",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-email-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-email-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-email-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-email-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-email-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-phone",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-phone-incoming",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-phone-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-phone-outgoing",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "message-phone-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-bankcard",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-card",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-card-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-card-location",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-card-settings",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash-1",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash-10",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash-100",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash-clock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash-dollar",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-cash-sync",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "pay-wallet",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-clock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-lock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-open-mark",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-open-page",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-book-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-chemistry",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-doctor",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-flask",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-graph",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-root",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "science-test-tube",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-eye",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-eye-closed",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-key",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-key-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-lock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-lock-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-lock-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-lock-style2-open",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-shield",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-shield-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-shield-check-small",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-shield-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "secure-shield-small",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-alert",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-badge",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-clock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-lock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-question",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-search",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "social-message-talk",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-stroke",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-stroke-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-stroke-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-check-stroke-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-stroke",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-stroke-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-stroke-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-close-stroke-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-stroke",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-stroke-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-stroke-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-minus-stroke-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-box-stroke",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-circle-stroke",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-stroke",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "symbol-plus-stroke-min",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-av-timer",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock-alarm",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock-nine",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock-seven",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock-six",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock-ten",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-clock-three",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-lock",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-pause",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-play",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-refresh",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-sand",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-sand-complete",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-sand-running",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-star",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "time-timer-stop",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-bag-suitcase",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-close",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-earth-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-language",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "traveling-umbrella",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-align-center",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-align-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-align-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-copy",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-delete",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-edit",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-filter",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-help",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-info",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-info-slab",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-menu",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-menu-badge",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-more",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-other",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-power",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-search",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-setting",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-setting-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-setting-cog-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-setting-cog-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-setting-cog-style3",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-setting-style2",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-tune",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-tune-vertical",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-wrench",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-wrench-cog",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "ui-writer",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "upload-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "upload-cloud",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "upload-tray",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-box",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-cancel",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-check",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-circle",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-down",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-group",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-left",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-multiple",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-multiple-minus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-multiple-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-multiple-switch",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-plus",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-read",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-remove",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-right",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-search",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-setting",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-account-up",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "user-recognition",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-cloud",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-lightning",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-moon",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-rain",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-rain-pouring",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-sun",
+      "styleGroup": "moe-3d-industrial-red",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "weather-thermometer",
+      "styleGroup": "moe-3d-industrial-red",
       "minimumTier": "pro"
     },
     {
