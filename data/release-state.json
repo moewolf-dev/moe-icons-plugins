@@ -226,7 +226,9 @@
         }
       },
       "pluginVersion": "0.0.17",
-      "phase": "versionAllocated"
+      "phase": "verified",
+      "tag": "v0.0.17",
+      "vsixSha256": "b4f6ed62377aae445b9ceae6821d3b817a24f1230fd60addf33130578d773f2f"
     }
   ]
 }
