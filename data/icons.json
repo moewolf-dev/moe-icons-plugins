@@ -1,25 +1,25 @@
 {
   "schemaVersion": 2,
-  "resourceVersion": "0.0.30",
-  "sourceCommit": "5622064c47b346ff8d006b4bfe3ccdade6fb92b7",
+  "resourceVersion": "0.0.31",
+  "sourceCommit": "9a50339bd4de52d786d9520a3d62c873a143e69a",
   "candidateSets": {
     "free": {
       "tier": "free",
-      "fullVersion": "0.0.30",
-      "sourceCommit": "5622064c47b346ff8d006b4bfe3ccdade6fb92b7",
+      "fullVersion": "0.0.31",
+      "sourceCommit": "9a50339bd4de52d786d9520a3d62c873a143e69a",
       "generatorCommit": "1ab9cb3d3d4c3321d63d9290b34c02a312f028cc",
       "candidateRootBytes": 455,
-      "candidateRootSha256": "63ab5ff4125e0899a005b74b5bf5ec4a32f9da3065862df81d1fdd27a572c93e",
-      "packageSetSha256": "21c8485348e1842a46623ee6192c83a4cb9910ad0bbe0fbb2ed375e3dffae04b"
+      "candidateRootSha256": "d59c8853aa278dd3de9e16302a088ea2c4806e195023b5073afa5c50ef191520",
+      "packageSetSha256": "8db5ea0cde717c49b89c1db3ba0307dba84f8790778b73a0439733676b4da182"
     },
     "pro": {
       "tier": "pro",
-      "fullVersion": "0.0.30",
-      "sourceCommit": "5622064c47b346ff8d006b4bfe3ccdade6fb92b7",
+      "fullVersion": "0.0.31",
+      "sourceCommit": "9a50339bd4de52d786d9520a3d62c873a143e69a",
       "generatorCommit": "1ab9cb3d3d4c3321d63d9290b34c02a312f028cc",
       "candidateRootBytes": 453,
-      "candidateRootSha256": "da5f8ba9b81a865866e8c0f3e6897f656290bae68706cc561c06d879f044d435",
-      "packageSetSha256": "b225cf480251673b7f38b1f2975b62181f1b518412bd209b5eb6bfb1141b3de7"
+      "candidateRootSha256": "5e1cc7ee88141e0a9de85c53a38e8b08fb5c0013d8c37fcf498acb407a5c21fb",
+      "packageSetSha256": "743d968180a3b79855bd62765684376c87e87baa5329fa76f4eb8569c7292e63"
     }
   },
   "entries": [
