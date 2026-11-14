@@ -90,9 +90,16 @@ function validateEvent(event) {
   }
 }
 
-function nextPluginVersion(currentPlugin, nextCli) {
+function nextPluginVersion(currentPlugin, event) {
+  // Release train: when the CLI and resource carry the same version, the
+  // plugin uses that exact version too. Legacy events that still carry an
+  // independently bumped CLI version keep the old x.y/patch rule.
+  if (event.cliVersion === event.resourceVersion) {
+    if (compare(event.resourceVersion, currentPlugin) <= 0) throw new Error("release train version must advance");
+    return event.resourceVersion;
+  }
   const [major, minor, patch] = semver(currentPlugin);
-  const [cliMajor, cliMinor] = semver(nextCli);
+  const [cliMajor, cliMinor] = semver(event.cliVersion);
   if (cliMajor < major || (cliMajor === major && cliMinor < minor)) throw new Error("CLI x.y cannot move plugin version backwards");
   if (cliMajor !== major || cliMinor !== minor) return `${cliMajor}.${cliMinor}.0`;
   return `${major}.${minor}.${patch + 1}`;
@@ -131,7 +138,7 @@ async function saveRelease(event) {
     assert(compare(event.cliVersion, current.cliVersion) > 0, "CLI version is old or already accepted");
     assert(event.resourceVersion === current.resourceVersion, "CLI release references an unaccepted resource version");
   }
-  const pluginVersion = nextPluginVersion(current.pluginVersion, event.cliVersion);
+  const pluginVersion = nextPluginVersion(current.pluginVersion, event);
   const entry = { pluginVersion, cliVersion: event.cliVersion, resourceVersion: event.resourceVersion, sourceCommit: event.sourceCommit, descriptorSha256: event.descriptorSha256, resourceDigest: event.resourceDigest, ...(event.packageSets ? { packageSets: event.packageSets } : {}), eventId: event.eventId };
   const oldHistory = Array.isArray(map) ? map.map(item => ({ pluginVersion: item.pluginVersion, resourceVersion: item.libraryVersion })) : map.history;
   assert(Array.isArray(oldHistory), "invalid version map history");
