@@ -464,6 +464,31 @@
         }
       },
       "eventId": "resource:0.0.40:cli:0.0.40"
+    },
+    {
+      "pluginVersion": "0.0.43",
+      "cliVersion": "0.0.43",
+      "resourceVersion": "0.0.43",
+      "sourceCommit": "32854389e6415365b0390e7b1c6d5aa76d7731b4",
+      "descriptorSha256": "a281996c534386a70d3c5f0cbdd67cdc547925d39023f6ac9bb56d141ff49c8f",
+      "resourceDigest": "883194337c74b13b88ff71f26f122f9ea16e06fca38eca93491d3caf00517358",
+      "packageSets": {
+        "schemaVersion": 1,
+        "resourceVersion": "0.0.43",
+        "sourceCommit": "32854389e6415365b0390e7b1c6d5aa76d7731b4",
+        "generatorCommit": "1cb30759a0e74a170f929f518ff76700ac3734ef",
+        "free": {
+          "candidateRootBytes": 455,
+          "candidateRootSha256": "fcbfbe846d06f6d6629a29f407e3087c012472e58496a403bf4be17debaeabc7",
+          "packageSetSha256": "1c45d4fe805123cb9073126f0bd983fd2a61cc6eb1f1d4e9eccb0467c50427ea"
+        },
+        "pro": {
+          "candidateRootBytes": 453,
+          "candidateRootSha256": "ef09203948ed477719a348799d1bbf89cc45d3c41cd6b84e63c6b2cb198a7fc3",
+          "packageSetSha256": "0016e90deb29788545dcee251dcee046887ff182ea2f3ca3efdd8fd9251a65e2"
+        }
+      },
+      "eventId": "resource:0.0.43:cli:0.0.43"
     }
   ]
 }
