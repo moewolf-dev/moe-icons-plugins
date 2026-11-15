@@ -1,25 +1,25 @@
 {
   "schemaVersion": 2,
-  "resourceVersion": "0.0.43",
-  "sourceCommit": "32854389e6415365b0390e7b1c6d5aa76d7731b4",
+  "resourceVersion": "0.0.44",
+  "sourceCommit": "a5041402fa6b4ddff397285a2b985f7cc79ed0d5",
   "candidateSets": {
     "free": {
       "tier": "free",
-      "fullVersion": "0.0.43",
-      "sourceCommit": "32854389e6415365b0390e7b1c6d5aa76d7731b4",
-      "generatorCommit": "1cb30759a0e74a170f929f518ff76700ac3734ef",
+      "fullVersion": "0.0.44",
+      "sourceCommit": "a5041402fa6b4ddff397285a2b985f7cc79ed0d5",
+      "generatorCommit": "925fd8eb211b804fdf405d6c920e8a2cd8d31ef6",
       "candidateRootBytes": 455,
-      "candidateRootSha256": "fcbfbe846d06f6d6629a29f407e3087c012472e58496a403bf4be17debaeabc7",
-      "packageSetSha256": "1c45d4fe805123cb9073126f0bd983fd2a61cc6eb1f1d4e9eccb0467c50427ea"
+      "candidateRootSha256": "87c9898e21918833f7b5501d6616883b435fbc289b863b94f36e2b7544224dae",
+      "packageSetSha256": "4097abf165925cedcde3293cec9c940c4745c090fed82f5048abea73c64fe220"
     },
     "pro": {
       "tier": "pro",
-      "fullVersion": "0.0.43",
-      "sourceCommit": "32854389e6415365b0390e7b1c6d5aa76d7731b4",
-      "generatorCommit": "1cb30759a0e74a170f929f518ff76700ac3734ef",
+      "fullVersion": "0.0.44",
+      "sourceCommit": "a5041402fa6b4ddff397285a2b985f7cc79ed0d5",
+      "generatorCommit": "925fd8eb211b804fdf405d6c920e8a2cd8d31ef6",
       "candidateRootBytes": 453,
-      "candidateRootSha256": "ef09203948ed477719a348799d1bbf89cc45d3c41cd6b84e63c6b2cb198a7fc3",
-      "packageSetSha256": "0016e90deb29788545dcee251dcee046887ff182ea2f3ca3efdd8fd9251a65e2"
+      "candidateRootSha256": "83624f84b7980646210a3fa9c63233705cfbf9875a8881c907473ca30a7a4b9f",
+      "packageSetSha256": "be909cab4648b9928f3c87079859908d551136c49b65446d37b6f8877f0b5ee0"
     }
   },
   "entries": [
@@ -35585,6 +35585,11 @@
     },
     {
       "id": "symbol-plus-stroke-min",
+      "styleGroup": "moe-solid",
+      "minimumTier": "free"
+    },
+    {
+      "id": "test-cube",
       "styleGroup": "moe-solid",
       "minimumTier": "free"
     },

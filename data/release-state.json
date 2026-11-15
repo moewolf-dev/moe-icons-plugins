@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "current": {
-    "pluginVersion": "0.0.43",
-    "cliVersion": "0.0.43",
-    "resourceVersion": "0.0.43"
+    "pluginVersion": "0.0.44",
+    "cliVersion": "0.0.44",
+    "resourceVersion": "0.0.44"
   },
   "events": [
     {
@@ -788,6 +788,47 @@
       "phase": "verified",
       "tag": "v0.0.43",
       "vsixSha256": "e5ab3448f7a46639682382e8313d24a99477e0167ddb4b44741276b2e9e3c341"
+    },
+    {
+      "eventId": "resource:0.0.44:cli:0.0.44",
+      "event": {
+        "schemaVersion": 1,
+        "eventId": "resource:0.0.44:cli:0.0.44",
+        "sourceRepository": "moewolf-dev/moe-icons-code-library",
+        "sourceVersion": "0.0.44",
+        "sourceCommit": "a5041402fa6b4ddff397285a2b985f7cc79ed0d5",
+        "cliVersion": "0.0.44",
+        "resourceVersion": "0.0.44",
+        "resourceDigest": "2cf6caa1bf0c29efc65ae1caa1478055bc41c90fcba071dfee3c59a612539e97",
+        "descriptorSha256": "5f66a1d002bcdd4d69b21906fb836f8cb137095a308473b7a16fdc62fd0d2d75",
+        "verifiedDelivery": true,
+        "sourceDispatchId": "4cc783a017b94bcec7e49bfa3d8268c1c3231cc7e7ce6805516212267997e0e2",
+        "packageSets": {
+          "schemaVersion": 1,
+          "resourceVersion": "0.0.44",
+          "sourceCommit": "a5041402fa6b4ddff397285a2b985f7cc79ed0d5",
+          "generatorCommit": "925fd8eb211b804fdf405d6c920e8a2cd8d31ef6",
+          "free": {
+            "candidateRootBytes": 455,
+            "candidateRootSha256": "87c9898e21918833f7b5501d6616883b435fbc289b863b94f36e2b7544224dae",
+            "packageSetSha256": "4097abf165925cedcde3293cec9c940c4745c090fed82f5048abea73c64fe220"
+          },
+          "pro": {
+            "candidateRootBytes": 453,
+            "candidateRootSha256": "83624f84b7980646210a3fa9c63233705cfbf9875a8881c907473ca30a7a4b9f",
+            "packageSetSha256": "be909cab4648b9928f3c87079859908d551136c49b65446d37b6f8877f0b5ee0"
+          }
+        },
+        "producer": {
+          "repository": "moewolf-dev/moe-icons-code-library",
+          "workflowPath": ".github/workflows/small-pack-candidate.yml",
+          "runId": "43719424453",
+          "runAttempt": 1,
+          "headSha": "925fd8eb211b804fdf405d6c920e8a2cd8d31ef6"
+        }
+      },
+      "pluginVersion": "0.0.44",
+      "phase": "versionAllocated"
     }
   ]
 }
