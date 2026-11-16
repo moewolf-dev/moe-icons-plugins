@@ -871,7 +871,9 @@
         }
       },
       "pluginVersion": "0.0.45",
-      "phase": "versionAllocated"
+      "phase": "verified",
+      "tag": "v0.0.45",
+      "vsixSha256": "359df04034005a20d472b59129ee16aef6a9bf11331c0a01f84b61194061a139"
     }
   ]
 }
