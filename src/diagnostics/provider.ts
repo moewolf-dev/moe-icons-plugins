@@ -3,6 +3,7 @@ import { HIGHLIGHT_LANGUAGE_IDS } from "../constants";
 import type { LanguageService } from "../language/service";
 import type { AccountService } from "../account/service";
 import { entitlementIssues, formatIssue } from "./core";
+import { projectGuidance } from "./project";
 
 export function registerDiagnostics(service: LanguageService, account: AccountService): vscode.Disposable {
   const collection = vscode.languages.createDiagnosticCollection("moeicons");
@@ -18,7 +19,7 @@ export function registerDiagnostics(service: LanguageService, account: AccountSe
     timers.set(uri, setTimeout(() => {
       timers.delete(uri);
       const version = document.version;
-      void service.analyze(document).then(analysis => {
+      void Promise.all([service.analyze(document), service.contract(document)]).then(([analysis, project]) => {
         if (!analysis || disposed || document.isClosed || document.version !== version || timers.has(uri)) return;
         const diagnostics = [...analysis.issues, ...entitlementIssues(analysis.occurrences, account.current)].map(issue => {
           const { definition, message } = formatIssue(issue);
@@ -28,8 +29,18 @@ export function registerDiagnostics(service: LanguageService, account: AccountSe
           diagnostic.code = { value: definition.code, target: vscode.Uri.parse(definition.helpUrl) };
           return diagnostic;
         });
+        // A project-level contract issue is reported once per document. A
+        // workspace with no CLI evidence stays quiet until a project marker exists.
+        const guidance = project?.configured ? projectGuidance(project.contract) : undefined;
+        if (guidance) {
+          const severity = guidance.definition.severity === "error" ? vscode.DiagnosticSeverity.Error : guidance.definition.severity === "warning" ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information;
+          const diagnostic = new vscode.Diagnostic(new vscode.Range(0, 0, 0, 0), `${guidance.message} ${guidance.hint}`, severity);
+          diagnostic.source = "moeicons";
+          diagnostic.code = { value: guidance.definition.code, target: vscode.Uri.parse(guidance.definition.helpUrl) };
+          diagnostics.push(diagnostic);
+        }
         collection.set(document.uri, diagnostics);
-      });
+      }).catch(() => collection.delete(document.uri));
     }, 300));
   }
   const listeners = [

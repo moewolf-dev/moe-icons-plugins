@@ -1,5 +1,8 @@
 import rawCodes from "../../data/error-codes.json";
 import type { LanguageIssue } from "../language/contracts";
+/** Help links point at the plugin docs or the official CLI troubleshooting docs. */
+const HELP_URL = /^https:\/\/(?:github\.com\/moewolf-dev\/moe-icons-plugins|moeicons\.com\/docs\/)/;
+
 export interface ErrorCode {
   readonly key: string;
   readonly code: string;
@@ -18,7 +21,7 @@ export function loadErrorCodes(value: unknown = rawCodes): ReadonlyMap<string, E
     if (typeof key !== "string" || typeof code !== "string" || !/^MOE-ICON-\d{4}$/.test(code) ||
         (severity !== "error" && severity !== "warning" && severity !== "info") ||
         typeof message !== "string" || typeof hint !== "string" || typeof helpUrl !== "string" ||
-        !helpUrl.startsWith("https://github.com/moewolf-dev/moe-icons-plugins") || entries.has(key) || codes.has(code)) throw new Error("Invalid or duplicate error code");
+        !HELP_URL.test(helpUrl) || entries.has(key) || codes.has(code)) throw new Error("Invalid or duplicate error code");
     entries.set(key, { key, code, severity, message, hint, helpUrl });
     codes.add(code);
   }

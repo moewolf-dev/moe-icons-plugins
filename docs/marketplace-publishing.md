@@ -4,11 +4,29 @@
 
 - Extension: `moewolf.moe-icons-plugins`
 - GitHub: `moewolf-dev/moe-icons-plugins`
-- Current plugin version: 0.0.2
-- Accepted CLI baseline: 0.0.3; bundled legacy resource baseline: 0.0.17
+- Current package version: 0.0.14 (authoritative: `package.json`)
+- Accepted CLI baseline: 0.0.10; resource baseline: 0.0.19
+- Latest recorded Marketplace publication evidence: 0.0.2 (see Evidence below)
 
-The plugin version and resource version are independent. This is an early release
-and does not claim completion of the four-target iteration.
+The plugin version, CLI version and resource version are independent. The
+verified combination table is in
+[version-compatibility.md](version-compatibility.md) and
+[`data/version-map.json`](../data/version-map.json). This is an early release and
+does not claim completion of the four-target iteration.
+
+## Runtime and toolchain boundary
+
+- The **extension** runs in the VS Code **Extension Host**, which is managed by
+  VS Code (minimum `^1.85.0`). Do not add a user-facing `engines.node`
+  requirement for extension users.
+- The **Moeicons CLI** requires **Node.js 24+** in the user's terminal.
+- **CI, tests, VSIX packaging and Marketplace publication** require **Node.js
+  24+**. All GitHub Actions workflows use Node 24; `.nvmrc` pins 24 for local
+  development.
+- `package.json` keeps only `"engines": { "vscode": "^1.85.0" }`.
+
+Do not conflate the Extension Host runtime with the CLI/development runtime in
+release notes, Marketplace copy or troubleshooting text.
 
 ## Authentication: GitHub → Entra ID → Marketplace
 
@@ -39,7 +57,9 @@ requires Contributor or Owner access. No access token is printed in these steps.
 ## One tag, two release destinations
 
 1. Review changes and synchronize package.json, package-lock.json, the version
-   map and release baseline. Run compile, tests, build and release validation.
+   map and release baseline. Verify the CLI/resource combination in
+   [version-compatibility.md](version-compatibility.md). Run compile, tests,
+   build and release validation with Node.js 24.
 2. Commit and push the version commit to `main`.
 3. Create and push its matching stable `vX.Y.Z` tag.
 4. The tag coordinator dispatches `release.yml` on `main`, preserving the
@@ -53,16 +73,37 @@ requires Contributor or Owner access. No access token is printed in these steps.
    content in a fresh build of the tag. Its original bytes are retained.
 7. A separate job receives `id-token: write`, logs into Entra, checks publisher
    access, verifies the VSIX digest and publishes that exact artifact.
+8. Write GitHub/Marketplace release notes from
+   [release-notes.md](release-notes.md), keeping the Extension Host, CLI Node 24
+   and plugin/CLI mapping statements consistent with this runbook.
 
 Branch pushes and PRs run CI without publication. Runs are serialized per tag.
 The GitHub Release and Marketplace jobs have separate permissions; only the
 Marketplace job can obtain an Azure identity. There is no PAT fallback.
 
+A CLI patch release does not require a plugin release when the generation
+contract is unchanged. Conversely, a plugin release does not force every project
+to upgrade the CLI. Record only verified combinations in the version map.
+
+## Release smoke checks (run separately)
+
+| Surface | Check | Do not substitute it with |
+| --- | --- | --- |
+| GitHub Actions | `ci.yml`/`release.yml` run on the exact tag; package job produces the reviewed VSIX and SHA-256. | A local build. |
+| VSIX | Download the published VSIX, verify SHA-256, install into a supported VS Code Extension Host, activate and run `Moe Icons: Show Project Status`. | A Marketplace page. |
+| CLI (`npx`) | With Node.js 24, run `npx @moewolf/moe-icons-cli --version` and, against a fixture project, `init`/`install free`/`generate`; confirm the plugin reads the new metadata. | A CI-only CLI version string. |
+| Marketplace | Confirm the published version, listing text and install action after CDN propagation. | A successful `vsce publish` log alone. |
+
+The extension's unit tests must not require a real token or network; account
+tests use injected session readers and fetch fakes. Core-host and packaged-VSIX
+checks are reported separately when they cannot run in an environment.
+
 ## Recovery without a new version
 
-Dispatch `release.yml` on `main` with `release_tag=v0.0.2` and `publish=true`
-to publish the existing reviewed 0.0.2 package. `publish=false` validates and
-packages without creating a GitHub Release or obtaining an Azure credential.
+Dispatch `release.yml` on `main` with the existing reviewed tag (the 0.0.2
+recovery below is historical) and `publish=true` to publish that exact package.
+`publish=false` validates and packages without creating a GitHub Release or
+obtaining an Azure credential.
 Do not move existing tags or allocate a new version just to test authentication.
 `--skip-duplicate` permits recovery when the Marketplace version already exists;
 it does not replace that version. A new change needs a higher patch version.
@@ -74,6 +115,8 @@ verification status separately. Updates follow each user's VS Code settings.
 
 ## Evidence and migration history
 
+- Current package baseline 0.0.14 maps to CLI 0.0.10 and resource 0.0.19; its
+  Marketplace publication evidence must be recorded separately when published.
 - Manual first publication of 0.0.1 was confirmed on 2026-10-05.
 - 0.0.2 source tag: `62df19d6ebe0c69546457e8704041df04160cfdb`.
 - Reviewed 0.0.2 VSIX SHA-256:

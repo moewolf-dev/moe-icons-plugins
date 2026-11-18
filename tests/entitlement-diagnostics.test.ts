@@ -5,7 +5,7 @@ const module={complete:true,exports:new Map<string,PublicSymbol>([['ProIcon',{ki
 test('verified Pro references warn only on confirmed inactive entitlement',()=>{
  const a=analyzeDocument("import * as Icons from './icons'; <Icons.ProIcon/>; <Icons.FreeIcon/>;",'typescriptreact',()=>module);
  assert.equal(entitlementIssues(a.occurrences,{kind:'authenticated',tier:'free',status:'none',effectivePro:false,expiresAt:Date.now()+60000}).length,1);
- assert.equal(entitlementIssues(a.occurrences,{kind:'unknown',reason:'unavailable'}).length,0);
+ assert.equal(entitlementIssues(a.occurrences,{kind:'unavailable'}).length,0);
  assert.equal(entitlementIssues(a.occurrences,{kind:'authenticated',tier:'pro',status:'active',effectivePro:true,expiresAt:Date.now()+60000}).length,0);
 });
 test('deterministic malformed usage is coded while unfinished typing remains quiet',()=>{

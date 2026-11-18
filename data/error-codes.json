@@ -4,8 +4,8 @@
     "code": "MOE-ICON-0001",
     "severity": "warning",
     "message": "Moe Icons export '{name}' is not available in this installed module.",
-    "hint": "Check the generated exports and run moeicons generate after changing the selected icons.",
-    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+    "hint": "Run `moeicons generate` after changing the selected icons, then check the generated export. If generation fails, run `moeicons doctor`.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
   },
   {
     "key": "MALFORMED_USAGE",
@@ -27,32 +27,112 @@
     "key": "ACCOUNT_TIER_MISMATCH",
     "code": "MOE-ICON-0004",
     "severity": "warning",
-    "message": "This icon's configured styles include Pro resources; the current account has no active Pro entitlement.",
-    "hint": "Check the account panel or installed resource version.",
-    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+    "message": "This icon's configured styles include Pro resources; the current account has no confirmed active Pro entitlement.",
+    "hint": "Check the Moe Icons account view or run `moeicons login`. Pro icons require an active Pro entitlement.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#login"
   },
   {
     "key": "RESOURCE_VERSION_MISMATCH",
     "code": "MOE-ICON-0005",
     "severity": "info",
     "message": "The installed Moe Icons resource version differs from this plugin's bundled metadata.",
-    "hint": "Update the plugin or install a matching Moe Icons resource release.",
-    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+    "hint": "Install or generate the intended resource version, or update the plugin. The version map records verified combinations.",
+    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins/blob/main/docs/version-compatibility.md"
   },
   {
     "key": "ACCOUNT_SESSION_EXPIRED",
     "code": "MOE-ICON-0006",
     "severity": "info",
     "message": "The CLI account session has expired.",
-    "hint": "Sign in again with the moeicons CLI.",
-    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+    "hint": "Run `moeicons login` in a terminal on this VS Code host, then refresh the account view.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#login"
   },
   {
     "key": "ACCOUNT_UNAVAILABLE",
     "code": "MOE-ICON-0007",
     "severity": "info",
     "message": "The Moe Icons account status is temporarily unavailable.",
-    "hint": "Retry when the network or account service is available.",
-    "helpUrl": "https://github.com/moewolf-dev/moe-icons-plugins#usage"
+    "hint": "Check network/proxy, run `moeicons doctor`, or upgrade to Node.js 24 and reinstall the CLI, then retry.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
+  },
+  {
+    "key": "ACCOUNT_SIGNED_OUT",
+    "code": "MOE-ICON-0008",
+    "severity": "info",
+    "message": "No Moe Icons CLI session was found on this VS Code host.",
+    "hint": "Run `moeicons login` in a terminal on this host, then refresh the account view. Remote SSH, WSL and containers need their own login; local credentials are not copied.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#login"
+  },
+  {
+    "key": "ACCOUNT_SESSION_STORE",
+    "code": "MOE-ICON-0009",
+    "severity": "warning",
+    "message": "The CLI session store could not be read safely.",
+    "hint": "Run `moeicons login` again. On Linux ensure `secret-tool`/libsecret is installed; on macOS ensure the `security` command works; in a container or remote host log in there.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
+  },
+  {
+    "key": "ACCOUNT_RATE_LIMITED",
+    "code": "MOE-ICON-0010",
+    "severity": "info",
+    "message": "The Moe Icons account service is rate limiting this host.",
+    "hint": "Wait before retrying and use Refresh Account; do not sign in repeatedly.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
+  },
+  {
+    "key": "ACCOUNT_POLICY",
+    "code": "MOE-ICON-0011",
+    "severity": "warning",
+    "message": "The account service rejected this request under its policy.",
+    "hint": "Verify your account and plan status on moeicons.com. If the CLI fails too, upgrade to Node.js 24 and the CLI, then retry.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
+  },
+  {
+    "key": "PROJECT_CLI_MISSING",
+    "code": "MOE-ICON-0012",
+    "severity": "info",
+    "message": "No Moe Icons CLI project or installation was found in this workspace.",
+    "hint": "Install Node.js 24, install the CLI with `npm install -D @moewolf/moe-icons-cli@latest`, then run `npx moeicons init` from the project root.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#installation"
+  },
+  {
+    "key": "PROJECT_NOT_GENERATED",
+    "code": "MOE-ICON-0013",
+    "severity": "info",
+    "message": "The Moe Icons project exists but has no CLI-generated install metadata.",
+    "hint": "Run `npx moeicons init`, `npx moeicons install free`, and `npx moeicons generate` from the project root.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#installation"
+  },
+  {
+    "key": "PROJECT_METADATA_INVALID",
+    "code": "MOE-ICON-0014",
+    "severity": "warning",
+    "message": "CLI install metadata or the generated catalog is invalid or unreadable.",
+    "hint": "Regenerate with `npx moeicons generate`. Do not hand-edit `.moeicons` files; run `npx moeicons doctor` if it repeats.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
+  },
+  {
+    "key": "PROJECT_SCHEMA_DRIFT",
+    "code": "MOE-ICON-0015",
+    "severity": "warning",
+    "message": "The installed Moe Icons CLI metadata uses an unsupported schema.",
+    "hint": "Upgrade to Node.js 24 and reinstall/upgrade the Moeicons CLI, then run init/install/generate. Update the plugin if the CLI is already current.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#upgrade"
+  },
+  {
+    "key": "PROJECT_GENERATED_STALE",
+    "code": "MOE-ICON-0016",
+    "severity": "warning",
+    "message": "CLI-generated files differ from the hashes recorded in install metadata.",
+    "hint": "Run `npx moeicons generate` to regenerate them; do not hand-edit generated files.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#troubleshooting"
+  },
+  {
+    "key": "PROJECT_CLI_TOO_OLD",
+    "code": "MOE-ICON-0017",
+    "severity": "warning",
+    "message": "This project was generated by an unsupported Moeicons CLI version.",
+    "hint": "Upgrade to Node.js 24, reinstall/upgrade the Moeicons CLI, then run init/install/generate.",
+    "helpUrl": "https://moeicons.com/docs/cli.html#upgrade"
   }
 ]

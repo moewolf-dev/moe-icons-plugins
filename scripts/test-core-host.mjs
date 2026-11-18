@@ -45,7 +45,12 @@ try {
   const child = spawn(code, [
     `--extensionDevelopmentPath=${extension}`, `--extensionTestsPath=${testRoot}`,
     `--user-data-dir=${join(temporary, "user")}`, `--extensions-dir=${join(temporary, "extensions")}`,
-    "--disable-extensions", "--disable-workspace-trust", "--skip-welcome", "--skip-release-notes", workspace,
+    "--disable-extensions", "--disable-workspace-trust", "--skip-welcome", "--skip-release-notes",
+    // Some CI/container/desktop-sandbox hosts cannot initialize Electron's
+    // Chromium sandbox. This is a test-only opt-in; the packaged extension and
+    // the user's VS Code are unaffected.
+    ...(process.env.MOEICONS_CORE_TEST_NO_SANDBOX === "1" ? ["--no-sandbox", "--disable-gpu"] : []),
+    workspace,
   ], { env: { ...process.env, MOEICONS_CORE_TEST_RESULT: result }, stdio: "inherit" });
   let startupError;
   child.on("error", error => { startupError = error; });

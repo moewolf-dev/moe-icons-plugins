@@ -37,7 +37,9 @@
     "onCommand:moeicons.showAccount",
     "onView:moeicons.account",
     "onLanguage:typescript",
-    "onLanguage:javascript"
+    "onLanguage:javascript",
+    "onCommand:moeicons.showProjectStatus",
+    "onCommand:moeicons.showOutput"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -60,6 +62,16 @@
       {
         "command": "moeicons.showAccount",
         "title": "Moe Icons: Show Account",
+        "category": "Moe Icons"
+      },
+      {
+        "command": "moeicons.showProjectStatus",
+        "title": "Moe Icons: Show Project Status",
+        "category": "Moe Icons"
+      },
+      {
+        "command": "moeicons.showOutput",
+        "title": "Moe Icons: Show Output Log",
         "category": "Moe Icons"
       }
     ],
@@ -129,6 +141,12 @@
           "type": "string",
           "default": "https://moeicons.com/docs/",
           "markdownDescription": "Moe Icons usage documentation."
+        },
+        "moeicons.enableDiagnosticOutput": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "markdownDescription": "Write short-lived, redacted diagnostic detail to the **Moe Icons** output channel. Lifecycle events and error codes are always recorded; tokens, emails, authorization headers, session JSON, home paths and icon source are never written. The channel is not saved to disk."
         }
       }
     },

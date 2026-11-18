@@ -10,6 +10,7 @@ export interface MoeiconsSettings {
   repositoryUrl: string;
   pluginRepositoryUrl: string;
   documentationUrl: string;
+  enableDiagnosticOutput: boolean;
 }
 
 function readString(section: vscode.WorkspaceConfiguration, key: string, fallback: string): string {
@@ -43,5 +44,6 @@ export function getSettings(): MoeiconsSettings {
       "documentationUrl",
       "https://moeicons.com/docs/",
     ),
+    enableDiagnosticOutput: section.get<boolean>("enableDiagnosticOutput") === true,
   };
 }
