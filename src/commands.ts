@@ -114,7 +114,6 @@ export function registerShowProjectStatusCommand(service: LanguageService, logge
 export function registerCommands(service: LanguageService, extensionUri: vscode.Uri, logger?: Pick<MoeiconsLogger, "lifecycle" | "diagnostic">): vscode.Disposable[] {
   return [registerListStyleLibrariesCommand(service, extensionUri), registerShowVersionMapCommand(service), registerShowProjectStatusCommand(service, logger)];
 }
-}
 
 export function detectVersionLog(): string {
   return getSettings().libraryVersion;
