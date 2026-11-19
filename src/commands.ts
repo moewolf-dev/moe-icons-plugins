@@ -3,6 +3,8 @@ import type { LanguageService } from "./language/service";
 import { loadIcons, type IconEntry } from "./data";
 import { getSettings } from "./settings";
 import { getVersionMap } from "./version";
+import { formatContract, projectGuidance } from "./diagnostics/project";
+import type { MoeiconsLogger } from "./logging/logger";
 
 interface StyleGroupSummary {
   styleGroup: string;
@@ -67,7 +69,10 @@ export function registerShowVersionMapCommand(service: LanguageService): vscode.
   return vscode.commands.registerCommand("moeicons.showVersionMap", async () => {
     const document = vscode.window.activeTextEditor?.document;
     const project = document ? await service.project(document) : undefined;
-    if (project) { void vscode.window.showInformationMessage(`Moe Icons: installed resource ${project.snapshot.version ?? "unknown"} (${project.snapshot.target ?? "unknown"})`); return; }
+    if (project) {
+      void vscode.window.showInformationMessage(`Moe Icons: installed resource ${project.snapshot.version ?? "unknown"} (${project.snapshot.target ?? "unknown"}). ${formatContract(project.snapshot.contract)}`);
+      return;
+    }
     const map = getVersionMap();
     if (map.length === 0) {
       void vscode.window.showInformationMessage("Moe Icons: version map is empty.");
@@ -81,8 +86,33 @@ export function registerShowVersionMapCommand(service: LanguageService): vscode.
   });
 }
 
-export function registerCommands(service: LanguageService, extensionUri: vscode.Uri): vscode.Disposable[] {
-  return [registerListStyleLibrariesCommand(service, extensionUri), registerShowVersionMapCommand(service)];
+export function registerShowProjectStatusCommand(service: LanguageService, logger?: Pick<MoeiconsLogger, "lifecycle" | "diagnostic">): vscode.Disposable {
+  return vscode.commands.registerCommand("moeicons.showProjectStatus", async () => {
+    const document = vscode.window.activeTextEditor?.document;
+    if (!document) {
+      void vscode.window.showInformationMessage("Moe Icons: open a file in a CLI-managed project to inspect its status.");
+      return;
+    }
+    const inspection = await service.contract(document);
+    if (!inspection) {
+      void vscode.window.showInformationMessage("Moe Icons: project status is unavailable in an untrusted or non-file workspace.");
+      return;
+    }
+    const summary = formatContract(inspection.contract);
+    logger?.lifecycle("project.contract", { contractStatus: inspection.contract.status, detail: inspection.contract.detail });
+    const guidance = projectGuidance(inspection.contract);
+    if (!guidance) {
+      void vscode.window.showInformationMessage(`Moe Icons project: ${summary}`);
+      return;
+    }
+    logger?.diagnostic("project.contract.guidance", { contractStatus: guidance.status, code: guidance.definition.code });
+    const choice = await vscode.window.showWarningMessage(`Moe Icons project: ${summary}\n${guidance.message} ${guidance.hint}`, "Open troubleshooting");
+    if (choice === "Open troubleshooting") void vscode.env.openExternal(vscode.Uri.parse(guidance.definition.helpUrl));
+  });
+}
+
+export function registerCommands(service: LanguageService, extensionUri: vscode.Uri, logger?: Pick<MoeiconsLogger, "lifecycle" | "diagnostic">): vscode.Disposable[] {
+  return [registerListStyleLibrariesCommand(service, extensionUri), registerShowVersionMapCommand(service), registerShowProjectStatusCommand(service, logger)];
 }
 
 export function detectVersionLog(): string {

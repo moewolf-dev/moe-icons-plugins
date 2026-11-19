@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
-import {missingCredential,selectedStore} from '../src/account/session-policy.cjs';
+import {missingCredential,selectedStore,keychainToolMissing} from '../src/account/session-policy.cjs';
 import {readCliAccessToken} from '../src/account/session';
 import {mkdtempSync,writeFileSync,rmSync,symlinkSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -8,6 +8,12 @@ test('only known missing credentials become signed out',()=>{
  assert.equal(missingCredential('darwin',{code:44}),true);assert.equal(missingCredential('darwin',{code:'ETIMEDOUT'}),false);
  assert.equal(missingCredential('linux',{code:1,stderr:''}),true);assert.equal(missingCredential('linux',{code:1,stderr:'permission denied'}),false);
  assert.equal(missingCredential('win32',{stderr:'0x80070490'}),true);
+});
+test('a missing credential helper is not treated as signed out',()=>{
+ assert.equal(keychainToolMissing('linux',{code:'ENOENT'}),true);
+ assert.equal(keychainToolMissing('darwin',{stderr:'security: command not found'}),true);
+ assert.equal(keychainToolMissing('win32',{stderr:'The term powershell.exe is not recognized as an internal or external command'}),true);
+ assert.equal(keychainToolMissing('darwin',{code:44}),false);
 });
 test('a dangling storage preference cannot select an unrelated backend',()=>{
  const root=mkdtempSync(join(tmpdir(),'moeicons-plugin-preference-'));
@@ -30,7 +36,7 @@ test('file fallback treats only an absent or empty store as signed out', async()
    ['mixed valid and corrupt',{fixture:valid,invalid:'fixture'},'unknown'],
    ['valid',{fixture:valid},'token'],
   ];
-  for(const [name,value,expected] of cases){writeFileSync(file,JSON.stringify(value),{mode:0o600});assert.equal((await readCliAccessToken()).kind,expected,name);}
+  for(const [name,value,expected] of cases){writeFileSync(file,JSON.stringify(value),{mode:0o600});const read=await readCliAccessToken();assert.equal(read.kind,expected,name);if(expected==='unknown'&&read.kind==='unknown')assert.equal(read.reason,'corruptSession',name);}
   rmSync(file);symlinkSync(join(root,'missing-target'),file);assert.equal((await readCliAccessToken()).kind,'unknown');
  }finally{
   if(previous.disable===undefined)delete process.env.MOEICONS_DISABLE_SYSTEM_KEYCHAIN;else process.env.MOEICONS_DISABLE_SYSTEM_KEYCHAIN=previous.disable;

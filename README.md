@@ -1,12 +1,24 @@
 # Moe Icons for VS Code
 
 Code completion, semantic highlighting and icon diagnostics for Moe Icons in
-React and Vue projects. Requires VS Code 1.85 or newer (Node 18 extension host).
+React and Vue projects, plus the account/version view for CLI-generated projects.
 
 - [Official website](https://moeicons.com/)
 - [Documentation](https://moeicons.com/docs/)
 - [CLI installation and usage](https://moeicons.com/docs/cli.html)
 - [CLI repository and reference](https://github.com/moewolf-dev/moe-icons-cli#readme)
+- [Plugin/CLI/resource compatibility](docs/version-compatibility.md)
+
+## Runtime requirements: two different runtimes
+
+| What you run | Requirement |
+| --- | --- |
+| **This VS Code extension** | VS Code **1.85 or newer**. It runs inside the VS Code **Extension Host**; VS Code supplies that Node runtime. You do not need to install Node.js to run the extension. |
+| **The Moe Icons CLI** (`moeicons init/install/generate/login/doctor`) | **Node.js 24 or newer** in the terminal where you run the CLI. This is a CLI requirement, not an Extension Host requirement. |
+| **Building/testing/packaging this extension, CI, VSIX and Marketplace release** | **Node.js 24 or newer**. The repository pins this in `.nvmrc` and all GitHub Actions workflows. |
+
+Installing the extension does not install the CLI or the icon library, and it
+does not add a user-facing `engines.node` requirement.
 
 ## Required: install the Moe Icons CLI
 
@@ -15,9 +27,10 @@ project's icons before using this extension's project-aware features.** The
 extension reads the CLI-generated catalog and modules; installing the VS Code
 extension alone does not install the icon library.
 
-With Node.js 22 or newer, run these commands from your project's root:
+First verify the CLI runtime, then run these commands from your project root:
 
 ```bash
+node -v   # must be v24.x or newer
 npm install -D @moewolf/moe-icons-cli
 npx moeicons init
 ```
@@ -30,8 +43,20 @@ npx moeicons install free
 npx moeicons generate
 ```
 
-For Pro installation, authentication and further configuration, see the
-[CLI documentation](https://moeicons.com/docs/cli.html).
+For Pro installation, authentication, upgrades and further configuration, see
+the [CLI documentation](https://moeicons.com/docs/cli.html).
+
+If `node -v` is below 24, upgrade Node first. Common managers:
+
+```bash
+nvm install 24 && nvm use 24
+# or: fnm install 24 && fnm use 24
+# or: volta install node@24
+```
+
+Reopen the terminal, check `node -v` and `npx moeicons --version`, then rerun
+the install/generate commands. The extension never opens a terminal and never
+runs or auto-installs the CLI for you.
 
 ## Usage
 
@@ -50,12 +75,78 @@ CLI-managed exports. Keep generated files consistent with
 icon selection. The extension completes icon names without embedding SVG source
 or downloading icon resources.
 
+## How the extension reads CLI data
+
+For each file, the nearest CLI-managed project inside the workspace is used. The
+extension records and displays:
+
+- the install-metadata schema and the generated catalog schema;
+- the CLI version when metadata records it (older metadata without this optional
+  field is tolerated);
+- the installed CLI version when a local `node_modules/@moewolf/moe-icons-cli`
+  package is present;
+- the artifact/resource version from install metadata and the catalog.
+
+Generated exports are accepted only when their SHA-256 hashes match install
+metadata. The extension never executes project configuration, never downloads
+icons, never invokes the CLI and never writes to `.moeicons`.
+
+## Project status and troubleshooting
+
+`Moe Icons: Show Project Status` reports one of these independent states:
+
+| State | Meaning | What to do |
+| --- | --- | --- |
+| `cliMissing` | No CLI project or installation marker was found in the workspace. | Install Node.js 24 and the CLI, then run `moeicons init`. |
+| `notGenerated` | The project exists (for example `.moeicons` or a `moeicons.config.*` file) but install metadata has not been generated. | Run `moeicons init`, `moeicons install free`, and `moeicons generate`. |
+| `invalidMetadata` | Install metadata or the catalog is invalid, unreadable, or escapes the project. | Regenerate with `moeicons generate`; do not hand-edit generated files. Run `moeicons doctor` if it repeats. |
+| `schemaDrift` | The metadata/catalog uses a schema this plugin does not support. | Upgrade Node 24, reinstall/upgrade the CLI, then init/install/generate. Update the plugin if the CLI is already current. |
+| `staleGenerated` | Generated files no longer match the hashes in install metadata. | Run `moeicons generate`; do not edit generated files by hand. |
+| `cliVersionTooOld` | Metadata records a CLI below the verified minimum. | Upgrade Node 24 and the CLI, regenerate, and reload the window if needed. |
+| `ready` | Verified generated data is authoritative. | No action. |
+
+The full recovery order is: **upgrade Node 24 → reinstall/upgrade the Moeicons
+CLI → run `init`/`install`/`generate`**. Editor diagnostics use the extension's
+`MOE-ICON-*` codes and link to the CLI installation, upgrade, login and
+troubleshooting documentation. When a new `.moeicons/install-metadata.json` is
+detected, completion, highlighting and diagnostics refresh automatically; you do
+not need to reinstall the extension.
+
+## Account and remote hosts
+
+The Moe Icons Account view reads the CLI session store **read-only**. It never
+copies, exports, prints or generates access/refresh tokens. Account states are
+independent: `signedOut`, `sessionExpired`, `sessionStore` (missing keychain
+tool, corrupt session, unreadable store), `rateLimited`, `policy`, `unavailable`
+and `authenticated` (Free or Pro). Every non-authenticated state has a concrete
+next action, such as:
+
+- run `moeicons login` on the same VS Code host;
+- install/repair the OS credential tool (`secret-tool`/libsecret on Linux,
+  `security` on macOS, PowerShell PasswordVault on Windows);
+- wait for the rate-limit window and use **Refresh Account**;
+- check the account/plan policy, or upgrade Node 24 and the CLI and retry.
+
+**Remote SSH, WSL and containers:** the extension runs on the extension host and
+reads that host's OS credential store. Local credentials are **not** copied to
+the remote host. Install and log in with the CLI in the same host where this
+window runs (`moeicons login` there), and use the same Remote SSH/WSL/container
+host consistently. Rebuilding or recreating a container may require logging in
+again.
+
+Unknown account rights never produce a guessed Free entitlement warning.
+Verified icon proxies that include Pro resources in their configured themes warn
+when the current account has a confirmed inactive Pro entitlement; this is an
+editor hint and does not replace the server's download authorization.
+
 ## Features and current scope
 
 - Complete imported icon components and namespace members in React and Vue.
 - Highlight recognized icon references with colors that follow the editor theme.
 - Report unavailable exports in verified generated modules.
-- Inspect style libraries and the plugin/library version map.
+- Inspect style libraries, project contract status and the plugin/library
+  version map.
+- Show a redacted diagnostic output channel.
 
 Relative imports and bounded local `paths` aliases in JSON/JSONC tsconfig or
 jsconfig are supported. Config `extends`, automatic imports, npm import
@@ -63,19 +154,12 @@ resolution and Assets reference completion are not supported. Dynamic or
 unverified inputs are skipped. The installed catalog and verified generated
 files are authoritative; bundled metadata is a reference.
 
-The Moe Icons Account view reads the CLI session on the extension host and has
-a refresh command. Log in with `moeicons login` on that same host. Remote SSH,
-WSL and containers do not copy local credentials automatically. Unknown account
-rights never produce a guessed Free entitlement warning. Verified icon proxies
-that include Pro resources in their configured themes warn when the current
-account has a confirmed inactive Pro entitlement; this is an editor hint and
-does not replace the server's download authorization.
-
 ## Settings
 
 | Setting | Default | Description |
 | --- | --- | --- |
 | `moeicons.highlightColorMode` | `auto` | Follow the editor theme, or force `light` / `dark` semantic-token modifiers. Override colors in `editor.semanticTokenColorCustomizations`. |
+| `moeicons.enableDiagnosticOutput` | `false` | Write short-lived, redacted detail to the **Moe Icons** output channel. Lifecycle events and error codes are always recorded. |
 | `moeicons.styleGroup` | `outline` | Deprecated; completion uses verified project exports. |
 | `moeicons.libraryVersion` | `""` | Deprecated; installed resource version is read from the active project. |
 | `moeicons.websiteUrl` | `https://moeicons.com` | Official website link. |
@@ -87,13 +171,38 @@ does not replace the server's download authorization.
 
 - `Moe Icons: List Style Libraries` — list style libraries with `free`/`pro` markers.
 - `Moe Icons: Show Plugin/Library Version Map` — show plugin, CLI and resource delivery versions.
+- `Moe Icons: Show Project Status` — show the project contract state, versions and recovery steps.
+- `Moe Icons: Show Output Log` — open the redacted **Moe Icons** output channel.
 - `Moe Icons: Show Account` — focus the account/version view.
 - `Moe Icons: Refresh Account` — read the current CLI session and refresh entitlement status.
 
+## Output, logging and privacy
+
+The extension writes activation and lifecycle messages to a VS Code
+`OutputChannel` (no bare `console.log`). By default it records only lifecycle
+events and stable `MOE-ICON-*` error codes. Enabling
+`moeicons.enableDiagnosticOutput` adds short-lived, session-only detail for
+troubleshooting.
+
+The output channel is not written to disk and is never uploaded. It must not
+contain tokens, refresh tokens, authorization headers, email addresses, session
+JSON, absolute home paths, icon source or network bodies. A central redactor
+removes these values and only allowlisted scalar diagnostic fields are written.
+Error-code links point to CLI `doctor`, installation, login and upgrade docs.
+
+To report a bug, email [info@moeicons.com](mailto:info@moeicons.com). Include your
+VS Code, extension and CLI versions, reproduction steps, and only redacted log
+excerpts.
+
 ## Development
 
+Development, tests, VSIX packaging and Marketplace release require **Node.js 24
+or newer**. The extension itself still runs on the VS Code Extension Host; the
+development requirement does not become a user runtime requirement.
+
 ```bash
-npm install
+node -v           # v24.x or newer
+npm ci
 npm run compile   # type-check
 npm run build     # bundle to dist/
 npm test          # unit tests
@@ -103,24 +212,30 @@ npm run package   # produce a .vsix
 
 Press `F5` in VS Code to launch an Extension Development Host.
 
+## Version compatibility and releases
+
+The plugin version and the CLI/resource versions are independent. The plugin
+does **not** automatically publish a new version for every CLI patch. A verified
+combination table lives in
+[docs/version-compatibility.md](docs/version-compatibility.md) and
+[`data/version-map.json`](data/version-map.json); `npm run release:validate`
+checks the current package version against the accepted baseline. The plugin
+reads the CLI's generated contract rather than assuming a specific CLI patch.
 
 ## Marketplace publishing
 
 Publisher: `moewolf`; extension ID: `moewolf.moe-icons-plugins`.
-Development and packaging require Node.js 22 or newer.
+Development, packaging and publication use **Node.js 24 or newer**.
+
 PRs and branch pushes run CI. A matching `vX.Y.Z` tag dispatches the release
 workflow on `main`, which checks out the tagged code, tests and packages it,
-publishes the same VSIX to GitHub Release and Marketplace, and authenticates using
-Microsoft Entra ID federation. The Entra application must have Contributor
+publishes the same VSIX to GitHub Release and Marketplace, and authenticates
+using Microsoft Entra ID federation. The Entra application must have Contributor
 permission on the `moewolf` Marketplace publisher. No long-lived secret is used.
-See [the publishing runbook](docs/marketplace-publishing.md) for first VSIX upload,
-version synchronization, and policy setup.
 
-## Help and feedback
-
-If you encounter a bug, an installation problem, or any other issue, email
-[info@moeicons.com](mailto:info@moeicons.com). Include your VS Code, extension and
-CLI versions, reproduction steps, and any relevant error messages.
+See [the publishing runbook](docs/marketplace-publishing.md) for first VSIX
+upload, Node 24 toolchain notes, version synchronization, smoke checks and
+policy setup.
 
 ## Project discovery and releases
 
@@ -129,8 +244,8 @@ The nearest CLI installation inside the workspace is used for each file. Local
 supported when they resolve to verified generated modules. Inherited `extends`
 configuration and arbitrary JavaScript configuration are not evaluated.
 
-The style/version commands show the active project's installed data. The old
-manual style and library-version settings are ignored. Plugin releases remain
+The style/version/status commands show the active project's installed data. The
+old manual style and library-version settings are ignored. Plugin releases remain
 independent: a CLI or resource release does not automatically publish a plugin.
 The version map records a tested combination, rather than forcing every project
 to use the bundled resource version.

@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import type { LanguageService } from "../language/service";
 import { AccountService } from "./service";
-import { getErrorCode } from "../diagnostics/core";
+import { accountGuidance } from "./guidance";
+import { formatContract, projectGuidance } from "../diagnostics/project";
 import { getVersionMap } from "../version";
 
 class AccountView implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -12,16 +13,20 @@ class AccountView implements vscode.TreeDataProvider<vscode.TreeItem> {
   getTreeItem(item: vscode.TreeItem): vscode.TreeItem { return item; }
   async getChildren(): Promise<vscode.TreeItem[]> {
     const state = this.account.current;
+    const guidance = accountGuidance(state, { remoteName: vscode.env.remoteName });
     const items = [new vscode.TreeItem("Account status", vscode.TreeItemCollapsibleState.None)];
-    if (state.kind === "signedOut") items.push(new vscode.TreeItem("Please sign in with the moeicons CLI", vscode.TreeItemCollapsibleState.None));
-    else if (state.kind === "sessionExpired") {
-      const definition = getErrorCode("ACCOUNT_SESSION_EXPIRED");
-      items.push(new vscode.TreeItem(`${definition?.message ?? "Session expired."} ${definition?.hint ?? ""}`, vscode.TreeItemCollapsibleState.None));
-    } else if (state.kind === "unknown") {
-      const definition = getErrorCode("ACCOUNT_UNAVAILABLE");
-      items.push(new vscode.TreeItem(`${definition?.message ?? "Account status unavailable."} ${definition?.hint ?? ""}`, vscode.TreeItemCollapsibleState.None));
+    const title = guidance.code === undefined ? guidance.title : `${guidance.title} (${guidance.code})`;
+    const titleItem = new vscode.TreeItem(title, vscode.TreeItemCollapsibleState.None);
+    titleItem.tooltip = `${guidance.title}\n${guidance.hint}`;
+    items.push(titleItem);
+    items.push(new vscode.TreeItem(guidance.hint, vscode.TreeItemCollapsibleState.None));
+    for (const step of guidance.steps) items.push(new vscode.TreeItem(step, vscode.TreeItemCollapsibleState.None));
+    if (guidance.remoteNote !== undefined) {
+      const remote = new vscode.TreeItem(guidance.remoteNote, vscode.TreeItemCollapsibleState.None);
+      remote.iconPath = new vscode.ThemeIcon("remote");
+      items.push(remote);
     }
-    else {
+    if (state.kind === "authenticated") {
       items.push(new vscode.TreeItem(`Tier: ${state.tier}`, vscode.TreeItemCollapsibleState.None));
       items.push(new vscode.TreeItem(`Entitlement: ${state.status}${state.effectivePro ? " (active Pro)" : ""}`, vscode.TreeItemCollapsibleState.None));
     }
@@ -31,10 +36,13 @@ class AccountView implements vscode.TreeDataProvider<vscode.TreeItem> {
     items.push(new vscode.TreeItem(`Bundled resource: ${version}`, vscode.TreeItemCollapsibleState.None));
     items.push(new vscode.TreeItem(`Build CLI version: ${versionEntry?.cliVersion ?? "unknown (not recorded)"}`, vscode.TreeItemCollapsibleState.None));
     const document = vscode.window.activeTextEditor?.document;
-    const project = document ? await this.language.project(document) : undefined;
-    if (project) {
-      items.push(new vscode.TreeItem(`Project: ${vscode.workspace.asRelativePath(project.root)}`, vscode.TreeItemCollapsibleState.None));
-      items.push(new vscode.TreeItem(`Installed resource: ${project.snapshot.version ?? "unverified"} (${project.snapshot.target ?? "unknown"})`, vscode.TreeItemCollapsibleState.None));
+    const inspection = document ? await this.language.contract(document) : undefined;
+    if (inspection) {
+      items.push(new vscode.TreeItem(`Project: ${vscode.workspace.asRelativePath(inspection.root)}`, vscode.TreeItemCollapsibleState.None));
+      items.push(new vscode.TreeItem(`Project contract: ${inspection.contract.status}`, vscode.TreeItemCollapsibleState.None));
+      items.push(new vscode.TreeItem(`Versions: ${formatContract(inspection.contract)}`, vscode.TreeItemCollapsibleState.None));
+      const project = projectGuidance(inspection.contract);
+      if (project) items.push(new vscode.TreeItem(`${project.message} ${project.hint}`, vscode.TreeItemCollapsibleState.None));
     } else items.push(new vscode.TreeItem("Open a file in a CLI-managed project to view its installed resource", vscode.TreeItemCollapsibleState.None));
     return items;
   }

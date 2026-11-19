@@ -22,4 +22,12 @@ function rememberFileStore(env, rootDir) {
 function missingCredential(platform,error) {
   return platform==='darwin' ? error.code===44 || error.status===44 : platform==='linux' ? (error.code===1 || error.status===1) && !String(error.stderr || '').trim() : platform==='win32' ? error.code===44 || error.status===44 || /0x80070490|Element not found/i.test(String(error.stderr || '')) : false;
 }
-module.exports={selectedStore,rememberFileStore,stateRoot,missingCredential};
+/** A missing credential helper is a store problem, not "signed out". */
+function keychainToolMissing(platform,error) {
+  const code=error && error.code;
+  if (code==='ENOENT' || code==='EACCES' || code==='EPERM') return true;
+  const text=String((error && (error.stderr || error.message)) || '');
+  if (/command not found|no such file or directory|not recognized as an internal or external command|cannot find/i.test(text)) return true;
+  return platform==='linux' && /secret-tool/i.test(text);
+}
+module.exports={selectedStore,rememberFileStore,stateRoot,missingCredential,keychainToolMissing};

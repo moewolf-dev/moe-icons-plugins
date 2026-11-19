@@ -1,5 +1,10 @@
 # Core language implementation handoff — 2026-10-04
 
+> Historical handoff. Current runtime boundaries, project contract states and
+> logging behavior are documented in [README.md](../README.md),
+> [plugin-contracts-2026-10-05.md](plugin-contracts-2026-10-05.md) and
+> [version-compatibility.md](version-compatibility.md).
+
 The maintainer requested implementing the hardest shared core first, rather than executing one whole plan task at a time. This work is a local core slice across several tasks, not completion of the entire iteration or permission to publish.
 
 ## Implemented
@@ -26,9 +31,32 @@ npm run package
 
 `test:core-host` launches an isolated installed VS Code, using temporary user/extension/workspace directories. Set `MOEICONS_VSCODE_BIN` when the CLI is not in the default macOS location/PATH. It requires a host-written pass report; a zero exit code from the `code` launcher is not sufficient. The fixture is synthetic and hash-consistent, not a real live install.
 
+On CI/container/desktop-sandbox hosts where Electron cannot initialize its
+Chromium sandbox, set `MOEICONS_CORE_TEST_NO_SANDBOX=1`; the script then adds
+`--no-sandbox --disable-gpu` to the isolated test host only. This never changes
+the packaged extension or a user's VS Code.
+
+Packed VSIX check (2026-11-18 evidence):
+
+```sh
+npm run package
+rm -rf /tmp/moe-vsix-check && mkdir -p /tmp/moe-vsix-check/ext
+unzip -q moe-icons-plugins-0.0.14.vsix -d /tmp/moe-vsix-check/ext
+MOEICONS_VSCODE_BIN="/Applications/Visual Studio Code.app/Contents/MacOS/Code" \
+MOEICONS_CORE_TEST_NO_SANDBOX=1 \
+MOEICONS_CORE_TEST_EXTENSION_DIR=/tmp/moe-vsix-check/ext/extension \
+npm run test:core-host
+```
+
+Result on VS Code 1.146.0: `extensionHost: pass` for both the source tree and
+the extracted VSIX (9 checks). `code --install-extension ... --extensions-dir
+<tmp>` also installed `moewolf.moe-icons-plugins@0.0.14` and
+`--list-extensions --show-versions` returned it. Marketplace publication and
+readback remain external.
+
 32 unit tests cover binding identity, aliases, namespace members, shadowing, type imports, comments/strings, incomplete JSX, Vue setup/kebab tags, loop/slot scopes, dynamic expressions, catalog/barrel drift, outside-root symlinks and naming. VS Code 1.140.0 core smoke validation covers activation, coded diagnostic/range, namespace completion and clearing after edit. A separate source drill called the actual sibling CLI generator for React/Vue (`archive` -> `Archive`, catalog 0.0.18); the local install metadata was synthesized for that drill. It is not full CLI install, live API or cross-platform acceptance. Evidence is recorded in the coordination workspace.
 
-VSIX packaging succeeded locally. The bundled compiler is approximately 10.8 MB uncompressed; the initial VSIX is approximately 1.8 MB. Use the machine's current Node >=22 for packaging if old npm/node on PATH cannot run current vsce dependencies. Do not update all dependencies or run audit fix as part of this core slice.
+VSIX packaging succeeded locally. The bundled compiler is approximately 10.8 MB uncompressed; the initial VSIX is approximately 1.8 MB. Use Node.js 24 or newer for packaging; old npm/node on PATH cannot run current vsce dependencies. Do not update all dependencies or run audit fix as part of this core slice.
 
 ## Outstanding boundaries
 

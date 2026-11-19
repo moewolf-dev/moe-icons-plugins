@@ -3,73 +3,234 @@ import { readFile, realpath, stat } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import * as ts from "typescript";
 import type { LanguageTarget, ModuleResolver, PublicModule, PublicSymbol } from "./contracts";
+import {
+  isRecord as record,
+  isSemver,
+  parseInstallMetadata,
+  resolveProjectStatus,
+  resourceVersionFromCatalog,
+  safeProjectPath,
+  SUPPORTED_CATALOG_SCHEMA,
+  type ProjectContract,
+  type ProjectStatus,
+  type ProjectVersions,
+} from "./metadata";
 
-const record = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
 const digest = (value: string): string => createHash("sha256").update(value).digest("hex");
-const safePath = (value: string): boolean => !isAbsolute(value) && !value.includes("\\") && !value.includes(":") && value.split("/").every(part => part.length > 0 && part !== "." && part !== "..");
+const keywordNames = new Set(["MoeiconsProvider", "useMoeiconsTheme", "createMoeiconsRuntime", "MOEICONS_THEME_KEY"]);
+const errorCode = (error: unknown): string | undefined =>
+  typeof error === "object" && error !== null && "code" in error ? String((error as { code?: unknown }).code) : undefined;
 const inside = (root: string, file: string): boolean => {
   const rel = relative(root, file);
   return rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel);
 };
-const target = (value: unknown): value is LanguageTarget => ["react", "vue", "vanilla", "assets"].some(item => item === value);
-const keywordNames = new Set(["MoeiconsProvider", "useMoeiconsTheme", "createMoeiconsRuntime", "MOEICONS_THEME_KEY"]);
 import { proxyName } from "./naming";
 export { proxyName } from "./naming";
+
 export interface ProjectSnapshot {
   readonly version?: string;
   readonly target?: LanguageTarget;
+  /** Whether this snapshot is usable and why it may be degraded. */
+  readonly contract: ProjectContract;
   readonly modules: ReadonlyMap<string, PublicModule>;
   owns(documentPath: string): boolean;
   watches(documentPath: string): boolean;
   readonly styleGroups?: readonly string[];
   resolver(documentPath: string): ModuleResolver;
 }
-const missing = (): ProjectSnapshot => ({ modules: new Map(), owns: () => false, watches: path => path.includes("/.moeicons/") || /(?:ts|js)config.*\.json$/.test(path), resolver: () => () => undefined });
+
+const missing = (contract: ProjectContract): ProjectSnapshot => ({
+  contract,
+  modules: new Map(),
+  owns: () => false,
+  watches: path => path.includes("/.moeicons/") || /(?:ts|js)config.*\.json$/.test(path),
+  resolver: () => () => undefined,
+});
+
+const markers = [
+  ".moeicons",
+  "moeicons.config.ts",
+  "moeicons.config.js",
+  "moeicons.config.json",
+  "moeicons.config.jsonc",
+  "node_modules/@moewolf/moe-icons-cli/package.json",
+] as const;
+
+async function hasProjectMarker(root: string): Promise<boolean> {
+  for (const marker of markers) {
+    try {
+      await stat(resolve(root, marker));
+      return true;
+    } catch {
+      /* Try the next read-only marker. */
+    }
+  }
+  return false;
+}
+
+/** Record the installed CLI version when the project has a local installation. */
+export async function readInstalledCliVersion(root: string): Promise<string | undefined> {
+  try {
+    const text = await readFile(resolve(root, "node_modules/@moewolf/moe-icons-cli/package.json"), "utf8");
+    if (text.length > 100_000) return undefined;
+    const value: unknown = JSON.parse(text);
+    return record(value) && isSemver(value.version) ? value.version : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function absentContract(root: string): Promise<ProjectContract> {
+  const installedCliVersion = await readInstalledCliVersion(root);
+  const status: ProjectStatus = (await hasProjectMarker(root)) ? "notGenerated" : "cliMissing";
+  return {
+    status,
+    versions: installedCliVersion === undefined ? {} : { installedCliVersion },
+    detail: status === "notGenerated" ? "metadata-absent" : "no-project",
+  };
+}
+
+/** Inspect an arbitrary workspace directory without requiring a managed project. */
+export async function inspectProjectContract(workspaceRoot: string): Promise<ProjectContract> {
+  let root: string;
+  try {
+    root = await realpath(workspaceRoot);
+  } catch {
+    return { status: "cliMissing", versions: {}, detail: "workspace-unreadable" };
+  }
+  try {
+    await stat(resolve(root, ".moeicons/install-metadata.json"));
+  } catch {
+    return absentContract(root);
+  }
+  return (await readProjectSnapshot(root)).contract;
+}
 
 export { findManagedProjectRoot } from "./project-root";
 
 /** Only hashed CLI-managed modules are authoritative. Never execute project config. */
 export async function readProjectSnapshot(workspaceRoot: string): Promise<ProjectSnapshot> {
+  let root: string;
   try {
-    const root = await realpath(workspaceRoot);
+    root = await realpath(workspaceRoot);
+  } catch {
+    return missing({ status: "cliMissing", versions: {}, detail: "workspace-unreadable" });
+  }
+  const installedCliVersion = await readInstalledCliVersion(root);
+  const withInstalled = (versions: ProjectVersions): ProjectVersions =>
+    installedCliVersion === undefined ? versions : { ...versions, installedCliVersion };
+  try {
     async function readWithin(path: string, maxBytes = 2_000_000): Promise<string> {
       const file = await realpath(path);
       if (!inside(root, file) || (await stat(file)).size > maxBytes) throw new Error("Untrusted project input");
       return readFile(file, "utf8");
     }
-    const metadata: unknown = JSON.parse(await readWithin(resolve(root, ".moeicons/install-metadata.json"), 8_000_000));
-    if (!record(metadata) || metadata.schemaVersion !== 1 || !target(metadata.target) || typeof metadata.artifactVersion !== "string" || !record(metadata.managedFiles)) return missing();
-    const outputDir = metadata.generatedOutputDir;
-    if (typeof outputDir !== "string" || !safePath(outputDir)) return missing();
+
+    let metadataText: string;
+    try {
+      metadataText = await readWithin(resolve(root, ".moeicons/install-metadata.json"), 8_000_000);
+    } catch (error) {
+      if (errorCode(error) === "ENOENT") return missing(await absentContract(root));
+      return missing({ status: "invalidMetadata", versions: withInstalled({}), detail: "metadata-unreadable" });
+    }
+
+    let metadataValue: unknown;
+    try {
+      metadataValue = JSON.parse(metadataText);
+    } catch {
+      return missing({ status: "invalidMetadata", versions: withInstalled({}), detail: "metadata-json" });
+    }
+    const parsed = parseInstallMetadata(metadataValue);
+    if (!parsed.ok) {
+      return missing({ status: parsed.status, versions: withInstalled(parsed.versions), detail: parsed.detail });
+    }
+    const metadata = parsed.metadata;
+    const baseVersions: ProjectVersions = {
+      metadataSchema: metadata.schemaVersion,
+      ...(metadata.cliVersion === undefined ? {} : { cliVersion: metadata.cliVersion }),
+      artifactVersion: metadata.artifactVersion,
+    };
+
+    let catalogText: string;
+    try {
+      catalogText = await readWithin(resolve(root, ".moeicons/catalog.json"));
+    } catch (error) {
+      const status: ProjectStatus = errorCode(error) === "ENOENT" ? "staleGenerated" : "invalidMetadata";
+      return missing({ status, versions: withInstalled({ ...baseVersions, catalogSchema: undefined }), detail: status === "staleGenerated" ? "catalog-unreadable" : "catalog-untrusted" });
+    }
     const managed = metadata.managedFiles;
-    const catalogText = await readWithin(resolve(root, ".moeicons/catalog.json"));
-    if (digest(catalogText) !== metadata.catalogSha256 || metadata.catalogSha256 !== managed[".moeicons/catalog.json"]) return missing();
-    const catalog: unknown = JSON.parse(catalogText);
-    if (!record(catalog) || catalog.schemaVersion !== 1 || !Array.isArray(catalog.icons)) return missing();
+    if (digest(catalogText) !== metadata.catalogSha256 || managed[".moeicons/catalog.json"] !== metadata.catalogSha256) {
+      return missing({ status: "staleGenerated", versions: withInstalled(baseVersions), detail: "catalog-hash" });
+    }
+    let catalog: unknown;
+    try {
+      catalog = JSON.parse(catalogText);
+    } catch {
+      return missing({ status: "invalidMetadata", versions: withInstalled(baseVersions), detail: "catalog-json" });
+    }
+    if (!record(catalog)) {
+      return missing({ status: "invalidMetadata", versions: withInstalled(baseVersions), detail: "catalog-not-object" });
+    }
+    if (catalog.schemaVersion !== SUPPORTED_CATALOG_SCHEMA) {
+      const catalogSchema = typeof catalog.schemaVersion === "number" ? catalog.schemaVersion : undefined;
+      const status: ProjectStatus = catalogSchema === undefined ? "invalidMetadata" : "schemaDrift";
+      return missing({
+        status,
+        versions: withInstalled({ ...baseVersions, ...(catalogSchema === undefined ? {} : { catalogSchema }) }),
+        detail: "catalog-schema",
+      });
+    }
+    if (!Array.isArray(catalog.icons)) {
+      return missing({ status: "invalidMetadata", versions: withInstalled({ ...baseVersions, catalogSchema: 1 }), detail: "catalog-icons" });
+    }
+    const versions: ProjectVersions = {
+      ...baseVersions,
+      catalogSchema: SUPPORTED_CATALOG_SCHEMA,
+      resourceVersion: resourceVersionFromCatalog(catalog, metadata.artifactVersion),
+    };
+
+    const outputDir = metadata.generatedOutputDir;
     const ids = new Map<string, string>();
     const names = new Map<string, string>();
     for (const icon of catalog.icons) if (record(icon) && typeof icon.id === "string") {
       const name = proxyName(icon.id);
       // Ambiguous names must not produce a false icon identity.
-      if (ids.has(name) && ids.get(name) !== icon.id) return missing();
+      if (ids.has(name) && ids.get(name) !== icon.id) {
+        return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "ambiguous-icon-name" });
+      }
       ids.set(name, icon.id);
       names.set(name, icon.id); names.set(name.charAt(0).toLowerCase() + name.slice(1), icon.id);
     }
     const proGroups = Array.isArray(catalog.styleGroups) ? catalog.styleGroups.filter(record).filter(group => Array.isArray(group.tiers) && group.tiers.includes("pro") && !group.tiers.includes("free") && typeof group.id === "string").map(group => String(group.id)) : [];
     const files = new Map<string, string>();
-    const candidates = Object.entries(managed).filter(([path, hash]) => path.startsWith(`${outputDir}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
-    if (candidates.length > 3000) return missing();
+    const candidates = Object.entries(managed).filter(([path, hash]) => path.startsWith(`${outputDir}/`) && safeProjectPath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash));
+    if (candidates.length > 3000) {
+      return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "too-many-modules" });
+    }
+    let mismatchedFiles = 0;
     let totalBytes = 0;
     for (const [path, hash] of candidates) {
-      const bytes = await readWithin(resolve(root, path));
+      let bytes: string;
+      try {
+        bytes = await readWithin(resolve(root, path));
+      } catch (error) {
+        if (errorCode(error) !== "ENOENT") {
+          return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "generated-file-untrusted" });
+        }
+        mismatchedFiles++;
+        continue;
+      }
       totalBytes += Buffer.byteLength(bytes);
-      if (totalBytes > 8_000_000) return missing();
+      if (totalBytes > 8_000_000) {
+        return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "source-budget" });
+      }
       // A modified module is unknown, not an empty authoritative surface.
       if (digest(bytes) === hash) files.set(resolve(root, path), bytes);
+      else mismatchedFiles++;
     }
     // Follow only artifact modules actually re-exported by generated proxies.
     // Full installations may contain thousands of other icons; do not read them.
-    const artifacts = new Map(Object.entries(managed).filter(([path, hash]) => path.startsWith(`.moeicons/artifact/${metadata.target}/`) && safePath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash)).map(([path, hash]) => [resolve(root, path), hash]));
+    const artifacts = new Map(Object.entries(managed).filter(([path, hash]) => path.startsWith(`.moeicons/artifact/${metadata.target}/`) && safeProjectPath(path) && /\.(?:ts|tsx|js|jsx|vue)$/.test(path) && typeof hash === "string" && /^[a-f0-9]{64}$/.test(hash)).map(([path, hash]) => [resolve(root, path), hash] as const));
     const sources = new Map<string, ts.SourceFile>();
     const pending = [...files.keys()];
     const owned = new Set(candidates.map(([name]) => resolve(root, name)));
@@ -83,11 +244,25 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
         const artifact = [base, `${base}.js`, `${base}.ts`, resolve(base, "index.js"), resolve(base, "index.ts")].find(path => artifacts.has(path));
         if (!artifact || owned.has(artifact)) continue;
         owned.add(artifact);
-        if (owned.size > 3000) return missing();
-        const bytes = await readWithin(artifact);
+        if (owned.size > 3000) {
+          return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "too-many-artifacts" });
+        }
+        let bytes: string;
+        try {
+          bytes = await readWithin(artifact);
+        } catch (error) {
+          if (errorCode(error) !== "ENOENT") {
+            return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "artifact-untrusted" });
+          }
+          mismatchedFiles++;
+          continue;
+        }
         totalBytes += Buffer.byteLength(bytes);
-        if (totalBytes > 8_000_000) return missing();
+        if (totalBytes > 8_000_000) {
+          return missing({ status: "invalidMetadata", versions: withInstalled(versions), detail: "source-budget" });
+        }
         if (digest(bytes) === artifacts.get(artifact)) { files.set(artifact, bytes); pending.push(artifact); }
+        else mismatchedFiles++;
       }
     }
     const modules = new Map<string, PublicModule>();
@@ -102,10 +277,11 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
       seen.add(file);
       const source = sources.get(file) ?? ts.createSourceFile(file, files.get(file)!, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
       const imports = source.statements.flatMap(statement => ts.isImportDeclaration(statement) && ts.isStringLiteral(statement.moduleSpecifier) && statement.moduleSpecifier.text.startsWith(".") ? [resolve(dirname(file), statement.moduleSpecifier.text)] : []);
-      const proPath = (path: string): boolean => (inside(resolve(root, ".moeicons/artifact"), path) || inside(resolve(root, String(outputDir), "assets"), path)) && proGroups.some(group => path.split(sep).some(part => part === group || part.startsWith(group + "-")));
+      const proPath = (path: string): boolean => (inside(resolve(root, ".moeicons/artifact"), path) || inside(resolve(root, outputDir, "assets"), path)) && proGroups.some(group => path.split(sep).some(part => part === group || part.startsWith(group + "-")));
       const required = proPath(file) || imports.some(path => proPath(path) || (findModule(path) ? usesProResource(findModule(path)!, seen) : false));
       proUsage.set(file, required); return required;
     }
+    const metadataTarget = metadata.target;
     function moduleAt(file: string): PublicModule | undefined {
       const cached = modules.get(file);
       if (cached) return cached;
@@ -183,9 +359,9 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
     for (const name of ["tsconfig.json", "tsconfig.app.json", "jsconfig.json"]) {
       const file = resolve(root, name); configs.push(file);
       try {
-        const parsed = ts.parseConfigFileTextToJson(file, await readWithin(file));
-        const options = parsed.config?.compilerOptions;
-        if (parsed.error || !record(options) || !record(options.paths)) continue;
+        const parsedConfig = ts.parseConfigFileTextToJson(file, await readWithin(file));
+        const options = parsedConfig.config?.compilerOptions;
+        if (parsedConfig.error || !record(options) || !record(options.paths)) continue;
         const base = resolve(root, typeof options.baseUrl === "string" ? options.baseUrl : ".");
         if (!inside(root, base)) continue;
         for (const [key, paths] of Object.entries(options.paths)) {
@@ -195,10 +371,21 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
         }
       } catch { /* Optional aliases; unknown paths retain conservative behaviour. */ }
     }
-    const metadataTarget = metadata.target;
     for (const file of files.keys()) moduleAt(file);
+    const resolution = resolveProjectStatus({
+      mismatchedFiles,
+      hasGeneratedModules: files.size > 0,
+      target: metadataTarget,
+      ...(metadata.cliVersion === undefined ? {} : { cliVersion: metadata.cliVersion }),
+    });
+    const contract: ProjectContract = {
+      status: resolution.status,
+      versions: withInstalled(versions),
+      ...(resolution.detail === undefined ? {} : { detail: resolution.detail }),
+    };
     const canonicalPath = (path: string): string => inside(resolve(workspaceRoot), path) ? resolve(root, relative(resolve(workspaceRoot), path)) : path;
     return {
+      contract,
       owns: path => owned.has(canonicalPath(path)),
       watches: path => { const file = canonicalPath(path); return file.startsWith(resolve(root, outputDir) + sep) || file.startsWith(resolve(root, ".moeicons") + sep) || configs.includes(file); },
       styleGroups: Array.isArray(catalog.styleGroups) ? catalog.styleGroups.filter(record).flatMap(group => typeof group.id === "string" ? [group.id] : []) : [],
@@ -210,7 +397,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
           const candidates = specifier.startsWith(".") ? [resolve(dirname(canonicalDocument), specifier)] : aliases.flatMap(alias => {
             if ((!alias.wildcard && specifier !== alias.prefix) || !specifier.startsWith(alias.prefix) || !specifier.endsWith(alias.suffix)) return [];
             const middle = specifier.slice(alias.prefix.length, alias.suffix ? -alias.suffix.length : undefined);
-            return alias.targets.map(target => resolve(alias.base, target.replace("*", middle)));
+            return alias.targets.map(targetPath => resolve(alias.base, targetPath.replace("*", middle)));
           });
           for (const candidate of candidates) {
             if (!inside(root, candidate)) continue;
@@ -221,5 +408,7 @@ export async function readProjectSnapshot(workspaceRoot: string): Promise<Projec
         };
       },
     };
-  } catch { return missing(); }
+  } catch {
+    return missing({ status: "invalidMetadata", versions: withInstalled({}), detail: "unreadable" });
+  }
 }
