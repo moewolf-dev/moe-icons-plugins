@@ -18,3 +18,5 @@ release-artifact/**
 candidate/**
 
 .tmp/**
+
+.nvmrc
