@@ -1,0 +1,4 @@
+# Byte-pinned small-pack vendor files must keep LF on Windows checkouts.
+scripts/vendor/*.cjs text eol=lf
+scripts/vendor/*.json text eol=lf
+scripts/vendor/moe-icons-release-policy/* text eol=lf
