@@ -589,11 +589,6 @@
         }
       },
       "eventId": "resource:0.0.48:cli:0.0.48"
-    },
-    {
-      "pluginVersion": "0.0.49",
-      "cliVersion": "0.0.48",
-      "resourceVersion": "0.0.48"
     }
   ]
 }
