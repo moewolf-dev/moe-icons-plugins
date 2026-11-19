@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.0.49 - 2026-11-19
 
+- Align the plugin with the CLI/resource 0.0.49 release train (package-set identity `15502aef...`).
 - Separate the VS Code Extension Host runtime from the Node.js 24 requirement for CLI users and for extension development, CI, VSIX packaging and Marketplace publication. GitHub Actions workflows now use Node 24; `engines.vscode` remains `^1.85.0` and no user-facing `engines.node` requirement was added.
 - Record CLI metadata schema, optional CLI version, installed CLI version, and artifact/resource versions when reading CLI-generated projects. Distinguish a missing CLI, a project that was not generated, invalid metadata, schema drift, stale generated files and a CLI below the verified minimum.
 - Keep account states independent (`signedOut`, `sessionExpired`, `sessionStore`, `rateLimited`, `policy`, `unavailable`, authenticated Free/Pro) with concrete hints and explicit Remote SSH/WSL/container keychain limitations. The extension still reads the CLI session store read-only and never copies or generates tokens.
