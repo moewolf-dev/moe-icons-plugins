@@ -1,25 +1,25 @@
 {
   "schemaVersion": 2,
-  "resourceVersion": "0.0.48",
-  "sourceCommit": "1e3134bf0deb49239538c8ba78bcbf48f81989f9",
+  "resourceVersion": "0.0.49",
+  "sourceCommit": "4f4bce0a533ccfe6a6d91109ea50e7e3d8fe7c65",
   "candidateSets": {
     "free": {
       "tier": "free",
-      "fullVersion": "0.0.48",
-      "sourceCommit": "1e3134bf0deb49239538c8ba78bcbf48f81989f9",
+      "fullVersion": "0.0.49",
+      "sourceCommit": "4f4bce0a533ccfe6a6d91109ea50e7e3d8fe7c65",
       "generatorCommit": "aab2c80f661a589d13d5e6e9ca2c0f77c84a7e0b",
       "candidateRootBytes": 455,
-      "candidateRootSha256": "b1d373785c11921908fc61c4eeea000fd3e80ffdf068fdcee529a669a6c726b3",
-      "packageSetSha256": "0b313f799b53b85422c811cadaf1e343d578bdf94a682d06dadb7b391a4340b2"
+      "candidateRootSha256": "562c41a9472b35bb6e41c72d852dc21b98fb8a68af2bf3928a3aa39e75b87c18",
+      "packageSetSha256": "9f22114907847532628d815ff8917ede0701a68acf4a727ebbfcbb667989cd32"
     },
     "pro": {
       "tier": "pro",
-      "fullVersion": "0.0.48",
-      "sourceCommit": "1e3134bf0deb49239538c8ba78bcbf48f81989f9",
+      "fullVersion": "0.0.49",
+      "sourceCommit": "4f4bce0a533ccfe6a6d91109ea50e7e3d8fe7c65",
       "generatorCommit": "aab2c80f661a589d13d5e6e9ca2c0f77c84a7e0b",
       "candidateRootBytes": 453,
-      "candidateRootSha256": "612b24866350e34605b6b96536331c4669aa561f5ba916a526ec07d39bf6deaa",
-      "packageSetSha256": "24c57b7217d952d80c724a6e6883a6fc4332746282a1fb4678677c51763697d1"
+      "candidateRootSha256": "24ddd40f87fe9dc264aca27a43ae4ee57e5d1d95568ba65a873b0e6479b90472",
+      "packageSetSha256": "7636aa72bc03038de8344cbb3699645c6b5541887a5e8da7647e6c85e56d9b8c"
     }
   },
   "entries": [
@@ -38370,6 +38370,11 @@
     },
     {
       "id": "symbol-plus-stroke-min",
+      "styleGroup": "moe-sticker",
+      "minimumTier": "pro"
+    },
+    {
+      "id": "test-cube",
       "styleGroup": "moe-sticker",
       "minimumTier": "pro"
     },
